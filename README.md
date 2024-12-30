@@ -2,4 +2,4 @@
 
 A tool to package 7z FMs in a way that allows FM loaders to scan them quickly, while retaining the high compression advantage of the 7z format.
 
-Still in development. Current release versions of AngelLoader cannot yet properly take advantage of this, although an advantage may sometimes be gained depending on how unfavorable the structure of a 7z FM was prior to being repackaged with this tool. Development versions of AngelLoader are achieving a 10.5x performance increase on average when scanning FMs packed with this tool.
+Still in development. Current release versions of AngelLoader cannot yet properly take advantage of this, although an advantage may sometimes be gained depending on how unfavorable the structure of a 7z FM was prior to being repackaged with this tool. Development versions of AngelLoader are achieving a 6.6x performance increase on average when scanning FMs packed with this tool.
