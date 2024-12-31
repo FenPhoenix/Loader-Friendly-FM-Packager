@@ -55,7 +55,7 @@ sealed partial class MainForm
             this.SourceFMDirectoryTextBox.Name = "SourceFMDirectoryTextBox";
             this.SourceFMDirectoryTextBox.Size = new System.Drawing.Size(640, 20);
             this.SourceFMDirectoryTextBox.TabIndex = 0;
-            this.SourceFMDirectoryTextBox.Text = "J:\\_BlackParade_Blocks\\TheBlackParade_1.0.7";
+            this.SourceFMDirectoryTextBox.Text = "J:\\_BlackParade_Blocks\\TheBlackParade_1.0";
             // 
             // FMDirectoryBrowseButton
             // 
