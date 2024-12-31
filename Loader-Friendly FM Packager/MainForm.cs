@@ -13,6 +13,11 @@ namespace Loader_Friendly_FM_Packager;
 TODO: We'll be adding to the archive with every call, so make sure it doesn't exist beforehand and/or delete
  it first or something
 
+TODO: When re-packing from a zip file, notify the user when an unknown-encoded filename comes up (where it would
+ normally use "Default" encoding). Show the user the filename in various encodings and allow them to choose what
+ it should be.
+ We'll need to pull in the .NET zip code so as to customize it to expose the "used default encoding" situation.
+
 --
 
 TODO: Mod.ini specifies a readme and icon file.
@@ -202,10 +207,10 @@ public sealed partial class MainForm : Form
             {
                 extractedDirName = Path.GetFileNameWithoutExtension(zip).Trim();
 
-                if (extractedDirName != "Religious_conflict_V_1_5")
-                {
-                    continue;
-                }
+                //if (extractedDirName != "Religious_conflict_V_1_5")
+                //{
+                //    continue;
+                //}
 
                 string tempExtractedDir = Path.Combine(@"J:\_7z_temp", extractedDirName);
                 using (var zipArchive = GetReadModeZipArchiveCharEnc(zip))
@@ -235,7 +240,7 @@ public sealed partial class MainForm : Form
                 Trace.WriteLine(extractedDirName + ":\r\n" + exOuter);
             }
 
-            Trace.WriteLine(i.ToStrInv() + " / " + zips.Length.ToStrInv() + ": " + extractedDirName);
+            Trace.WriteLine((i + 1).ToStrInv() + " / " + zips.Length.ToStrInv() + ": " + extractedDirName);
 
             //break;
 
@@ -266,7 +271,7 @@ public sealed partial class MainForm : Form
         return enc;
     }
 
-#endregion
+    #endregion
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {

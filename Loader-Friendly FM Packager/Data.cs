@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Text;
+using JetBrains.Annotations;
 
 namespace Loader_Friendly_FM_Packager;
 
@@ -33,6 +34,8 @@ public sealed class ConfigData
 
 public static class Global
 {
+    public static readonly UTF8Encoding UTF8NoBOM = new(false, true);
+
     // TODO: We should probably just always use LZMA2, I don't see any disadvantage...
     public static readonly string[] CompressionMethodArgStrings =
     {

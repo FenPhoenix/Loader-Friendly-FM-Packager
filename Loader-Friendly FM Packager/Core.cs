@@ -199,7 +199,25 @@ internal static class Core
         for (int i = 0; i < fileNames.Count; i++)
         {
             string fileName = fileNames[i];
-            using (var sw = new StreamWriter(listFile))
+
+            if (!File.Exists(Path.Combine(sourcePath, fileName)))
+            {
+                // TODO: Handle this better - placeholder for now
+                string msg =
+                    "----------\r\n" +
+                    "Filename we're about to pass to 7z via the list file (" + nameof(Run7z_ALScanFiles) +
+                    ") doesn't exist on disk! Character encoding difference?\r\n" +
+                    "Filename: +" + fileName + "\r\n" +
+                    "----------";
+                Trace.WriteLine(msg);
+                MessageBox.Show(
+                    msg,
+                    "Warning",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+
+            using (var sw = new StreamWriter(listFile, false, UTF8NoBOM))
             {
                 sw.WriteLine(fileName);
             }
@@ -425,6 +443,26 @@ internal static class Core
 
         //string listFile_ALScan = Path.Combine(TempPath, AL_Scan_Block_ListFileName);
         string listFile_Rest = Path.Combine(Paths.Temp, Rest_Block_ListFileName);
+
+        foreach (string fileName in restFileNames)
+        {
+            if (!File.Exists(Path.Combine(filesDir, fileName)))
+            {
+                // TODO: Handle this better - placeholder for now
+                string msg =
+                    "----------\r\n" +
+                    "Filename we're about to pass to 7z via the list file (" + nameof(Run7z_ALScanFiles) +
+                    ") doesn't exist on disk! Character encoding difference?\r\n" +
+                    "Filename: +" + fileName + "\r\n" +
+                    "----------";
+                Trace.WriteLine(msg);
+                MessageBox.Show(
+                    msg,
+                    "Warning",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        }
 
         //File.WriteAllLines(listFile_ALScan, alScanFileNames);
         File.WriteAllLines(listFile_Rest, restFileNames);
