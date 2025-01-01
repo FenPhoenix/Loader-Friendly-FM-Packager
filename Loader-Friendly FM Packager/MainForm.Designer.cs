@@ -62,15 +62,15 @@ sealed partial class MainForm
             this.NumberOfCPUThreadsOutOfFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.NumberOfCPUThreadsOutOfLabel = new System.Windows.Forms.Label();
             this.TimeGroupBox = new System.Windows.Forms.GroupBox();
-            this.StoreCreationTimeEnableSettingCheckBox = new System.Windows.Forms.CheckBox();
-            this.StoreLastAccessTimeEnableSettingCheckBox = new System.Windows.Forms.CheckBox();
-            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox = new System.Windows.Forms.CheckBox();
-            this.DoNotChangeSourceFilesLastAccessTimeCheckBox = new System.Windows.Forms.CheckBox();
-            this.StoreModificationTimeCheckBox = new System.Windows.Forms.CheckBox();
-            this.StoreCreationTimeCheckBox = new System.Windows.Forms.CheckBox();
-            this.StoreLastAccessTimeCheckBox = new System.Windows.Forms.CheckBox();
-            this.SetArchiveTimeToLatestFileTimeCheckBox = new System.Windows.Forms.CheckBox();
             this.TimestampPrecisionLabel = new System.Windows.Forms.Label();
+            this.SetArchiveTimeToLatestFileTimeCheckBox = new System.Windows.Forms.CheckBox();
+            this.StoreLastAccessTimeCheckBox = new System.Windows.Forms.CheckBox();
+            this.StoreCreationTimeCheckBox = new System.Windows.Forms.CheckBox();
+            this.StoreModificationTimeCheckBox = new System.Windows.Forms.CheckBox();
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox = new System.Windows.Forms.CheckBox();
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox = new System.Windows.Forms.CheckBox();
+            this.StoreLastAccessTimeEnableSettingCheckBox = new System.Windows.Forms.CheckBox();
+            this.StoreCreationTimeEnableSettingCheckBox = new System.Windows.Forms.CheckBox();
             this.TimestampPrecisionComboBox = new System.Windows.Forms.ComboBox();
             this.SevenZipExePanel.SuspendLayout();
             this.MemoryUsageForDecompressingValueFLP.SuspendLayout();
@@ -283,6 +283,7 @@ sealed partial class MainForm
             this.DictionarySizeComboBox.Name = "DictionarySizeComboBox";
             this.DictionarySizeComboBox.Size = new System.Drawing.Size(132, 21);
             this.DictionarySizeComboBox.TabIndex = 9;
+            this.DictionarySizeComboBox.SelectedIndexChanged += new System.EventHandler(this.DictionarySizeComboBox_SelectedIndexChanged);
             // 
             // WordSizeLabel
             // 
@@ -422,48 +423,47 @@ sealed partial class MainForm
             this.TimeGroupBox.TabStop = false;
             this.TimeGroupBox.Text = "Time";
             // 
-            // StoreCreationTimeEnableSettingCheckBox
+            // TimestampPrecisionLabel
             // 
-            this.StoreCreationTimeEnableSettingCheckBox.AutoSize = true;
-            this.StoreCreationTimeEnableSettingCheckBox.Location = new System.Drawing.Point(12, 68);
-            this.StoreCreationTimeEnableSettingCheckBox.Name = "StoreCreationTimeEnableSettingCheckBox";
-            this.StoreCreationTimeEnableSettingCheckBox.Size = new System.Drawing.Size(29, 17);
-            this.StoreCreationTimeEnableSettingCheckBox.TabIndex = 0;
-            this.StoreCreationTimeEnableSettingCheckBox.Text = ":";
-            this.StoreCreationTimeEnableSettingCheckBox.UseVisualStyleBackColor = true;
-            this.StoreCreationTimeEnableSettingCheckBox.CheckedChanged += new System.EventHandler(this.StoreCreationTimeEnableSettingCheckBox_CheckedChanged);
+            this.TimestampPrecisionLabel.AutoSize = true;
+            this.TimestampPrecisionLabel.Location = new System.Drawing.Point(36, 22);
+            this.TimestampPrecisionLabel.Name = "TimestampPrecisionLabel";
+            this.TimestampPrecisionLabel.Size = new System.Drawing.Size(106, 13);
+            this.TimestampPrecisionLabel.TabIndex = 1;
+            this.TimestampPrecisionLabel.Text = "Timestamp precision:";
             // 
-            // StoreLastAccessTimeEnableSettingCheckBox
+            // SetArchiveTimeToLatestFileTimeCheckBox
             // 
-            this.StoreLastAccessTimeEnableSettingCheckBox.AutoSize = true;
-            this.StoreLastAccessTimeEnableSettingCheckBox.Location = new System.Drawing.Point(12, 91);
-            this.StoreLastAccessTimeEnableSettingCheckBox.Name = "StoreLastAccessTimeEnableSettingCheckBox";
-            this.StoreLastAccessTimeEnableSettingCheckBox.Size = new System.Drawing.Size(29, 17);
-            this.StoreLastAccessTimeEnableSettingCheckBox.TabIndex = 0;
-            this.StoreLastAccessTimeEnableSettingCheckBox.Text = ":";
-            this.StoreLastAccessTimeEnableSettingCheckBox.UseVisualStyleBackColor = true;
-            this.StoreLastAccessTimeEnableSettingCheckBox.CheckedChanged += new System.EventHandler(this.StoreLastAccessTimeEnableSettingCheckBox_CheckedChanged);
+            this.SetArchiveTimeToLatestFileTimeCheckBox.AutoSize = true;
+            this.SetArchiveTimeToLatestFileTimeCheckBox.Enabled = false;
+            this.SetArchiveTimeToLatestFileTimeCheckBox.Location = new System.Drawing.Point(39, 122);
+            this.SetArchiveTimeToLatestFileTimeCheckBox.Name = "SetArchiveTimeToLatestFileTimeCheckBox";
+            this.SetArchiveTimeToLatestFileTimeCheckBox.Size = new System.Drawing.Size(180, 17);
+            this.SetArchiveTimeToLatestFileTimeCheckBox.TabIndex = 0;
+            this.SetArchiveTimeToLatestFileTimeCheckBox.Text = "Set archive time to latest file time";
+            this.SetArchiveTimeToLatestFileTimeCheckBox.UseVisualStyleBackColor = true;
             // 
-            // SetArchiveTimeToLatestFileTimeEnableSettingCheckBox
+            // StoreLastAccessTimeCheckBox
             // 
-            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.AutoSize = true;
-            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Location = new System.Drawing.Point(12, 122);
-            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Name = "SetArchiveTimeToLatestFileTimeEnableSettingCheckBox";
-            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Size = new System.Drawing.Size(29, 17);
-            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.TabIndex = 0;
-            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Text = ":";
-            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.UseVisualStyleBackColor = true;
-            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.CheckedChanged += new System.EventHandler(this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox_CheckedChanged);
+            this.StoreLastAccessTimeCheckBox.AutoSize = true;
+            this.StoreLastAccessTimeCheckBox.Enabled = false;
+            this.StoreLastAccessTimeCheckBox.Location = new System.Drawing.Point(39, 91);
+            this.StoreLastAccessTimeCheckBox.Name = "StoreLastAccessTimeCheckBox";
+            this.StoreLastAccessTimeCheckBox.Size = new System.Drawing.Size(129, 17);
+            this.StoreLastAccessTimeCheckBox.TabIndex = 0;
+            this.StoreLastAccessTimeCheckBox.Text = "Store last access time";
+            this.StoreLastAccessTimeCheckBox.UseVisualStyleBackColor = true;
             // 
-            // DoNotChangeSourceFilesLastAccessTimeCheckBox
+            // StoreCreationTimeCheckBox
             // 
-            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.AutoSize = true;
-            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Location = new System.Drawing.Point(12, 154);
-            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Name = "DoNotChangeSourceFilesLastAccessTimeCheckBox";
-            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Size = new System.Drawing.Size(231, 17);
-            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.TabIndex = 0;
-            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Text = "Do not change source files last access time";
-            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.UseVisualStyleBackColor = true;
+            this.StoreCreationTimeCheckBox.AutoSize = true;
+            this.StoreCreationTimeCheckBox.Enabled = false;
+            this.StoreCreationTimeCheckBox.Location = new System.Drawing.Point(39, 68);
+            this.StoreCreationTimeCheckBox.Name = "StoreCreationTimeCheckBox";
+            this.StoreCreationTimeCheckBox.Size = new System.Drawing.Size(114, 17);
+            this.StoreCreationTimeCheckBox.TabIndex = 0;
+            this.StoreCreationTimeCheckBox.Text = "Store creation time";
+            this.StoreCreationTimeCheckBox.UseVisualStyleBackColor = true;
             // 
             // StoreModificationTimeCheckBox
             // 
@@ -478,47 +478,48 @@ sealed partial class MainForm
             this.StoreModificationTimeCheckBox.Text = "Store modification time";
             this.StoreModificationTimeCheckBox.UseVisualStyleBackColor = true;
             // 
-            // StoreCreationTimeCheckBox
+            // DoNotChangeSourceFilesLastAccessTimeCheckBox
             // 
-            this.StoreCreationTimeCheckBox.AutoSize = true;
-            this.StoreCreationTimeCheckBox.Enabled = false;
-            this.StoreCreationTimeCheckBox.Location = new System.Drawing.Point(39, 68);
-            this.StoreCreationTimeCheckBox.Name = "StoreCreationTimeCheckBox";
-            this.StoreCreationTimeCheckBox.Size = new System.Drawing.Size(114, 17);
-            this.StoreCreationTimeCheckBox.TabIndex = 0;
-            this.StoreCreationTimeCheckBox.Text = "Store creation time";
-            this.StoreCreationTimeCheckBox.UseVisualStyleBackColor = true;
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.AutoSize = true;
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Location = new System.Drawing.Point(12, 154);
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Name = "DoNotChangeSourceFilesLastAccessTimeCheckBox";
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Size = new System.Drawing.Size(231, 17);
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.TabIndex = 0;
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Text = "Do not change source files last access time";
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.UseVisualStyleBackColor = true;
             // 
-            // StoreLastAccessTimeCheckBox
+            // SetArchiveTimeToLatestFileTimeEnableSettingCheckBox
             // 
-            this.StoreLastAccessTimeCheckBox.AutoSize = true;
-            this.StoreLastAccessTimeCheckBox.Enabled = false;
-            this.StoreLastAccessTimeCheckBox.Location = new System.Drawing.Point(39, 91);
-            this.StoreLastAccessTimeCheckBox.Name = "StoreLastAccessTimeCheckBox";
-            this.StoreLastAccessTimeCheckBox.Size = new System.Drawing.Size(129, 17);
-            this.StoreLastAccessTimeCheckBox.TabIndex = 0;
-            this.StoreLastAccessTimeCheckBox.Text = "Store last access time";
-            this.StoreLastAccessTimeCheckBox.UseVisualStyleBackColor = true;
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.AutoSize = true;
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Location = new System.Drawing.Point(12, 122);
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Name = "SetArchiveTimeToLatestFileTimeEnableSettingCheckBox";
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Size = new System.Drawing.Size(29, 17);
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.TabIndex = 0;
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Text = ":";
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.UseVisualStyleBackColor = true;
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.CheckedChanged += new System.EventHandler(this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox_CheckedChanged);
             // 
-            // SetArchiveTimeToLatestFileTimeCheckBox
+            // StoreLastAccessTimeEnableSettingCheckBox
             // 
-            this.SetArchiveTimeToLatestFileTimeCheckBox.AutoSize = true;
-            this.SetArchiveTimeToLatestFileTimeCheckBox.Enabled = false;
-            this.SetArchiveTimeToLatestFileTimeCheckBox.Location = new System.Drawing.Point(39, 122);
-            this.SetArchiveTimeToLatestFileTimeCheckBox.Name = "SetArchiveTimeToLatestFileTimeCheckBox";
-            this.SetArchiveTimeToLatestFileTimeCheckBox.Size = new System.Drawing.Size(180, 17);
-            this.SetArchiveTimeToLatestFileTimeCheckBox.TabIndex = 0;
-            this.SetArchiveTimeToLatestFileTimeCheckBox.Text = "Set archive time to latest file time";
-            this.SetArchiveTimeToLatestFileTimeCheckBox.UseVisualStyleBackColor = true;
+            this.StoreLastAccessTimeEnableSettingCheckBox.AutoSize = true;
+            this.StoreLastAccessTimeEnableSettingCheckBox.Location = new System.Drawing.Point(12, 91);
+            this.StoreLastAccessTimeEnableSettingCheckBox.Name = "StoreLastAccessTimeEnableSettingCheckBox";
+            this.StoreLastAccessTimeEnableSettingCheckBox.Size = new System.Drawing.Size(29, 17);
+            this.StoreLastAccessTimeEnableSettingCheckBox.TabIndex = 0;
+            this.StoreLastAccessTimeEnableSettingCheckBox.Text = ":";
+            this.StoreLastAccessTimeEnableSettingCheckBox.UseVisualStyleBackColor = true;
+            this.StoreLastAccessTimeEnableSettingCheckBox.CheckedChanged += new System.EventHandler(this.StoreLastAccessTimeEnableSettingCheckBox_CheckedChanged);
             // 
-            // TimestampPrecisionLabel
+            // StoreCreationTimeEnableSettingCheckBox
             // 
-            this.TimestampPrecisionLabel.AutoSize = true;
-            this.TimestampPrecisionLabel.Location = new System.Drawing.Point(36, 22);
-            this.TimestampPrecisionLabel.Name = "TimestampPrecisionLabel";
-            this.TimestampPrecisionLabel.Size = new System.Drawing.Size(106, 13);
-            this.TimestampPrecisionLabel.TabIndex = 1;
-            this.TimestampPrecisionLabel.Text = "Timestamp precision:";
+            this.StoreCreationTimeEnableSettingCheckBox.AutoSize = true;
+            this.StoreCreationTimeEnableSettingCheckBox.Location = new System.Drawing.Point(12, 68);
+            this.StoreCreationTimeEnableSettingCheckBox.Name = "StoreCreationTimeEnableSettingCheckBox";
+            this.StoreCreationTimeEnableSettingCheckBox.Size = new System.Drawing.Size(29, 17);
+            this.StoreCreationTimeEnableSettingCheckBox.TabIndex = 0;
+            this.StoreCreationTimeEnableSettingCheckBox.Text = ":";
+            this.StoreCreationTimeEnableSettingCheckBox.UseVisualStyleBackColor = true;
+            this.StoreCreationTimeEnableSettingCheckBox.CheckedChanged += new System.EventHandler(this.StoreCreationTimeEnableSettingCheckBox_CheckedChanged);
             // 
             // TimestampPrecisionComboBox
             // 

@@ -124,6 +124,8 @@ public sealed partial class MainForm : Form
 
         PopulateDictionarySizeComboBox();
 
+        PopulateSolidBlockSizeComboBox();
+
         string internal7zVersion = Core.GetSevenZipVersion(Path.Combine(Application.StartupPath, "7z", "7z.exe"));
         if (internal7zVersion.IsEmpty())
         {
@@ -348,5 +350,21 @@ public sealed partial class MainForm : Form
     private void PopulateDictionarySizeComboBox()
     {
         DictionarySizeComboBox.Items.AddRange(DictionarySizeItems.ToFriendlyStrings());
+    }
+
+    private void PopulateSolidBlockSizeComboBox()
+    {
+        SolidBlockSizeComboBox.Items.Clear();
+
+        int level = Config.CompressionLevel;
+        if (level == 0) return;
+    }
+
+    private void DictionarySizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        Config.DictionarySize =
+            DictionarySizeComboBox.SelectedIndexIsInRange()
+                ? DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue
+                : ConfigData.DefaultDictionarySize;
     }
 }

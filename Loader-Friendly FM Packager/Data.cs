@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace Loader_Friendly_FM_Packager;
@@ -17,6 +18,15 @@ public sealed class ConfigData
     public SevenZipApp SevenZipApp = SevenZipApp.Internal;
 
     public string SevenZipExternalAppPath = "";
+
+    public const ulong DefaultDictionarySize = ByteSize.MB * 256;
+
+    private ulong _dictionarySize;
+    public ulong DictionarySize
+    {
+        get => _dictionarySize;
+        set => _dictionarySize = Array.IndexOf(DictionarySizeItems, value) > -1 ? value : DefaultDictionarySize;
+    }
 }
 
 public sealed class FriendlyStringAndBackingValue<TBacking>
@@ -73,6 +83,11 @@ public static class Global
     };
 
     public static readonly ConfigData Config = new();
+
+    public static readonly FriendlyStringAndBackingValue<ulong>[] SolidBlockSizeItems =
+    {
+
+    };
 
     public static readonly FriendlyStringAndBackingValue<ulong>[] DictionarySizeItems =
     {
