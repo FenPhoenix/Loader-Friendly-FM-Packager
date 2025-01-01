@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -76,8 +75,6 @@ public sealed partial class MainForm : Form
         }
     }
 
-    // TODO: This goes to default value if it's the same as the selected one.
-    //  We need to handle default values explicitly.
     public long DictionarySize
     {
         get =>
@@ -110,6 +107,29 @@ public sealed partial class MainForm : Form
                     : NumberOfCPUThreadsComboBox.IndexIsInRange(value)
                         ? value
                         : 0;
+    }
+
+    public MemoryUseItem MemoryUseForCompression
+    {
+        get =>
+            MemoryUsageForCompressingComboBox.SelectedIndex == 0
+                ? MemoryUseItem.Default
+                : MemoryUseItems[MemoryUsageForCompressingComboBox.SelectedIndex].BackingValue;
+        set
+        {
+            if (value.Value == -1)
+            {
+                MemoryUsageForCompressingComboBox.SelectedIndex = 0;
+            }
+            else
+            {
+                FriendlyStringAndBackingValue<MemoryUseItem>? item =
+                    MemoryUseItems.FirstOrDefault_PastFirstIndex(x => x.BackingValue.Value == value.Value && x.BackingValue.IsPercent == value.IsPercent);
+                MemoryUsageForCompressingComboBox.SelectedIndex = item != null
+                    ? Array.IndexOf(MemoryUseItems, item)
+                    : 0;
+            }
+        }
     }
 
     public SevenZipApp SevenZipApp
@@ -161,6 +181,8 @@ public sealed partial class MainForm : Form
         PopulateDictionarySizeComboBox();
 
         PopulateThreadsComboBox();
+
+        PopulateMemoryUseComboBox();
 
         string internal7zVersion = Core.GetSevenZipVersion(Path.Combine(Application.StartupPath, "7z", "7z.exe"));
         if (internal7zVersion.IsEmpty())
@@ -432,5 +454,20 @@ public sealed partial class MainForm : Form
                 : Config.CompressionMethod == CompressionMethod.LZMA2
                     ? Lzma2ThreadItems[NumberOfCPUThreadsComboBox.SelectedIndex].BackingValue
                     : LzmaThreadItems[NumberOfCPUThreadsComboBox.SelectedIndex].BackingValue;
+    }
+
+    private void PopulateMemoryUseComboBox()
+    {
+        MemoryUsageForCompressingComboBox.Items.Clear();
+        MemoryUsageForCompressingComboBox.Items.AddRange(MemoryUseItems.ToFriendlyStrings());
+    }
+
+    private void MemoryUsageForCompressingComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (!MemoryUsageForCompressingComboBox.SelectedIndexIsInRange()) return;
+        Config.MemoryUseForCompression =
+            MemoryUsageForCompressingComboBox.SelectedIndex == 0
+                ? MemoryUseItem.Default
+                : MemoryUseItems[MemoryUsageForCompressingComboBox.SelectedIndex].BackingValue;
     }
 }

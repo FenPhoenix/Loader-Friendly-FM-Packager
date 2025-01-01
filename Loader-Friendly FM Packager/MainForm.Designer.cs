@@ -317,6 +317,7 @@ sealed partial class MainForm
             this.MemoryUsageForCompressingComboBox.Name = "MemoryUsageForCompressingComboBox";
             this.MemoryUsageForCompressingComboBox.Size = new System.Drawing.Size(78, 21);
             this.MemoryUsageForCompressingComboBox.TabIndex = 17;
+            this.MemoryUsageForCompressingComboBox.SelectedIndexChanged += new System.EventHandler(this.MemoryUsageForCompressingComboBox_SelectedIndexChanged);
             // 
             // MemoryUsageForDecompressingLabel
             // 

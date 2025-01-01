@@ -24,6 +24,7 @@ internal static class Core
         View.CompressionMethod = Config.CompressionMethod;
         View.Threads = Config.Threads;
         View.DictionarySize = Config.DictionarySize;
+        View.MemoryUseForCompression = Config.MemoryUseForCompression;
         View.SevenZipApp = Config.SevenZipApp;
         View.SevenZipExternalAppPath = Config.SevenZipExternalAppPath;
 
@@ -94,6 +95,19 @@ internal static class Core
             {
                 Config.SevenZipExternalAppPath = value.Trim();
             }
+            else if (lineT.TryGetValueO("MemoryUsageForCompressing=", out value))
+            {
+                bool isPercent = false;
+                if (value.Length > 0 && value[^1] == '%')
+                {
+                    isPercent = true;
+                    value = value.TrimEnd('%');
+                }
+                if (long.TryParse(value, out long result))
+                {
+                    Config.MemoryUseForCompression = new MemoryUseItem(result, isPercent);
+                }
+            }
         }
     }
 
@@ -105,6 +119,10 @@ internal static class Core
         sw.WriteLine("Threads=" + Config.Threads.ToStrInv());
         sw.WriteLine("DictionarySize=" + Config.DictionarySize.ToStrInv());
         sw.WriteLine("SevenZipApp=" + Config.SevenZipApp);
+        sw.WriteLine("MemoryUsageForCompressing=" +
+                     (Config.MemoryUseForCompression.IsPercent && Config.MemoryUseForCompression.Value != -1
+                         ? Config.MemoryUseForCompression.Value + "%"
+                         : Config.MemoryUseForCompression.Value));
         sw.WriteLine("SevenZipExternalAppPath=" + Config.SevenZipExternalAppPath);
     }
 
