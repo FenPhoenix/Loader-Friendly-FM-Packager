@@ -359,6 +359,7 @@ sealed partial class MainForm
             this.SetArchiveTimeToLatestFileTimeCheckBox.TabIndex = 0;
             this.SetArchiveTimeToLatestFileTimeCheckBox.Text = "Set archive time to latest file time";
             this.SetArchiveTimeToLatestFileTimeCheckBox.UseVisualStyleBackColor = true;
+            this.SetArchiveTimeToLatestFileTimeCheckBox.CheckedChanged += new System.EventHandler(this.SetArchiveTimeToLatestFileTimeCheckBox_CheckedChanged);
             // 
             // StoreLastAccessTimeCheckBox
             // 
@@ -370,6 +371,7 @@ sealed partial class MainForm
             this.StoreLastAccessTimeCheckBox.TabIndex = 0;
             this.StoreLastAccessTimeCheckBox.Text = "Store last access time";
             this.StoreLastAccessTimeCheckBox.UseVisualStyleBackColor = true;
+            this.StoreLastAccessTimeCheckBox.CheckedChanged += new System.EventHandler(this.StoreLastAccessTimeCheckBox_CheckedChanged);
             // 
             // StoreCreationTimeCheckBox
             // 
@@ -381,6 +383,7 @@ sealed partial class MainForm
             this.StoreCreationTimeCheckBox.TabIndex = 0;
             this.StoreCreationTimeCheckBox.Text = "Store creation time";
             this.StoreCreationTimeCheckBox.UseVisualStyleBackColor = true;
+            this.StoreCreationTimeCheckBox.CheckedChanged += new System.EventHandler(this.StoreCreationTimeCheckBox_CheckedChanged);
             // 
             // StoreModificationTimeCheckBox
             // 
@@ -404,6 +407,7 @@ sealed partial class MainForm
             this.DoNotChangeSourceFilesLastAccessTimeCheckBox.TabIndex = 0;
             this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Text = "Do not change source files last access time";
             this.DoNotChangeSourceFilesLastAccessTimeCheckBox.UseVisualStyleBackColor = true;
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.CheckedChanged += new System.EventHandler(this.DoNotChangeSourceFilesLastAccessTimeCheckBox_CheckedChanged);
             // 
             // SetArchiveTimeToLatestFileTimeEnableSettingCheckBox
             // 

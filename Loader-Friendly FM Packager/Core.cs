@@ -25,6 +25,10 @@ internal static class Core
         View.Threads = Config.Threads;
         View.DictionarySize = Config.DictionarySize;
         View.MemoryUseForCompression = Config.MemoryUseForCompression;
+        View.StoreCreationTime = Config.StoreCreationTime;
+        View.StoreLastAccessTime = Config.StoreLastAccessTime;
+        View.SetArchiveTimeToLatestFileTime = Config.SetArchiveTimeToLatestTileTime;
+        View.DoNotChangeSourceFilesLastAccessTime = Config.DoNotChangeSourceFilesLastAccessTime;
         View.SevenZipApp = Config.SevenZipApp;
         View.SevenZipExternalAppPath = Config.SevenZipExternalAppPath;
 
@@ -108,6 +112,40 @@ internal static class Core
                     Config.MemoryUseForCompression = new MemoryUseItem(result, isPercent);
                 }
             }
+            else if (lineT.TryGetValueO("StoreCreationTime=", out value))
+            {
+                Config.StoreCreationTime = GetNullableBoolValue(value);
+            }
+            else if (lineT.TryGetValueO("StoreLastAccessTime=", out value))
+            {
+                Config.StoreLastAccessTime = GetNullableBoolValue(value);
+            }
+            else if (lineT.TryGetValueO("SetArchiveTimeToLatestTileTime=", out value))
+            {
+                Config.SetArchiveTimeToLatestTileTime = GetNullableBoolValue(value);
+            }
+            else if (lineT.TryGetValueO("DoNotChangeSourceFilesLastAccessTime=", out value))
+            {
+                Config.DoNotChangeSourceFilesLastAccessTime = value.EqualsI(bool.TrueString);
+            }
+        }
+
+        return;
+
+        static bool? GetNullableBoolValue(string value)
+        {
+            if (value == bool.TrueString)
+            {
+                return true;
+            }
+            else if (value == bool.FalseString)
+            {
+                return false;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 
@@ -123,7 +161,20 @@ internal static class Core
                      (Config.MemoryUseForCompression.IsPercent && Config.MemoryUseForCompression.Value != -1
                          ? Config.MemoryUseForCompression.Value + "%"
                          : Config.MemoryUseForCompression.Value));
+        sw.WriteLine("StoreCreationTime=" + GetNullableBoolValue(Config.StoreCreationTime));
+        sw.WriteLine("StoreLastAccessTime=" + GetNullableBoolValue(Config.StoreLastAccessTime));
+        sw.WriteLine("SetArchiveTimeToLatestTileTime=" + GetNullableBoolValue(Config.SetArchiveTimeToLatestTileTime));
+        sw.WriteLine("DoNotChangeSourceFilesLastAccessTime=" + Config.DoNotChangeSourceFilesLastAccessTime);
         sw.WriteLine("SevenZipExternalAppPath=" + Config.SevenZipExternalAppPath);
+
+        return;
+
+        static string GetNullableBoolValue(bool? value) => value switch
+        {
+            true => bool.TrueString,
+            false => bool.FalseString,
+            _ => "",
+        };
     }
 
     private static void RunProcess(

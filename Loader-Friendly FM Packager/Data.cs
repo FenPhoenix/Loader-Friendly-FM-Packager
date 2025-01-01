@@ -58,6 +58,11 @@ public sealed class ConfigData
         get => _memoryUseForCompression;
         set => _memoryUseForCompression = value.Value == -1 ? MemoryUseItem.Default : value;
     }
+
+    public bool? StoreCreationTime;
+    public bool? StoreLastAccessTime;
+    public bool? SetArchiveTimeToLatestTileTime;
+    public bool DoNotChangeSourceFilesLastAccessTime;
 }
 
 public readonly struct MemoryUseItem
