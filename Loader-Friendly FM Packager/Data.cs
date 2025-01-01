@@ -21,9 +21,7 @@ public sealed class ConfigData
 
     public string SevenZipExternalAppPath = "";
 
-    public const ulong DefaultDictionarySize = ByteSize.MB * 256;
-
-    public int DefaultThreads => CompressionMethod == CompressionMethod.LZMA2 ? CPUThreads : Math.Min(CPUThreads, 2);
+    public const long DefaultDictionarySize = ByteSize.MB * 256;
 
     private int _threads;
     public int Threads
@@ -31,18 +29,27 @@ public sealed class ConfigData
         get => _threads;
         set
         {
-            int max = CompressionMethod == CompressionMethod.LZMA2 ? CPUThreads * 2 : Math.Min(CPUThreads, 2);
-            _threads = value.Clamp(0, max);
+            if (value == -1)
+            {
+                _threads = -1;
+            }
+            else
+            {
+                int max = CompressionMethod == CompressionMethod.LZMA2 ? CPUThreads * 2 : Math.Min(CPUThreads, 2);
+                _threads = value.Clamp(0, max);
+            }
         }
     }
 
-    private ulong _dictionarySize;
-    public ulong DictionarySize
+    private long _dictionarySize;
+    public long DictionarySize
     {
         get => _dictionarySize;
         set =>
-            _dictionarySize = DictionarySizeItems.FirstOrDefault(x =>
-                x.BackingValue == value)?.BackingValue ?? DefaultDictionarySize;
+            _dictionarySize = value == -1
+                ? -1
+                : DictionarySizeItems.FirstOrDefault_PastFirstIndex(x =>
+                    x.BackingValue == value)?.BackingValue ?? DefaultDictionarySize;
     }
 }
 
@@ -74,9 +81,9 @@ public static class Global
 
     public static class ByteSize
     {
-        public const ulong KB = 1024;
-        public const ulong MB = KB * 1024;
-        public const ulong GB = MB * 1024;
+        public const long KB = 1024;
+        public const long MB = KB * 1024;
+        public const long GB = MB * 1024;
     }
 
     [PublicAPI]
@@ -160,7 +167,7 @@ public static class Global
     public static readonly FriendlyStringAndBackingValue<int>[] Lzma2ThreadItems = FillLzma2ThreadItems();
     public static readonly FriendlyStringAndBackingValue<int>[] LzmaThreadItems = FillLzmaThreadItems();
 
-    public static readonly FriendlyStringAndBackingValue<ulong>[] DictionarySizeItems =
+    public static readonly FriendlyStringAndBackingValue<long>[] DictionarySizeItems =
     {
         new("* 256 MB", ByteSize.MB * 256),
         new("64 KB", ByteSize.KB * 64),

@@ -77,7 +77,7 @@ internal static class Core
             }
             else if (lineT.TryGetValueO("DictionarySize=", out value))
             {
-                if (ulong.TryParse(value, out ulong result))
+                if (long.TryParse(value, out long result))
                 {
                     Config.DictionarySize = result;
                 }

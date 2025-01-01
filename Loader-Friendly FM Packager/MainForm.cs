@@ -78,24 +78,38 @@ public sealed partial class MainForm : Form
 
     // TODO: This goes to default value if it's the same as the selected one.
     //  We need to handle default values explicitly.
-    public ulong DictionarySize
+    public long DictionarySize
     {
-        get => DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue;
+        get =>
+            DictionarySizeComboBox.SelectedIndex == 0
+                ? -1
+                : DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue;
         set
         {
-            FriendlyStringAndBackingValue<ulong>? item = DictionarySizeItems.FirstOrDefault(x => x.BackingValue == value);
-            DictionarySizeComboBox.SelectedIndex = item != null
-                ? Array.IndexOf(DictionarySizeItems, item)
-                : 0;
+            if (value == -1)
+            {
+                DictionarySizeComboBox.SelectedIndex = 0;
+            }
+            else
+            {
+                FriendlyStringAndBackingValue<long>? item = DictionarySizeItems.FirstOrDefault_PastFirstIndex(x => x.BackingValue == value);
+                DictionarySizeComboBox.SelectedIndex = item != null
+                    ? Array.IndexOf(DictionarySizeItems, item)
+                    : 0;
+            }
         }
     }
 
     public int Threads
     {
-        get => NumberOfCPUThreadsComboBox.SelectedIndex;
-        set => NumberOfCPUThreadsComboBox.SelectedIndex = NumberOfCPUThreadsComboBox.IndexIsInRange(value)
-            ? value
-            : 0;
+        get => NumberOfCPUThreadsComboBox.SelectedIndex == 0 ? -1 : NumberOfCPUThreadsComboBox.SelectedIndex;
+        set =>
+            NumberOfCPUThreadsComboBox.SelectedIndex =
+                value == -1
+                    ? 0
+                    : NumberOfCPUThreadsComboBox.IndexIsInRange(value)
+                        ? value
+                        : 0;
     }
 
     public SevenZipApp SevenZipApp
@@ -382,7 +396,9 @@ public sealed partial class MainForm : Form
         if (DictionarySizeComboBox.SelectedIndexIsInRange())
         {
             Config.DictionarySize =
-                DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue;
+                DictionarySizeComboBox.SelectedIndex == 0
+                    ? -1
+                    : DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue;
         }
         else
         {
@@ -403,15 +419,18 @@ public sealed partial class MainForm : Form
 
         if (switching)
         {
-            Threads = Config.DefaultThreads;
+            Threads = -1;
         }
     }
 
     private void NumberOfCPUThreadsComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         if (!NumberOfCPUThreadsComboBox.SelectedIndexIsInRange()) return;
-        Config.Threads = Config.CompressionMethod == CompressionMethod.LZMA2
-            ? Lzma2ThreadItems[NumberOfCPUThreadsComboBox.SelectedIndex].BackingValue
-            : LzmaThreadItems[NumberOfCPUThreadsComboBox.SelectedIndex].BackingValue;
+        Config.Threads =
+            NumberOfCPUThreadsComboBox.SelectedIndex == 0
+                ? -1
+                : Config.CompressionMethod == CompressionMethod.LZMA2
+                    ? Lzma2ThreadItems[NumberOfCPUThreadsComboBox.SelectedIndex].BackingValue
+                    : LzmaThreadItems[NumberOfCPUThreadsComboBox.SelectedIndex].BackingValue;
     }
 }

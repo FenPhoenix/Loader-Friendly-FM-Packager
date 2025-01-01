@@ -9,11 +9,28 @@ namespace Loader_Friendly_FM_Packager;
 
 internal static class Utils
 {
+    public static TSource? FirstOrDefault_PastFirstIndex<TSource>(this TSource[] source, Func<TSource, bool> predicate)
+    {
+        for (int i = 0; i < source.Length; i++)
+        {
+            TSource item = source[i];
+            if (i > 0 && predicate(item))
+            {
+                return item;
+            }
+        }
+
+        return default;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static string ToStrInv(this int value) => value.ToString(NumberFormatInfo.InvariantInfo);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static string ToStrInv(this ulong value) => value.ToString(NumberFormatInfo.InvariantInfo);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static string ToStrInv(this long value) => value.ToString(NumberFormatInfo.InvariantInfo);
 
     /// <summary>
     /// Returns true if <paramref name="value"/> is null or empty.
