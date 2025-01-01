@@ -332,6 +332,8 @@ internal static class Core
 
         args += " -y -r -bsp1 -bb1 -sas -scsUTF-8 -t7z -mhc=off";
 
+        // TODO: "Word size" for LZMA/LZMA2 is actually "fast bytes" (-m0=LZMA2:fb=N)
+
         //Trace.WriteLine("*** " + nameof(GetArgs) + ": " + args);
         return args;
     }
