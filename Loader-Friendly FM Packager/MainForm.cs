@@ -122,6 +122,8 @@ public sealed partial class MainForm : Form
 
         CompressionMethodComboBox.SelectedIndex = 0;
 
+        PopulateDictionarySizeComboBox();
+
         string internal7zVersion = Core.GetSevenZipVersion(Path.Combine(Application.StartupPath, "7z", "7z.exe"));
         if (internal7zVersion.IsEmpty())
         {
@@ -341,5 +343,10 @@ public sealed partial class MainForm : Form
             SetArchiveTimeToLatestFileTimeCheckBox.Checked = false;
             SetArchiveTimeToLatestFileTimeCheckBox.Enabled = false;
         }
+    }
+
+    private void PopulateDictionarySizeComboBox()
+    {
+        DictionarySizeComboBox.Items.AddRange(DictionarySizeItems.ToFriendlyStrings());
     }
 }
