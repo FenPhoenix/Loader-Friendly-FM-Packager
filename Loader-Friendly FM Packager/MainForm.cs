@@ -218,7 +218,7 @@ public sealed partial class MainForm : Form
                     zipArchive.ExtractToDirectory(tempExtractedDir);
                 }
 
-                string outputArchive = Path.Combine(@"J:\__7z_scan_friendly", extractedDirName + ".7z");
+                string outputArchive = Path.Combine(@"J:\__7z_scan_friendly_hc_off", extractedDirName + ".7z");
 
                 (List<string> al_Scan_FileNames, string listFile_Rest) = Core.GetListFile(tempExtractedDir);
                 Core.Run7z_ALScanFiles(tempExtractedDir, outputArchive, al_Scan_FileNames, level, methodIndex);

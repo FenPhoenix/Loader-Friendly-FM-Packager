@@ -304,6 +304,7 @@ internal static class Core
         -m0   = You put a number for poorly explained reasons (0 here), then you put the actual compression method
                 as a string
         -myv  = Don't use filters not supported by this version and below. 4 digits, ex. 1600 for 16.00
+        -mhc  = Enable or disable header compression
         -y    = Say yes to all prompts automatically
         -r    = Recurse directories - basic thing required to put the files into the archive keeping the folder
                 structure
@@ -329,7 +330,7 @@ internal static class Core
         */
         args += " -myv=0920";
 
-        args += " -y -r -bsp1 -bb1 -sas -scsUTF-8 -t7z";
+        args += " -y -r -bsp1 -bb1 -sas -scsUTF-8 -t7z -mhc=off";
 
         //Trace.WriteLine("*** " + nameof(GetArgs) + ": " + args);
         return args;
