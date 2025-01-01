@@ -22,6 +22,8 @@ internal static class Core
 
         View.CompressionLevel = Config.CompressionLevel;
         View.CompressionMethod = Config.CompressionMethod;
+        View.Threads = Config.Threads;
+        View.DictionarySize = Config.DictionarySize;
         View.SevenZipApp = Config.SevenZipApp;
         View.SevenZipExternalAppPath = Config.SevenZipExternalAppPath;
 
@@ -66,6 +68,20 @@ internal static class Core
                     Config.CompressionMethod = (CompressionMethod)field.GetValue(null);
                 }
             }
+            else if (lineT.TryGetValueO("Threads=", out value))
+            {
+                if (int.TryParse(value, out int result))
+                {
+                    Config.Threads = result;
+                }
+            }
+            else if (lineT.TryGetValueO("DictionarySize=", out value))
+            {
+                if (ulong.TryParse(value, out ulong result))
+                {
+                    Config.DictionarySize = result;
+                }
+            }
             else if (lineT.TryGetValueO("SevenZipApp=", out value))
             {
                 FieldInfo? field = typeof(SevenZipApp).GetField(value, _bFlagsEnum);
@@ -86,6 +102,8 @@ internal static class Core
         using var sw = new StreamWriter(Paths.ConfigFile);
         sw.WriteLine("CompressionLevel=" + Config.CompressionLevel.ToStrInv());
         sw.WriteLine("CompressionMethod=" + Config.CompressionMethod);
+        sw.WriteLine("Threads=" + Config.Threads.ToStrInv());
+        sw.WriteLine("DictionarySize=" + Config.DictionarySize.ToStrInv());
         sw.WriteLine("SevenZipApp=" + Config.SevenZipApp);
         sw.WriteLine("SevenZipExternalAppPath=" + Config.SevenZipExternalAppPath);
     }

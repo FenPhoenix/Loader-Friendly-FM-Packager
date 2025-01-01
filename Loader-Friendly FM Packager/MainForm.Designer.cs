@@ -48,10 +48,6 @@ sealed partial class MainForm
             this.Test1Button = new System.Windows.Forms.Button();
             this.DictionarySizeLabel = new System.Windows.Forms.Label();
             this.DictionarySizeComboBox = new System.Windows.Forms.ComboBox();
-            this.WordSizeLabel = new System.Windows.Forms.Label();
-            this.WordSizeComboBox = new System.Windows.Forms.ComboBox();
-            this.SolidBlockSizeLabel = new System.Windows.Forms.Label();
-            this.SolidBlockSizeComboBox = new System.Windows.Forms.ComboBox();
             this.NumberOfCPUThreadsLabel = new System.Windows.Forms.Label();
             this.NumberOfCPUThreadsComboBox = new System.Windows.Forms.ComboBox();
             this.MemoryUsageForCompressingLabel = new System.Windows.Forms.Label();
@@ -285,46 +281,10 @@ sealed partial class MainForm
             this.DictionarySizeComboBox.TabIndex = 9;
             this.DictionarySizeComboBox.SelectedIndexChanged += new System.EventHandler(this.DictionarySizeComboBox_SelectedIndexChanged);
             // 
-            // WordSizeLabel
-            // 
-            this.WordSizeLabel.AutoSize = true;
-            this.WordSizeLabel.Location = new System.Drawing.Point(16, 233);
-            this.WordSizeLabel.Name = "WordSizeLabel";
-            this.WordSizeLabel.Size = new System.Drawing.Size(57, 13);
-            this.WordSizeLabel.TabIndex = 12;
-            this.WordSizeLabel.Text = "Word size:";
-            // 
-            // WordSizeComboBox
-            // 
-            this.WordSizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.WordSizeComboBox.FormattingEnabled = true;
-            this.WordSizeComboBox.Location = new System.Drawing.Point(175, 229);
-            this.WordSizeComboBox.Name = "WordSizeComboBox";
-            this.WordSizeComboBox.Size = new System.Drawing.Size(132, 21);
-            this.WordSizeComboBox.TabIndex = 11;
-            // 
-            // SolidBlockSizeLabel
-            // 
-            this.SolidBlockSizeLabel.AutoSize = true;
-            this.SolidBlockSizeLabel.Location = new System.Drawing.Point(16, 268);
-            this.SolidBlockSizeLabel.Name = "SolidBlockSizeLabel";
-            this.SolidBlockSizeLabel.Size = new System.Drawing.Size(84, 13);
-            this.SolidBlockSizeLabel.TabIndex = 14;
-            this.SolidBlockSizeLabel.Text = "Solid Block size:";
-            // 
-            // SolidBlockSizeComboBox
-            // 
-            this.SolidBlockSizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.SolidBlockSizeComboBox.FormattingEnabled = true;
-            this.SolidBlockSizeComboBox.Location = new System.Drawing.Point(175, 264);
-            this.SolidBlockSizeComboBox.Name = "SolidBlockSizeComboBox";
-            this.SolidBlockSizeComboBox.Size = new System.Drawing.Size(132, 21);
-            this.SolidBlockSizeComboBox.TabIndex = 13;
-            // 
             // NumberOfCPUThreadsLabel
             // 
             this.NumberOfCPUThreadsLabel.AutoSize = true;
-            this.NumberOfCPUThreadsLabel.Location = new System.Drawing.Point(16, 303);
+            this.NumberOfCPUThreadsLabel.Location = new System.Drawing.Point(16, 233);
             this.NumberOfCPUThreadsLabel.Name = "NumberOfCPUThreadsLabel";
             this.NumberOfCPUThreadsLabel.Size = new System.Drawing.Size(122, 13);
             this.NumberOfCPUThreadsLabel.TabIndex = 16;
@@ -334,15 +294,16 @@ sealed partial class MainForm
             // 
             this.NumberOfCPUThreadsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.NumberOfCPUThreadsComboBox.FormattingEnabled = true;
-            this.NumberOfCPUThreadsComboBox.Location = new System.Drawing.Point(175, 299);
+            this.NumberOfCPUThreadsComboBox.Location = new System.Drawing.Point(175, 229);
             this.NumberOfCPUThreadsComboBox.Name = "NumberOfCPUThreadsComboBox";
             this.NumberOfCPUThreadsComboBox.Size = new System.Drawing.Size(80, 21);
             this.NumberOfCPUThreadsComboBox.TabIndex = 15;
+            this.NumberOfCPUThreadsComboBox.SelectedIndexChanged += new System.EventHandler(this.NumberOfCPUThreadsComboBox_SelectedIndexChanged);
             // 
             // MemoryUsageForCompressingLabel
             // 
             this.MemoryUsageForCompressingLabel.AutoSize = true;
-            this.MemoryUsageForCompressingLabel.Location = new System.Drawing.Point(16, 338);
+            this.MemoryUsageForCompressingLabel.Location = new System.Drawing.Point(16, 268);
             this.MemoryUsageForCompressingLabel.Name = "MemoryUsageForCompressingLabel";
             this.MemoryUsageForCompressingLabel.Size = new System.Drawing.Size(157, 13);
             this.MemoryUsageForCompressingLabel.TabIndex = 18;
@@ -352,7 +313,7 @@ sealed partial class MainForm
             // 
             this.MemoryUsageForCompressingComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.MemoryUsageForCompressingComboBox.FormattingEnabled = true;
-            this.MemoryUsageForCompressingComboBox.Location = new System.Drawing.Point(229, 334);
+            this.MemoryUsageForCompressingComboBox.Location = new System.Drawing.Point(229, 264);
             this.MemoryUsageForCompressingComboBox.Name = "MemoryUsageForCompressingComboBox";
             this.MemoryUsageForCompressingComboBox.Size = new System.Drawing.Size(78, 21);
             this.MemoryUsageForCompressingComboBox.TabIndex = 17;
@@ -360,7 +321,7 @@ sealed partial class MainForm
             // MemoryUsageForDecompressingLabel
             // 
             this.MemoryUsageForDecompressingLabel.AutoSize = true;
-            this.MemoryUsageForDecompressingLabel.Location = new System.Drawing.Point(16, 373);
+            this.MemoryUsageForDecompressingLabel.Location = new System.Drawing.Point(16, 303);
             this.MemoryUsageForDecompressingLabel.Name = "MemoryUsageForDecompressingLabel";
             this.MemoryUsageForDecompressingLabel.Size = new System.Drawing.Size(157, 13);
             this.MemoryUsageForDecompressingLabel.TabIndex = 18;
@@ -370,7 +331,7 @@ sealed partial class MainForm
             // 
             this.MemoryUsageForDecompressingValueFLP.Controls.Add(this.MemoryUsageForDecompressingValueLabel);
             this.MemoryUsageForDecompressingValueFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.MemoryUsageForDecompressingValueFLP.Location = new System.Drawing.Point(176, 373);
+            this.MemoryUsageForDecompressingValueFLP.Location = new System.Drawing.Point(176, 303);
             this.MemoryUsageForDecompressingValueFLP.Name = "MemoryUsageForDecompressingValueFLP";
             this.MemoryUsageForDecompressingValueFLP.Size = new System.Drawing.Size(132, 16);
             this.MemoryUsageForDecompressingValueFLP.TabIndex = 19;
@@ -389,7 +350,7 @@ sealed partial class MainForm
             // 
             this.NumberOfCPUThreadsOutOfFLP.Controls.Add(this.NumberOfCPUThreadsOutOfLabel);
             this.NumberOfCPUThreadsOutOfFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.NumberOfCPUThreadsOutOfFLP.Location = new System.Drawing.Point(256, 302);
+            this.NumberOfCPUThreadsOutOfFLP.Location = new System.Drawing.Point(256, 232);
             this.NumberOfCPUThreadsOutOfFLP.Name = "NumberOfCPUThreadsOutOfFLP";
             this.NumberOfCPUThreadsOutOfFLP.Size = new System.Drawing.Size(52, 16);
             this.NumberOfCPUThreadsOutOfFLP.TabIndex = 20;
@@ -533,7 +494,6 @@ sealed partial class MainForm
             this.TimestampPrecisionComboBox.Name = "TimestampPrecisionComboBox";
             this.TimestampPrecisionComboBox.Size = new System.Drawing.Size(114, 21);
             this.TimestampPrecisionComboBox.TabIndex = 5;
-            this.TimestampPrecisionComboBox.SelectedIndexChanged += new System.EventHandler(this.CompressionLevelComboBox_SelectedIndexChanged);
             // 
             // MainForm
             // 
@@ -548,10 +508,6 @@ sealed partial class MainForm
             this.Controls.Add(this.MemoryUsageForCompressingComboBox);
             this.Controls.Add(this.NumberOfCPUThreadsLabel);
             this.Controls.Add(this.NumberOfCPUThreadsComboBox);
-            this.Controls.Add(this.SolidBlockSizeLabel);
-            this.Controls.Add(this.SolidBlockSizeComboBox);
-            this.Controls.Add(this.WordSizeLabel);
-            this.Controls.Add(this.WordSizeComboBox);
             this.Controls.Add(this.DictionarySizeLabel);
             this.Controls.Add(this.DictionarySizeComboBox);
             this.Controls.Add(this.Test1Button);
@@ -606,10 +562,6 @@ sealed partial class MainForm
     private System.Windows.Forms.Button Test1Button;
     private System.Windows.Forms.Label DictionarySizeLabel;
     private System.Windows.Forms.ComboBox DictionarySizeComboBox;
-    private System.Windows.Forms.Label WordSizeLabel;
-    private System.Windows.Forms.ComboBox WordSizeComboBox;
-    private System.Windows.Forms.Label SolidBlockSizeLabel;
-    private System.Windows.Forms.ComboBox SolidBlockSizeComboBox;
     private System.Windows.Forms.Label NumberOfCPUThreadsLabel;
     private System.Windows.Forms.ComboBox NumberOfCPUThreadsComboBox;
     private System.Windows.Forms.Label MemoryUsageForCompressingLabel;

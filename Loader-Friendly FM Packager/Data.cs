@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 
@@ -21,11 +23,26 @@ public sealed class ConfigData
 
     public const ulong DefaultDictionarySize = ByteSize.MB * 256;
 
+    public int DefaultThreads => CompressionMethod == CompressionMethod.LZMA2 ? CPUThreads : Math.Min(CPUThreads, 2);
+
+    private int _threads;
+    public int Threads
+    {
+        get => _threads;
+        set
+        {
+            int max = CompressionMethod == CompressionMethod.LZMA2 ? CPUThreads * 2 : Math.Min(CPUThreads, 2);
+            _threads = value.Clamp(0, max);
+        }
+    }
+
     private ulong _dictionarySize;
     public ulong DictionarySize
     {
         get => _dictionarySize;
-        set => _dictionarySize = Array.IndexOf(DictionarySizeItems, value) > -1 ? value : DefaultDictionarySize;
+        set =>
+            _dictionarySize = DictionarySizeItems.FirstOrDefault(x =>
+                x.BackingValue == value)?.BackingValue ?? DefaultDictionarySize;
     }
 }
 
@@ -43,6 +60,8 @@ public sealed class FriendlyStringAndBackingValue<TBacking>
 
 public static class Global
 {
+    public static readonly int CPUThreads = Environment.ProcessorCount;
+
     public static object[] ToFriendlyStrings<T>(this FriendlyStringAndBackingValue<T>[] items)
     {
         object[] ret = new object[items.Length];
@@ -84,10 +103,62 @@ public static class Global
 
     public static readonly ConfigData Config = new();
 
-    public static readonly FriendlyStringAndBackingValue<ulong>[] SolidBlockSizeItems =
+    private static FriendlyStringAndBackingValue<int>[] FillLzma2ThreadItems()
     {
+        if (CPUThreads < 1)
+        {
+            return Array.Empty<FriendlyStringAndBackingValue<int>>();
+        }
 
-    };
+        int count = (CPUThreads * 2) + 1;
+
+        FriendlyStringAndBackingValue<int>[] ret = new FriendlyStringAndBackingValue<int>[count];
+        ret[0] = new FriendlyStringAndBackingValue<int>("* " + CPUThreads.ToStrInv(), CPUThreads);
+        for (int i = 1; i < count; i++)
+        {
+            ret[i] = new FriendlyStringAndBackingValue<int>(i.ToStrInv(), i);
+        }
+
+        Trace.WriteLine(nameof(FillLzma2ThreadItems));
+        for (int i = 0; i < ret.Length; i++)
+        {
+            var item = ret[i];
+            Trace.WriteLine(item?.FriendlyString ?? "<null at " + i + ">");
+        }
+
+        return ret;
+    }
+
+    private static FriendlyStringAndBackingValue<int>[] FillLzmaThreadItems()
+    {
+        if (CPUThreads < 1)
+        {
+            return Array.Empty<FriendlyStringAndBackingValue<int>>();
+        }
+
+        int threads = Math.Min(CPUThreads, 2);
+
+        int count = threads + 1;
+
+        FriendlyStringAndBackingValue<int>[] ret = new FriendlyStringAndBackingValue<int>[count];
+        ret[0] = new FriendlyStringAndBackingValue<int>("* " + threads, CPUThreads);
+        for (int i = 1; i < count; i++)
+        {
+            ret[i] = new FriendlyStringAndBackingValue<int>(i.ToStrInv(), i);
+        }
+
+        Trace.WriteLine(nameof(FillLzmaThreadItems));
+        for (int i = 0; i < ret.Length; i++)
+        {
+            var item = ret[i];
+            Trace.WriteLine(item?.FriendlyString ?? "<null at " + i + ">");
+        }
+
+        return ret;
+    }
+
+    public static readonly FriendlyStringAndBackingValue<int>[] Lzma2ThreadItems = FillLzma2ThreadItems();
+    public static readonly FriendlyStringAndBackingValue<int>[] LzmaThreadItems = FillLzmaThreadItems();
 
     public static readonly FriendlyStringAndBackingValue<ulong>[] DictionarySizeItems =
     {
@@ -118,5 +189,11 @@ public static class Global
         new("1536 MB", ByteSize.MB * 1536),
         new("2048 MB", ByteSize.MB * 2048),
         new("3840 MB", ByteSize.MB * 3840),
+    };
+
+    public static readonly FriendlyStringAndBackingValue<CompressionMethod>[] CompressionMethodItems =
+    {
+        new("* LZMA2", CompressionMethod.LZMA2),
+        new("LZMA", CompressionMethod.LZMA),
     };
 }

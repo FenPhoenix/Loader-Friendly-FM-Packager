@@ -12,6 +12,9 @@ internal static class Utils
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static string ToStrInv(this int value) => value.ToString(NumberFormatInfo.InvariantInfo);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static string ToStrInv(this ulong value) => value.ToString(NumberFormatInfo.InvariantInfo);
+
     /// <summary>
     /// Returns true if <paramref name="value"/> is null or empty.
     /// </summary>

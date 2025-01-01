@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -57,23 +58,44 @@ public sealed partial class MainForm : Form
     public int CompressionLevel
     {
         get => CompressionLevelComboBox.SelectedIndex;
-        set => CompressionLevelComboBox.SelectedIndex =
-            value >= 0 && value < CompressionLevelComboBox.Items.Count
-                ? value
-                : 0;
+        set => CompressionLevelComboBox.SelectedIndex = CompressionLevelComboBox.IndexIsInRange(value)
+            ? value
+            : 0;
     }
 
     public CompressionMethod CompressionMethod
     {
-        get => (CompressionMethod)CompressionMethodComboBox.SelectedIndex;
+        get => CompressionMethodItems[CompressionMethodComboBox.SelectedIndex].BackingValue;
         set
         {
             int index = (int)value;
             CompressionMethodComboBox.SelectedIndex =
-                index >= 0 && index < CompressionMethodComboBox.Items.Count
+                CompressionMethodComboBox.IndexIsInRange(index)
                     ? index
                     : 0;
         }
+    }
+
+    // TODO: This goes to default value if it's the same as the selected one.
+    //  We need to handle default values explicitly.
+    public ulong DictionarySize
+    {
+        get => DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue;
+        set
+        {
+            FriendlyStringAndBackingValue<ulong>? item = DictionarySizeItems.FirstOrDefault(x => x.BackingValue == value);
+            DictionarySizeComboBox.SelectedIndex = item != null
+                ? Array.IndexOf(DictionarySizeItems, item)
+                : 0;
+        }
+    }
+
+    public int Threads
+    {
+        get => NumberOfCPUThreadsComboBox.SelectedIndex;
+        set => NumberOfCPUThreadsComboBox.SelectedIndex = NumberOfCPUThreadsComboBox.IndexIsInRange(value)
+            ? value
+            : 0;
     }
 
     public SevenZipApp SevenZipApp
@@ -118,13 +140,13 @@ public sealed partial class MainForm : Form
             CompressionMethodComboBox.ResumeLayout();
         }
 
-        CompressionMethodComboBox.Items.AddRange(["* LZMA2", "LZMA"]);
+        CompressionMethodComboBox.Items.AddRange(CompressionMethodItems.ToFriendlyStrings());
 
         CompressionMethodComboBox.SelectedIndex = 0;
 
         PopulateDictionarySizeComboBox();
 
-        PopulateSolidBlockSizeComboBox();
+        PopulateThreadsComboBox();
 
         string internal7zVersion = Core.GetSevenZipVersion(Path.Combine(Application.StartupPath, "7z", "7z.exe"));
         if (internal7zVersion.IsEmpty())
@@ -293,12 +315,15 @@ public sealed partial class MainForm : Form
 
     private void CompressionLevelComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
+        if (!CompressionLevelComboBox.SelectedIndexIsInRange()) return;
         Config.CompressionLevel = CompressionLevelComboBox.SelectedIndex;
     }
 
     private void CompressionMethodComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        Config.CompressionMethod = (CompressionMethod)CompressionMethodComboBox.SelectedIndex;
+        if (!CompressionMethodComboBox.SelectedIndexIsInRange()) return;
+        Config.CompressionMethod = CompressionMethodItems[CompressionMethodComboBox.SelectedIndex].BackingValue;
+        PopulateThreadsComboBox(switching: true);
     }
 
     private void SevenZipExternalTextBox_TextChanged(object sender, EventArgs e)
@@ -352,19 +377,41 @@ public sealed partial class MainForm : Form
         DictionarySizeComboBox.Items.AddRange(DictionarySizeItems.ToFriendlyStrings());
     }
 
-    private void PopulateSolidBlockSizeComboBox()
-    {
-        SolidBlockSizeComboBox.Items.Clear();
-
-        int level = Config.CompressionLevel;
-        if (level == 0) return;
-    }
-
     private void DictionarySizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        Config.DictionarySize =
-            DictionarySizeComboBox.SelectedIndexIsInRange()
-                ? DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue
-                : ConfigData.DefaultDictionarySize;
+        if (DictionarySizeComboBox.SelectedIndexIsInRange())
+        {
+            Config.DictionarySize =
+                DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue;
+        }
+        else
+        {
+            Config.DictionarySize =
+                ConfigData.DefaultDictionarySize;
+        }
+    }
+
+    private void PopulateThreadsComboBox(bool switching = false)
+    {
+        FriendlyStringAndBackingValue<int>[] items =
+            Config.CompressionMethod == CompressionMethod.LZMA2
+                ? Lzma2ThreadItems
+                : LzmaThreadItems;
+
+        NumberOfCPUThreadsComboBox.Items.Clear();
+        NumberOfCPUThreadsComboBox.Items.AddRange(items.ToFriendlyStrings());
+
+        if (switching)
+        {
+            Threads = Config.DefaultThreads;
+        }
+    }
+
+    private void NumberOfCPUThreadsComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (!NumberOfCPUThreadsComboBox.SelectedIndexIsInRange()) return;
+        Config.Threads = Config.CompressionMethod == CompressionMethod.LZMA2
+            ? Lzma2ThreadItems[NumberOfCPUThreadsComboBox.SelectedIndex].BackingValue
+            : LzmaThreadItems[NumberOfCPUThreadsComboBox.SelectedIndex].BackingValue;
     }
 }
