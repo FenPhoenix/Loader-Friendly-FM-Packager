@@ -46,7 +46,36 @@ sealed partial class MainForm
             this.SevenZipExternalRadioButton = new System.Windows.Forms.RadioButton();
             this.SevenZipInternalRadioButton = new System.Windows.Forms.RadioButton();
             this.Test1Button = new System.Windows.Forms.Button();
+            this.DictionarySizeLabel = new System.Windows.Forms.Label();
+            this.DictionarySizeComboBox = new System.Windows.Forms.ComboBox();
+            this.WordSizeLabel = new System.Windows.Forms.Label();
+            this.WordSizeComboBox = new System.Windows.Forms.ComboBox();
+            this.SolidBlockSizeLabel = new System.Windows.Forms.Label();
+            this.SolidBlockSizeComboBox = new System.Windows.Forms.ComboBox();
+            this.NumberOfCPUThreadsLabel = new System.Windows.Forms.Label();
+            this.NumberOfCPUThreadsComboBox = new System.Windows.Forms.ComboBox();
+            this.MemoryUsageForCompressingLabel = new System.Windows.Forms.Label();
+            this.MemoryUsageForCompressingComboBox = new System.Windows.Forms.ComboBox();
+            this.MemoryUsageForDecompressingLabel = new System.Windows.Forms.Label();
+            this.MemoryUsageForDecompressingValueFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.MemoryUsageForDecompressingValueLabel = new System.Windows.Forms.Label();
+            this.NumberOfCPUThreadsOutOfFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.NumberOfCPUThreadsOutOfLabel = new System.Windows.Forms.Label();
+            this.TimeGroupBox = new System.Windows.Forms.GroupBox();
+            this.StoreCreationTimeEnableSettingCheckBox = new System.Windows.Forms.CheckBox();
+            this.StoreLastAccessTimeEnableSettingCheckBox = new System.Windows.Forms.CheckBox();
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox = new System.Windows.Forms.CheckBox();
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox = new System.Windows.Forms.CheckBox();
+            this.StoreModificationTimeCheckBox = new System.Windows.Forms.CheckBox();
+            this.StoreCreationTimeCheckBox = new System.Windows.Forms.CheckBox();
+            this.StoreLastAccessTimeCheckBox = new System.Windows.Forms.CheckBox();
+            this.SetArchiveTimeToLatestFileTimeCheckBox = new System.Windows.Forms.CheckBox();
+            this.TimestampPrecisionLabel = new System.Windows.Forms.Label();
+            this.TimestampPrecisionComboBox = new System.Windows.Forms.ComboBox();
             this.SevenZipExePanel.SuspendLayout();
+            this.MemoryUsageForDecompressingValueFLP.SuspendLayout();
+            this.NumberOfCPUThreadsOutOfFLP.SuspendLayout();
+            this.TimeGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // SourceFMDirectoryTextBox
@@ -95,7 +124,7 @@ sealed partial class MainForm
             // 
             // GoButton
             // 
-            this.GoButton.Location = new System.Drawing.Point(640, 192);
+            this.GoButton.Location = new System.Drawing.Point(640, 512);
             this.GoButton.Name = "GoButton";
             this.GoButton.Size = new System.Drawing.Size(99, 23);
             this.GoButton.TabIndex = 4;
@@ -120,7 +149,7 @@ sealed partial class MainForm
             "9 - Ultra"});
             this.CompressionLevelComboBox.Location = new System.Drawing.Point(175, 124);
             this.CompressionLevelComboBox.Name = "CompressionLevelComboBox";
-            this.CompressionLevelComboBox.Size = new System.Drawing.Size(144, 21);
+            this.CompressionLevelComboBox.Size = new System.Drawing.Size(132, 21);
             this.CompressionLevelComboBox.TabIndex = 5;
             this.CompressionLevelComboBox.SelectedIndexChanged += new System.EventHandler(this.CompressionLevelComboBox_SelectedIndexChanged);
             // 
@@ -137,16 +166,16 @@ sealed partial class MainForm
             // 
             this.CompressionMethodComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CompressionMethodComboBox.FormattingEnabled = true;
-            this.CompressionMethodComboBox.Location = new System.Drawing.Point(175, 164);
+            this.CompressionMethodComboBox.Location = new System.Drawing.Point(175, 159);
             this.CompressionMethodComboBox.Name = "CompressionMethodComboBox";
-            this.CompressionMethodComboBox.Size = new System.Drawing.Size(144, 21);
+            this.CompressionMethodComboBox.Size = new System.Drawing.Size(132, 21);
             this.CompressionMethodComboBox.TabIndex = 5;
             this.CompressionMethodComboBox.SelectedIndexChanged += new System.EventHandler(this.CompressionMethodComboBox_SelectedIndexChanged);
             // 
             // CompressionMethodLabel
             // 
             this.CompressionMethodLabel.AutoSize = true;
-            this.CompressionMethodLabel.Location = new System.Drawing.Point(16, 168);
+            this.CompressionMethodLabel.Location = new System.Drawing.Point(16, 163);
             this.CompressionMethodLabel.Name = "CompressionMethodLabel";
             this.CompressionMethodLabel.Size = new System.Drawing.Size(108, 13);
             this.CompressionMethodLabel.TabIndex = 6;
@@ -164,12 +193,13 @@ sealed partial class MainForm
             // 
             // SevenZipExePanel
             // 
+            this.SevenZipExePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.SevenZipExePanel.Controls.Add(this.SevenZipAppToUseLabel);
             this.SevenZipExePanel.Controls.Add(this.SevenZipExternalBrowseButton);
             this.SevenZipExePanel.Controls.Add(this.SevenZipExternalTextBox);
             this.SevenZipExePanel.Controls.Add(this.SevenZipExternalRadioButton);
             this.SevenZipExePanel.Controls.Add(this.SevenZipInternalRadioButton);
-            this.SevenZipExePanel.Location = new System.Drawing.Point(0, 248);
+            this.SevenZipExePanel.Location = new System.Drawing.Point(0, 553);
             this.SevenZipExePanel.Name = "SevenZipExePanel";
             this.SevenZipExePanel.Size = new System.Drawing.Size(752, 112);
             this.SevenZipExePanel.TabIndex = 7;
@@ -228,7 +258,7 @@ sealed partial class MainForm
             // 
             // Test1Button
             // 
-            this.Test1Button.Location = new System.Drawing.Point(664, 120);
+            this.Test1Button.Location = new System.Drawing.Point(664, 440);
             this.Test1Button.Name = "Test1Button";
             this.Test1Button.Size = new System.Drawing.Size(75, 23);
             this.Test1Button.TabIndex = 8;
@@ -236,11 +266,293 @@ sealed partial class MainForm
             this.Test1Button.UseVisualStyleBackColor = true;
             this.Test1Button.Click += new System.EventHandler(this.Test1Button_Click);
             // 
+            // DictionarySizeLabel
+            // 
+            this.DictionarySizeLabel.AutoSize = true;
+            this.DictionarySizeLabel.Location = new System.Drawing.Point(16, 198);
+            this.DictionarySizeLabel.Name = "DictionarySizeLabel";
+            this.DictionarySizeLabel.Size = new System.Drawing.Size(78, 13);
+            this.DictionarySizeLabel.TabIndex = 10;
+            this.DictionarySizeLabel.Text = "Dictionary size:";
+            // 
+            // DictionarySizeComboBox
+            // 
+            this.DictionarySizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.DictionarySizeComboBox.FormattingEnabled = true;
+            this.DictionarySizeComboBox.Location = new System.Drawing.Point(175, 194);
+            this.DictionarySizeComboBox.Name = "DictionarySizeComboBox";
+            this.DictionarySizeComboBox.Size = new System.Drawing.Size(132, 21);
+            this.DictionarySizeComboBox.TabIndex = 9;
+            // 
+            // WordSizeLabel
+            // 
+            this.WordSizeLabel.AutoSize = true;
+            this.WordSizeLabel.Location = new System.Drawing.Point(16, 233);
+            this.WordSizeLabel.Name = "WordSizeLabel";
+            this.WordSizeLabel.Size = new System.Drawing.Size(57, 13);
+            this.WordSizeLabel.TabIndex = 12;
+            this.WordSizeLabel.Text = "Word size:";
+            // 
+            // WordSizeComboBox
+            // 
+            this.WordSizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.WordSizeComboBox.FormattingEnabled = true;
+            this.WordSizeComboBox.Location = new System.Drawing.Point(175, 229);
+            this.WordSizeComboBox.Name = "WordSizeComboBox";
+            this.WordSizeComboBox.Size = new System.Drawing.Size(132, 21);
+            this.WordSizeComboBox.TabIndex = 11;
+            // 
+            // SolidBlockSizeLabel
+            // 
+            this.SolidBlockSizeLabel.AutoSize = true;
+            this.SolidBlockSizeLabel.Location = new System.Drawing.Point(16, 268);
+            this.SolidBlockSizeLabel.Name = "SolidBlockSizeLabel";
+            this.SolidBlockSizeLabel.Size = new System.Drawing.Size(84, 13);
+            this.SolidBlockSizeLabel.TabIndex = 14;
+            this.SolidBlockSizeLabel.Text = "Solid Block size:";
+            // 
+            // SolidBlockSizeComboBox
+            // 
+            this.SolidBlockSizeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.SolidBlockSizeComboBox.FormattingEnabled = true;
+            this.SolidBlockSizeComboBox.Location = new System.Drawing.Point(175, 264);
+            this.SolidBlockSizeComboBox.Name = "SolidBlockSizeComboBox";
+            this.SolidBlockSizeComboBox.Size = new System.Drawing.Size(132, 21);
+            this.SolidBlockSizeComboBox.TabIndex = 13;
+            // 
+            // NumberOfCPUThreadsLabel
+            // 
+            this.NumberOfCPUThreadsLabel.AutoSize = true;
+            this.NumberOfCPUThreadsLabel.Location = new System.Drawing.Point(16, 303);
+            this.NumberOfCPUThreadsLabel.Name = "NumberOfCPUThreadsLabel";
+            this.NumberOfCPUThreadsLabel.Size = new System.Drawing.Size(122, 13);
+            this.NumberOfCPUThreadsLabel.TabIndex = 16;
+            this.NumberOfCPUThreadsLabel.Text = "Number of CPU threads:";
+            // 
+            // NumberOfCPUThreadsComboBox
+            // 
+            this.NumberOfCPUThreadsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.NumberOfCPUThreadsComboBox.FormattingEnabled = true;
+            this.NumberOfCPUThreadsComboBox.Location = new System.Drawing.Point(175, 299);
+            this.NumberOfCPUThreadsComboBox.Name = "NumberOfCPUThreadsComboBox";
+            this.NumberOfCPUThreadsComboBox.Size = new System.Drawing.Size(80, 21);
+            this.NumberOfCPUThreadsComboBox.TabIndex = 15;
+            // 
+            // MemoryUsageForCompressingLabel
+            // 
+            this.MemoryUsageForCompressingLabel.AutoSize = true;
+            this.MemoryUsageForCompressingLabel.Location = new System.Drawing.Point(16, 338);
+            this.MemoryUsageForCompressingLabel.Name = "MemoryUsageForCompressingLabel";
+            this.MemoryUsageForCompressingLabel.Size = new System.Drawing.Size(157, 13);
+            this.MemoryUsageForCompressingLabel.TabIndex = 18;
+            this.MemoryUsageForCompressingLabel.Text = "Memory usage for Compressing:";
+            // 
+            // MemoryUsageForCompressingComboBox
+            // 
+            this.MemoryUsageForCompressingComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.MemoryUsageForCompressingComboBox.FormattingEnabled = true;
+            this.MemoryUsageForCompressingComboBox.Location = new System.Drawing.Point(229, 334);
+            this.MemoryUsageForCompressingComboBox.Name = "MemoryUsageForCompressingComboBox";
+            this.MemoryUsageForCompressingComboBox.Size = new System.Drawing.Size(78, 21);
+            this.MemoryUsageForCompressingComboBox.TabIndex = 17;
+            // 
+            // MemoryUsageForDecompressingLabel
+            // 
+            this.MemoryUsageForDecompressingLabel.AutoSize = true;
+            this.MemoryUsageForDecompressingLabel.Location = new System.Drawing.Point(16, 373);
+            this.MemoryUsageForDecompressingLabel.Name = "MemoryUsageForDecompressingLabel";
+            this.MemoryUsageForDecompressingLabel.Size = new System.Drawing.Size(157, 13);
+            this.MemoryUsageForDecompressingLabel.TabIndex = 18;
+            this.MemoryUsageForDecompressingLabel.Text = "Memory usage for Compressing:";
+            // 
+            // MemoryUsageForDecompressingValueFLP
+            // 
+            this.MemoryUsageForDecompressingValueFLP.Controls.Add(this.MemoryUsageForDecompressingValueLabel);
+            this.MemoryUsageForDecompressingValueFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.MemoryUsageForDecompressingValueFLP.Location = new System.Drawing.Point(176, 373);
+            this.MemoryUsageForDecompressingValueFLP.Name = "MemoryUsageForDecompressingValueFLP";
+            this.MemoryUsageForDecompressingValueFLP.Size = new System.Drawing.Size(132, 16);
+            this.MemoryUsageForDecompressingValueFLP.TabIndex = 19;
+            // 
+            // MemoryUsageForDecompressingValueLabel
+            // 
+            this.MemoryUsageForDecompressingValueLabel.AutoSize = true;
+            this.MemoryUsageForDecompressingValueLabel.Location = new System.Drawing.Point(88, 0);
+            this.MemoryUsageForDecompressingValueLabel.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.MemoryUsageForDecompressingValueLabel.Name = "MemoryUsageForDecompressingValueLabel";
+            this.MemoryUsageForDecompressingValueLabel.Size = new System.Drawing.Size(44, 13);
+            this.MemoryUsageForDecompressingValueLabel.TabIndex = 18;
+            this.MemoryUsageForDecompressingValueLabel.Text = "258 MB";
+            // 
+            // NumberOfCPUThreadsOutOfFLP
+            // 
+            this.NumberOfCPUThreadsOutOfFLP.Controls.Add(this.NumberOfCPUThreadsOutOfLabel);
+            this.NumberOfCPUThreadsOutOfFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.NumberOfCPUThreadsOutOfFLP.Location = new System.Drawing.Point(256, 302);
+            this.NumberOfCPUThreadsOutOfFLP.Name = "NumberOfCPUThreadsOutOfFLP";
+            this.NumberOfCPUThreadsOutOfFLP.Size = new System.Drawing.Size(52, 16);
+            this.NumberOfCPUThreadsOutOfFLP.TabIndex = 20;
+            // 
+            // NumberOfCPUThreadsOutOfLabel
+            // 
+            this.NumberOfCPUThreadsOutOfLabel.AutoSize = true;
+            this.NumberOfCPUThreadsOutOfLabel.Location = new System.Drawing.Point(25, 0);
+            this.NumberOfCPUThreadsOutOfLabel.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.NumberOfCPUThreadsOutOfLabel.Name = "NumberOfCPUThreadsOutOfLabel";
+            this.NumberOfCPUThreadsOutOfLabel.Size = new System.Drawing.Size(27, 13);
+            this.NumberOfCPUThreadsOutOfLabel.TabIndex = 18;
+            this.NumberOfCPUThreadsOutOfLabel.Text = "/ 12";
+            // 
+            // TimeGroupBox
+            // 
+            this.TimeGroupBox.Controls.Add(this.TimestampPrecisionLabel);
+            this.TimeGroupBox.Controls.Add(this.SetArchiveTimeToLatestFileTimeCheckBox);
+            this.TimeGroupBox.Controls.Add(this.StoreLastAccessTimeCheckBox);
+            this.TimeGroupBox.Controls.Add(this.StoreCreationTimeCheckBox);
+            this.TimeGroupBox.Controls.Add(this.StoreModificationTimeCheckBox);
+            this.TimeGroupBox.Controls.Add(this.DoNotChangeSourceFilesLastAccessTimeCheckBox);
+            this.TimeGroupBox.Controls.Add(this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox);
+            this.TimeGroupBox.Controls.Add(this.StoreLastAccessTimeEnableSettingCheckBox);
+            this.TimeGroupBox.Controls.Add(this.StoreCreationTimeEnableSettingCheckBox);
+            this.TimeGroupBox.Controls.Add(this.TimestampPrecisionComboBox);
+            this.TimeGroupBox.Location = new System.Drawing.Point(320, 128);
+            this.TimeGroupBox.Name = "TimeGroupBox";
+            this.TimeGroupBox.Size = new System.Drawing.Size(360, 256);
+            this.TimeGroupBox.TabIndex = 21;
+            this.TimeGroupBox.TabStop = false;
+            this.TimeGroupBox.Text = "Time";
+            // 
+            // StoreCreationTimeEnableSettingCheckBox
+            // 
+            this.StoreCreationTimeEnableSettingCheckBox.AutoSize = true;
+            this.StoreCreationTimeEnableSettingCheckBox.Location = new System.Drawing.Point(12, 68);
+            this.StoreCreationTimeEnableSettingCheckBox.Name = "StoreCreationTimeEnableSettingCheckBox";
+            this.StoreCreationTimeEnableSettingCheckBox.Size = new System.Drawing.Size(29, 17);
+            this.StoreCreationTimeEnableSettingCheckBox.TabIndex = 0;
+            this.StoreCreationTimeEnableSettingCheckBox.Text = ":";
+            this.StoreCreationTimeEnableSettingCheckBox.UseVisualStyleBackColor = true;
+            this.StoreCreationTimeEnableSettingCheckBox.CheckedChanged += new System.EventHandler(this.StoreCreationTimeEnableSettingCheckBox_CheckedChanged);
+            // 
+            // StoreLastAccessTimeEnableSettingCheckBox
+            // 
+            this.StoreLastAccessTimeEnableSettingCheckBox.AutoSize = true;
+            this.StoreLastAccessTimeEnableSettingCheckBox.Location = new System.Drawing.Point(12, 91);
+            this.StoreLastAccessTimeEnableSettingCheckBox.Name = "StoreLastAccessTimeEnableSettingCheckBox";
+            this.StoreLastAccessTimeEnableSettingCheckBox.Size = new System.Drawing.Size(29, 17);
+            this.StoreLastAccessTimeEnableSettingCheckBox.TabIndex = 0;
+            this.StoreLastAccessTimeEnableSettingCheckBox.Text = ":";
+            this.StoreLastAccessTimeEnableSettingCheckBox.UseVisualStyleBackColor = true;
+            this.StoreLastAccessTimeEnableSettingCheckBox.CheckedChanged += new System.EventHandler(this.StoreLastAccessTimeEnableSettingCheckBox_CheckedChanged);
+            // 
+            // SetArchiveTimeToLatestFileTimeEnableSettingCheckBox
+            // 
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.AutoSize = true;
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Location = new System.Drawing.Point(12, 122);
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Name = "SetArchiveTimeToLatestFileTimeEnableSettingCheckBox";
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Size = new System.Drawing.Size(29, 17);
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.TabIndex = 0;
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Text = ":";
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.UseVisualStyleBackColor = true;
+            this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.CheckedChanged += new System.EventHandler(this.SetArchiveTimeToLatestFileTimeEnableSettingCheckBox_CheckedChanged);
+            // 
+            // DoNotChangeSourceFilesLastAccessTimeCheckBox
+            // 
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.AutoSize = true;
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Location = new System.Drawing.Point(12, 154);
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Name = "DoNotChangeSourceFilesLastAccessTimeCheckBox";
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Size = new System.Drawing.Size(231, 17);
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.TabIndex = 0;
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.Text = "Do not change source files last access time";
+            this.DoNotChangeSourceFilesLastAccessTimeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // StoreModificationTimeCheckBox
+            // 
+            this.StoreModificationTimeCheckBox.AutoSize = true;
+            this.StoreModificationTimeCheckBox.Checked = true;
+            this.StoreModificationTimeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.StoreModificationTimeCheckBox.Enabled = false;
+            this.StoreModificationTimeCheckBox.Location = new System.Drawing.Point(39, 45);
+            this.StoreModificationTimeCheckBox.Name = "StoreModificationTimeCheckBox";
+            this.StoreModificationTimeCheckBox.Size = new System.Drawing.Size(132, 17);
+            this.StoreModificationTimeCheckBox.TabIndex = 0;
+            this.StoreModificationTimeCheckBox.Text = "Store modification time";
+            this.StoreModificationTimeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // StoreCreationTimeCheckBox
+            // 
+            this.StoreCreationTimeCheckBox.AutoSize = true;
+            this.StoreCreationTimeCheckBox.Enabled = false;
+            this.StoreCreationTimeCheckBox.Location = new System.Drawing.Point(39, 68);
+            this.StoreCreationTimeCheckBox.Name = "StoreCreationTimeCheckBox";
+            this.StoreCreationTimeCheckBox.Size = new System.Drawing.Size(114, 17);
+            this.StoreCreationTimeCheckBox.TabIndex = 0;
+            this.StoreCreationTimeCheckBox.Text = "Store creation time";
+            this.StoreCreationTimeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // StoreLastAccessTimeCheckBox
+            // 
+            this.StoreLastAccessTimeCheckBox.AutoSize = true;
+            this.StoreLastAccessTimeCheckBox.Enabled = false;
+            this.StoreLastAccessTimeCheckBox.Location = new System.Drawing.Point(39, 91);
+            this.StoreLastAccessTimeCheckBox.Name = "StoreLastAccessTimeCheckBox";
+            this.StoreLastAccessTimeCheckBox.Size = new System.Drawing.Size(129, 17);
+            this.StoreLastAccessTimeCheckBox.TabIndex = 0;
+            this.StoreLastAccessTimeCheckBox.Text = "Store last access time";
+            this.StoreLastAccessTimeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // SetArchiveTimeToLatestFileTimeCheckBox
+            // 
+            this.SetArchiveTimeToLatestFileTimeCheckBox.AutoSize = true;
+            this.SetArchiveTimeToLatestFileTimeCheckBox.Enabled = false;
+            this.SetArchiveTimeToLatestFileTimeCheckBox.Location = new System.Drawing.Point(39, 122);
+            this.SetArchiveTimeToLatestFileTimeCheckBox.Name = "SetArchiveTimeToLatestFileTimeCheckBox";
+            this.SetArchiveTimeToLatestFileTimeCheckBox.Size = new System.Drawing.Size(180, 17);
+            this.SetArchiveTimeToLatestFileTimeCheckBox.TabIndex = 0;
+            this.SetArchiveTimeToLatestFileTimeCheckBox.Text = "Set archive time to latest file time";
+            this.SetArchiveTimeToLatestFileTimeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // TimestampPrecisionLabel
+            // 
+            this.TimestampPrecisionLabel.AutoSize = true;
+            this.TimestampPrecisionLabel.Location = new System.Drawing.Point(36, 22);
+            this.TimestampPrecisionLabel.Name = "TimestampPrecisionLabel";
+            this.TimestampPrecisionLabel.Size = new System.Drawing.Size(106, 13);
+            this.TimestampPrecisionLabel.TabIndex = 1;
+            this.TimestampPrecisionLabel.Text = "Timestamp precision:";
+            // 
+            // TimestampPrecisionComboBox
+            // 
+            this.TimestampPrecisionComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.TimestampPrecisionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.TimestampPrecisionComboBox.Enabled = false;
+            this.TimestampPrecisionComboBox.FormattingEnabled = true;
+            this.TimestampPrecisionComboBox.Items.AddRange(new object[] {
+            "100 ns : Windows"});
+            this.TimestampPrecisionComboBox.Location = new System.Drawing.Point(234, 19);
+            this.TimestampPrecisionComboBox.Name = "TimestampPrecisionComboBox";
+            this.TimestampPrecisionComboBox.Size = new System.Drawing.Size(114, 21);
+            this.TimestampPrecisionComboBox.TabIndex = 5;
+            this.TimestampPrecisionComboBox.SelectedIndexChanged += new System.EventHandler(this.CompressionLevelComboBox_SelectedIndexChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(752, 360);
+            this.ClientSize = new System.Drawing.Size(752, 665);
+            this.Controls.Add(this.TimeGroupBox);
+            this.Controls.Add(this.NumberOfCPUThreadsOutOfFLP);
+            this.Controls.Add(this.MemoryUsageForDecompressingValueFLP);
+            this.Controls.Add(this.MemoryUsageForDecompressingLabel);
+            this.Controls.Add(this.MemoryUsageForCompressingLabel);
+            this.Controls.Add(this.MemoryUsageForCompressingComboBox);
+            this.Controls.Add(this.NumberOfCPUThreadsLabel);
+            this.Controls.Add(this.NumberOfCPUThreadsComboBox);
+            this.Controls.Add(this.SolidBlockSizeLabel);
+            this.Controls.Add(this.SolidBlockSizeComboBox);
+            this.Controls.Add(this.WordSizeLabel);
+            this.Controls.Add(this.WordSizeComboBox);
+            this.Controls.Add(this.DictionarySizeLabel);
+            this.Controls.Add(this.DictionarySizeComboBox);
             this.Controls.Add(this.Test1Button);
             this.Controls.Add(this.SevenZipExePanel);
             this.Controls.Add(this.CompressionMethodLabel);
@@ -260,6 +572,12 @@ sealed partial class MainForm
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.SevenZipExePanel.ResumeLayout(false);
             this.SevenZipExePanel.PerformLayout();
+            this.MemoryUsageForDecompressingValueFLP.ResumeLayout(false);
+            this.MemoryUsageForDecompressingValueFLP.PerformLayout();
+            this.NumberOfCPUThreadsOutOfFLP.ResumeLayout(false);
+            this.NumberOfCPUThreadsOutOfFLP.PerformLayout();
+            this.TimeGroupBox.ResumeLayout(false);
+            this.TimeGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -285,4 +603,30 @@ sealed partial class MainForm
     private System.Windows.Forms.TextBox SevenZipExternalTextBox;
     private System.Windows.Forms.Label SevenZipAppToUseLabel;
     private System.Windows.Forms.Button Test1Button;
+    private System.Windows.Forms.Label DictionarySizeLabel;
+    private System.Windows.Forms.ComboBox DictionarySizeComboBox;
+    private System.Windows.Forms.Label WordSizeLabel;
+    private System.Windows.Forms.ComboBox WordSizeComboBox;
+    private System.Windows.Forms.Label SolidBlockSizeLabel;
+    private System.Windows.Forms.ComboBox SolidBlockSizeComboBox;
+    private System.Windows.Forms.Label NumberOfCPUThreadsLabel;
+    private System.Windows.Forms.ComboBox NumberOfCPUThreadsComboBox;
+    private System.Windows.Forms.Label MemoryUsageForCompressingLabel;
+    private System.Windows.Forms.ComboBox MemoryUsageForCompressingComboBox;
+    private System.Windows.Forms.Label MemoryUsageForDecompressingLabel;
+    private System.Windows.Forms.FlowLayoutPanel MemoryUsageForDecompressingValueFLP;
+    private System.Windows.Forms.Label MemoryUsageForDecompressingValueLabel;
+    private System.Windows.Forms.FlowLayoutPanel NumberOfCPUThreadsOutOfFLP;
+    private System.Windows.Forms.Label NumberOfCPUThreadsOutOfLabel;
+    private System.Windows.Forms.GroupBox TimeGroupBox;
+    private System.Windows.Forms.CheckBox DoNotChangeSourceFilesLastAccessTimeCheckBox;
+    private System.Windows.Forms.CheckBox SetArchiveTimeToLatestFileTimeEnableSettingCheckBox;
+    private System.Windows.Forms.CheckBox StoreLastAccessTimeEnableSettingCheckBox;
+    private System.Windows.Forms.CheckBox StoreCreationTimeEnableSettingCheckBox;
+    private System.Windows.Forms.CheckBox StoreModificationTimeCheckBox;
+    private System.Windows.Forms.CheckBox SetArchiveTimeToLatestFileTimeCheckBox;
+    private System.Windows.Forms.CheckBox StoreLastAccessTimeCheckBox;
+    private System.Windows.Forms.CheckBox StoreCreationTimeCheckBox;
+    private System.Windows.Forms.Label TimestampPrecisionLabel;
+    private System.Windows.Forms.ComboBox TimestampPrecisionComboBox;
 }

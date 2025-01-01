@@ -18,6 +18,8 @@ TODO: When re-packing from a zip file, notify the user when an unknown-encoded f
  it should be.
  We'll need to pull in the .NET zip code so as to customize it to expose the "used default encoding" situation.
 
+TODO: Match 7z 2409's logic for calculating UI values
+
 --
 
 TODO: Mod.ini specifies a readme and icon file.
@@ -129,6 +131,8 @@ public sealed partial class MainForm : Form
 
         UpdateExternalSevenZipLabel();
         UpdateSevenZipExternalUISection();
+
+        TimestampPrecisionComboBox.SelectedIndex = 0;
     }
 
     private void UpdateExternalSevenZipLabel()
@@ -296,5 +300,46 @@ public sealed partial class MainForm : Form
     private void SevenZipExternalTextBox_TextChanged(object sender, EventArgs e)
     {
         Config.SevenZipExternalAppPath = SevenZipExternalTextBox.Text;
+    }
+
+    // TODO: Save/restore in config
+    // TODO: Use in 7z call
+    private void StoreCreationTimeEnableSettingCheckBox_CheckedChanged(object sender, EventArgs e)
+    {
+        if (StoreCreationTimeEnableSettingCheckBox.Checked)
+        {
+            StoreCreationTimeCheckBox.Enabled = true;
+        }
+        else
+        {
+            StoreCreationTimeCheckBox.Checked = false;
+            StoreCreationTimeCheckBox.Enabled = false;
+        }
+    }
+
+    private void StoreLastAccessTimeEnableSettingCheckBox_CheckedChanged(object sender, EventArgs e)
+    {
+        if (StoreLastAccessTimeEnableSettingCheckBox.Checked)
+        {
+            StoreLastAccessTimeCheckBox.Enabled = true;
+        }
+        else
+        {
+            StoreLastAccessTimeCheckBox.Checked = false;
+            StoreLastAccessTimeCheckBox.Enabled = false;
+        }
+    }
+
+    private void SetArchiveTimeToLatestFileTimeEnableSettingCheckBox_CheckedChanged(object sender, EventArgs e)
+    {
+        if (SetArchiveTimeToLatestFileTimeEnableSettingCheckBox.Checked)
+        {
+            SetArchiveTimeToLatestFileTimeCheckBox.Enabled = true;
+        }
+        else
+        {
+            SetArchiveTimeToLatestFileTimeCheckBox.Checked = false;
+            SetArchiveTimeToLatestFileTimeCheckBox.Enabled = false;
+        }
     }
 }
