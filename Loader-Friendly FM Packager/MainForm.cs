@@ -193,8 +193,6 @@ public sealed partial class MainForm : Form
 
         UpdateExternalSevenZipLabel();
         UpdateSevenZipExternalUISection();
-
-        TimestampPrecisionComboBox.SelectedIndex = 0;
     }
 
     private void UpdateExternalSevenZipLabel()
