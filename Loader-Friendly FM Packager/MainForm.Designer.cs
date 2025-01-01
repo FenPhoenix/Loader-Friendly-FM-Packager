@@ -323,23 +323,23 @@ sealed partial class MainForm
             this.MemoryUsageForDecompressingLabel.AutoSize = true;
             this.MemoryUsageForDecompressingLabel.Location = new System.Drawing.Point(16, 303);
             this.MemoryUsageForDecompressingLabel.Name = "MemoryUsageForDecompressingLabel";
-            this.MemoryUsageForDecompressingLabel.Size = new System.Drawing.Size(157, 13);
+            this.MemoryUsageForDecompressingLabel.Size = new System.Drawing.Size(170, 13);
             this.MemoryUsageForDecompressingLabel.TabIndex = 18;
-            this.MemoryUsageForDecompressingLabel.Text = "Memory usage for Compressing:";
+            this.MemoryUsageForDecompressingLabel.Text = "Memory usage for Decompressing:";
             // 
             // MemoryUsageForDecompressingValueFLP
             // 
             this.MemoryUsageForDecompressingValueFLP.Controls.Add(this.MemoryUsageForDecompressingValueLabel);
             this.MemoryUsageForDecompressingValueFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.MemoryUsageForDecompressingValueFLP.Location = new System.Drawing.Point(176, 303);
+            this.MemoryUsageForDecompressingValueFLP.Location = new System.Drawing.Point(184, 303);
             this.MemoryUsageForDecompressingValueFLP.Name = "MemoryUsageForDecompressingValueFLP";
-            this.MemoryUsageForDecompressingValueFLP.Size = new System.Drawing.Size(132, 16);
+            this.MemoryUsageForDecompressingValueFLP.Size = new System.Drawing.Size(124, 16);
             this.MemoryUsageForDecompressingValueFLP.TabIndex = 19;
             // 
             // MemoryUsageForDecompressingValueLabel
             // 
             this.MemoryUsageForDecompressingValueLabel.AutoSize = true;
-            this.MemoryUsageForDecompressingValueLabel.Location = new System.Drawing.Point(88, 0);
+            this.MemoryUsageForDecompressingValueLabel.Location = new System.Drawing.Point(80, 0);
             this.MemoryUsageForDecompressingValueLabel.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.MemoryUsageForDecompressingValueLabel.Name = "MemoryUsageForDecompressingValueLabel";
             this.MemoryUsageForDecompressingValueLabel.Size = new System.Drawing.Size(44, 13);
