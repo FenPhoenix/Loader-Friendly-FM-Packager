@@ -25,10 +25,6 @@ internal static class Core
         View.Threads = Config.Threads;
         View.DictionarySize = Config.DictionarySize;
         View.MemoryUseForCompression = Config.MemoryUseForCompression;
-        View.StoreCreationTime = Config.StoreCreationTime;
-        View.StoreLastAccessTime = Config.StoreLastAccessTime;
-        View.SetArchiveTimeToLatestFileTime = Config.SetArchiveTimeToLatestTileTime;
-        View.DoNotChangeSourceFilesLastAccessTime = Config.DoNotChangeSourceFilesLastAccessTime;
         View.SevenZipApp = Config.SevenZipApp;
         View.SevenZipExternalAppPath = Config.SevenZipExternalAppPath;
 
@@ -409,6 +405,11 @@ internal static class Core
         else
         {
             args += " -m0=" + CompressionMethodArgStrings[methodIndex];
+            long dictSize = View.DictionarySize;
+            if (dictSize > -1)
+            {
+                args += ":d=" + dictSize.ToStrInv() + "b";
+            }
         }
 
         /*
@@ -416,6 +417,26 @@ internal static class Core
         will trigger as nobody will be putting ARM64 or RISC-V executables in their FMs, but hey.
         */
         args += " -myv=0920";
+
+        int threads = View.Threads;
+        if (threads > -1)
+        {
+            args += " -mmt=" + threads.ToStrInv();
+        }
+
+        MemoryUseItem memUse = View.MemoryUseForCompression;
+        if (memUse.Value > -1)
+        {
+            args += " -mmemuse=";
+            if (memUse.IsPercent)
+            {
+                args += "p" + memUse.Value.ToStrInv();
+            }
+            else
+            {
+                args += memUse.Value.ToStrInv() + "b";
+            }
+        }
 
         args += " -y -r -bsp1 -bb1 -sas -scsUTF-8 -t7z -mhc=off";
 
