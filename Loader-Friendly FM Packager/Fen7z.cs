@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Threading;
 using JetBrains.Annotations;
 
@@ -14,6 +15,7 @@ public static class Fen7z
     {
         public int PercentOfBytes;
         public int PercentOfEntries;
+        public int CompressPercent;
         public bool Canceling;
     }
 
@@ -204,6 +206,12 @@ public static class Fen7z
                     {
                         proc.CancelErrorRead();
                         proc.CancelOutputRead();
+                        /*
+                        We should be sending Ctrl+C to it, but since that's apparently deep-level black
+                        magic on Windows, we just kill it. We expect the caller to understand that the
+                        extracted files will be in an indeterminate state, and to delete them or do whatever
+                        it deems fit.
+                        */
                         proc.Kill();
                     }
                     catch
@@ -265,43 +273,157 @@ public static class Fen7z
         }
         finally
         {
-            try
+            EndProcess(p, selectiveFiles, listFile);
+        }
+    }
+
+    public static Result Compress(
+    string sevenZipPathAndExe,
+    string sourcePath,
+    string outputArchive,
+    string args,
+    CancellationToken cancellationToken,
+    string listFile = "",
+    IProgress<ProgressReport>? progress = null)
+    {
+        bool selectiveFiles = !listFile.IsWhiteSpace();
+
+        bool canceled = false;
+
+        string errorText = "";
+
+        var report = new ProgressReport();
+
+        var p = new Process { EnableRaisingEvents = true };
+        try
+        {
+            p.StartInfo.FileName = sevenZipPathAndExe;
+            p.StartInfo.WorkingDirectory = sourcePath;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.Arguments =
+                "a " + args + " \"" +
+                outputArchive + "\" " +
+                "@\"" + listFile + "\"";
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.UseShellExecute = false;
+
+            p.OutputDataReceived += (sender, e) =>
             {
-                if (!p.HasExited)
+                var proc = (Process)sender;
+                if (!canceled && cancellationToken.IsCancellationRequested)
                 {
-                    p.Kill();
+                    canceled = true;
+
+                    report.Canceling = true;
+                    progress?.Report(report);
+                    try
+                    {
+                        proc.CancelErrorRead();
+                        proc.CancelOutputRead();
+                        /*
+                        We should be sending Ctrl+C to it, but since that's apparently deep-level black
+                        magic on Windows, we just kill it. We expect the caller to understand that the
+                        extracted files will be in an indeterminate state, and to delete them or do whatever
+                        it deems fit.
+                        */
+                        proc.Kill();
+                    }
+                    catch
+                    {
+                        // Ignore, it's going to throw but work anyway (even on non-admin, tested)
+                    }
+                    return;
                 }
-            }
-            catch
-            {
-                // ignore
-            }
-            finally
-            {
+
+                if (e.Data.IsEmpty() || report.Canceling || progress == null) return;
                 try
                 {
-                    if (!p.HasExited)
+                    string lineT = e.Data.Trim();
+
+                    if (!lineT.StartsWithO("+"))
                     {
-                        p.WaitForExit();
+                        int pi = lineT.IndexOf('%');
+                        if (pi > -1)
+                        {
+                            string percentStr = lineT.Substring(0, pi).Trim();
+                            if (Utils.Int_TryParseInv(percentStr, out int percent))
+                            {
+                                report.CompressPercent = percent;
+                                progress.Report(report);
+                            }
+                        }
                     }
                 }
                 catch
                 {
-                    // ignore...
+                    // ignore, it just means we won't report progress... meh
                 }
+            };
 
-                p.Dispose();
-            }
-            if (selectiveFiles && !listFile.IsEmpty())
+            p.ErrorDataReceived += (_, e) =>
             {
-                try
+                if (!e.Data.IsWhiteSpace()) errorText += $"{NL}---" + e.Data;
+            };
+
+            p.Start();
+            p.BeginOutputReadLine();
+            p.BeginErrorReadLine();
+
+            p.WaitForExit();
+
+            (SevenZipExitCode exitCode, int? exitCodeInt, Exception? exception) = GetExitCode(p);
+
+            return new Result(exception, errorText, exitCode, exitCodeInt, canceled);
+        }
+        catch (Exception ex)
+        {
+            return new Result(ex, errorText, SevenZipExitCode.Unknown, canceled);
+        }
+        finally
+        {
+            EndProcess(p, selectiveFiles, listFile);
+        }
+    }
+
+    private static void EndProcess(Process p, bool selectiveFiles, string listFile)
+    {
+        try
+        {
+            if (!p.HasExited)
+            {
+                p.Kill();
+            }
+        }
+        catch
+        {
+            // ignore
+        }
+        finally
+        {
+            try
+            {
+                if (!p.HasExited)
                 {
-                    File.Delete(listFile);
+                    p.WaitForExit();
                 }
-                catch
-                {
-                    // ignore
-                }
+            }
+            catch
+            {
+                // ignore...
+            }
+
+            p.Dispose();
+        }
+        if (selectiveFiles && !listFile.IsEmpty())
+        {
+            try
+            {
+                File.Delete(listFile);
+            }
+            catch
+            {
+                // ignore
             }
         }
     }

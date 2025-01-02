@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Loader_Friendly_FM_Packager;
@@ -34,8 +35,6 @@ internal static class Core
         Application.Exit();
     }
 
-
-
     private static void RunProcess(
     string sourcePath,
     string outputArchive,
@@ -43,94 +42,18 @@ internal static class Core
     int level,
     int methodIndex)
     {
-        Process p = new();
-        p.StartInfo.FileName = Path.Combine(Application.StartupPath, "7z", "7z.exe");
-        p.StartInfo.WorkingDirectory = sourcePath;
-        p.StartInfo.Arguments =
-            "a " + GetArgs(level, methodIndex) + " \"" +
-            outputArchive + "\" " +
-            "@\"" + listFile + "\"";
-
-        //Trace.WriteLine(p.StartInfo.Arguments);
-
-        p.StartInfo.RedirectStandardOutput = true;
-        p.StartInfo.RedirectStandardError = true;
-        p.StartInfo.CreateNoWindow = true;
-        p.StartInfo.UseShellExecute = false;
-
-        p.OutputDataReceived += (sender, e) =>
-        {
-            if (e.Data.IsEmpty()) return;
-            try
-            {
-                Trace.WriteLine(e.Data);
-            }
-            catch
-            {
-                // ignore, it just means we won't report progress... meh
-            }
-        };
-
-        p.ErrorDataReceived += (_, e) =>
-        {
-            if (!e.Data.IsWhiteSpace())
-            {
-                Trace.WriteLine("**** ERROR:\r\n" + e.Data);
-            }
-        };
-
-        try
-        {
-            p.Start();
-            p.BeginOutputReadLine();
-            p.BeginErrorReadLine();
-            p.WaitForExit();
-        }
-        catch (Exception ex)
-        {
-
-        }
-        finally
-        {
-            try
-            {
-                if (!p.HasExited)
-                {
-                    p.Kill();
-                }
-            }
-            catch
-            {
-                // ignore
-            }
-            finally
-            {
-                try
-                {
-                    if (!p.HasExited)
-                    {
-                        p.WaitForExit();
-                    }
-                }
-                catch
-                {
-                    // ignore...
-                }
-
-                p.Dispose();
-            }
-            try
-            {
-                if (!listFile.IsEmpty())
-                {
-                    File.Delete(listFile);
-                }
-            }
-            catch
-            {
-                // ignore
-            }
-        }
+        Fen7z.Result result = Fen7z.Compress(
+            // TODO: Cache 7z.exe path
+            sevenZipPathAndExe: Path.Combine(Application.StartupPath, "7z", "7z.exe"),
+            sourcePath: sourcePath,
+            outputArchive: outputArchive,
+            args: GetArgs(level, methodIndex),
+            // TODO: Add cancellation
+            cancellationToken: CancellationToken.None,
+            listFile: listFile,
+            // TODO: Add progress reporting
+            progress: null
+        );
     }
 
     /*
