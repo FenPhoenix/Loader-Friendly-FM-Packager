@@ -43,7 +43,7 @@ TODO: Add built-in progress reporting like AngelLoader, copy-paste the Fen7z cod
 
 public sealed partial class MainForm : Form
 {
-    public string SourceFMDir
+    public string SourceFMPath
     {
         get => SourceFMDirectoryTextBox.Text;
         set => SourceFMDirectoryTextBox.Text = value;
@@ -114,20 +114,32 @@ public sealed partial class MainForm : Form
 
     public void StartCreateSingleArchiveOperation() => Invoke(() =>
     {
+        MainPanel.Enabled = false;
         ProgressMessageLabel.Text = "";
         MainProgressBar.Value = 0;
-        ProgressMessageLabel.Show();
         MainProgressBar.Show();
         Cancel_Button.Show();
     });
 
-    public void EndCreateSingleArchiveOperation() => Invoke(() =>
+    private void ResetProgressMessage()
     {
-        ProgressMessageLabel.Hide();
+        ProgressMessageLabel.Text = "No operation in progress.";
+    }
+
+    public void EndCreateSingleArchiveOperation(string? message = null) => Invoke(() =>
+    {
         MainProgressBar.Hide();
         Cancel_Button.Hide();
-        ProgressMessageLabel.Text = "";
+        if (message != null)
+        {
+            ProgressMessageLabel.Text = message;
+        }
+        else
+        {
+            ResetProgressMessage();
+        }
         MainProgressBar.Value = 0;
+        MainPanel.Enabled = true;
     });
 
     public void SetProgressMessage(string message) => Invoke(() =>
@@ -143,30 +155,22 @@ public sealed partial class MainForm : Form
     public MainForm()
     {
         InitializeComponent();
-        CompressionLevelComboBox.SelectedIndex = 9;
-
-        try
-        {
-            CompressionMethodComboBox.SuspendLayout();
-
-        }
-        finally
-        {
-            CompressionMethodComboBox.ResumeLayout();
-        }
 
         CompressionMethodComboBox.Items.AddRange(CompressionMethodItems.ToFriendlyStrings());
-
-        CompressionMethodComboBox.SelectedIndex = 0;
 
         PopulateDictionarySizeComboBox();
 
         PopulateThreadsComboBox();
 
         PopulateMemoryUseComboBox();
+
+        MainProgressBar.CenterH(StatusGroupBox);
+        Cancel_Button.CenterH(StatusGroupBox);
+        ResetProgressMessage();
+        ProgressMessageLabel.Location = ProgressMessageLabel.Location with { X = MainProgressBar.Left };
     }
 
-    private async void GoButton_Click(object sender, EventArgs e)
+    private async void CreateSingleArchiveButton_Click(object sender, EventArgs e)
     {
         await Core.CreateSingleArchive();
     }

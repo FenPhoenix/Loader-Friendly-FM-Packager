@@ -290,19 +290,21 @@ internal static class Core
     {
         await Task.Run(static () =>
         {
+            string sourcePath = View.SourceFMPath;
+            string outputArchive = View.OutputArchive;
+
             try
             {
                 View.StartCreateSingleArchiveOperation();
 
                 _cts = _cts.Recreate();
 
-                string dir = View.SourceFMDir;
-                Directory.SetCurrentDirectory(dir);
+                Directory.SetCurrentDirectory(sourcePath);
 
                 try
                 {
                     // TODO: Tell user if it exists and confirm delete!
-                    File.Delete(View.OutputArchive);
+                    File.Delete(outputArchive);
                 }
                 catch
                 {
@@ -314,10 +316,10 @@ internal static class Core
 
                 View.SetProgressMessage("Generating archive packaging logic...");
 
-                (List<string> al_Scan_FileNames, string listFile_Rest) = GetListFile(dir);
+                (List<string> al_Scan_FileNames, string listFile_Rest) = GetListFile(sourcePath);
 
-                Run7z_ALScanFiles(dir, View.OutputArchive, al_Scan_FileNames, level, method, _cts.Token);
-                Run7z_Rest(dir, View.OutputArchive, listFile_Rest, level, method, _cts.Token);
+                Run7z_ALScanFiles(sourcePath, outputArchive, al_Scan_FileNames, level, method, _cts.Token);
+                Run7z_Rest(sourcePath, outputArchive, listFile_Rest, level, method, _cts.Token);
             }
             catch (OperationCanceledException)
             {
@@ -335,7 +337,7 @@ internal static class Core
             finally
             {
                 Utils.CreateOrClearTempPath(Paths.Temp);
-                View.EndCreateSingleArchiveOperation();
+                View.EndCreateSingleArchiveOperation("Successfully created '" + outputArchive + "'.");
                 _cts.Dispose();
             }
         });

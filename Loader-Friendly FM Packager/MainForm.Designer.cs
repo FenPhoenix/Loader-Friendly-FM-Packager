@@ -33,7 +33,7 @@ sealed partial class MainForm
             this.SourceFMDirectoryLabel = new System.Windows.Forms.Label();
             this.OutputArchiveTextBox = new System.Windows.Forms.TextBox();
             this.OutputArchiveLabel = new System.Windows.Forms.Label();
-            this.GoButton = new System.Windows.Forms.Button();
+            this.CreateSingleArchiveButton = new System.Windows.Forms.Button();
             this.CompressionLevelComboBox = new System.Windows.Forms.ComboBox();
             this.CompressionLevelLabel = new System.Windows.Forms.Label();
             this.CompressionMethodComboBox = new System.Windows.Forms.ComboBox();
@@ -48,10 +48,14 @@ sealed partial class MainForm
             this.MemoryUsageForCompressingComboBox = new System.Windows.Forms.ComboBox();
             this.NumberOfCPUThreadsOutOfFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.NumberOfCPUThreadsOutOfLabel = new System.Windows.Forms.Label();
-            this.MainProgressBar = new Loader_Friendly_FM_Packager.ProgressBarCustom();
             this.ProgressMessageLabel = new System.Windows.Forms.Label();
             this.Cancel_Button = new System.Windows.Forms.Button();
+            this.MainPanel = new System.Windows.Forms.Panel();
+            this.StatusGroupBox = new System.Windows.Forms.GroupBox();
+            this.MainProgressBar = new Loader_Friendly_FM_Packager.ProgressBarCustom();
             this.NumberOfCPUThreadsOutOfFLP.SuspendLayout();
+            this.MainPanel.SuspendLayout();
+            this.StatusGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // SourceFMDirectoryTextBox
@@ -98,15 +102,15 @@ sealed partial class MainForm
             this.OutputArchiveLabel.TabIndex = 2;
             this.OutputArchiveLabel.Text = "Output archive:";
             // 
-            // GoButton
+            // CreateSingleArchiveButton
             // 
-            this.GoButton.Location = new System.Drawing.Point(640, 512);
-            this.GoButton.Name = "GoButton";
-            this.GoButton.Size = new System.Drawing.Size(99, 23);
-            this.GoButton.TabIndex = 4;
-            this.GoButton.Text = "Create 7-Zip file";
-            this.GoButton.UseVisualStyleBackColor = true;
-            this.GoButton.Click += new System.EventHandler(this.GoButton_Click);
+            this.CreateSingleArchiveButton.Location = new System.Drawing.Point(640, 264);
+            this.CreateSingleArchiveButton.Name = "CreateSingleArchiveButton";
+            this.CreateSingleArchiveButton.Size = new System.Drawing.Size(99, 23);
+            this.CreateSingleArchiveButton.TabIndex = 4;
+            this.CreateSingleArchiveButton.Text = "Create 7-Zip file";
+            this.CreateSingleArchiveButton.UseVisualStyleBackColor = true;
+            this.CreateSingleArchiveButton.Click += new System.EventHandler(this.CreateSingleArchiveButton_Click);
             // 
             // CompressionLevelComboBox
             // 
@@ -169,7 +173,7 @@ sealed partial class MainForm
             // 
             // Test1Button
             // 
-            this.Test1Button.Location = new System.Drawing.Point(664, 440);
+            this.Test1Button.Location = new System.Drawing.Point(664, 192);
             this.Test1Button.Name = "Test1Button";
             this.Test1Button.Size = new System.Drawing.Size(75, 23);
             this.Test1Button.TabIndex = 8;
@@ -253,27 +257,18 @@ sealed partial class MainForm
             this.NumberOfCPUThreadsOutOfLabel.TabIndex = 18;
             this.NumberOfCPUThreadsOutOfLabel.Text = "/ 12";
             // 
-            // MainProgressBar
-            // 
-            this.MainProgressBar.Location = new System.Drawing.Point(16, 344);
-            this.MainProgressBar.Name = "MainProgressBar";
-            this.MainProgressBar.Size = new System.Drawing.Size(720, 23);
-            this.MainProgressBar.TabIndex = 21;
-            this.MainProgressBar.Visible = false;
-            // 
             // ProgressMessageLabel
             // 
             this.ProgressMessageLabel.AutoSize = true;
-            this.ProgressMessageLabel.Location = new System.Drawing.Point(16, 320);
+            this.ProgressMessageLabel.Location = new System.Drawing.Point(16, 24);
             this.ProgressMessageLabel.Name = "ProgressMessageLabel";
             this.ProgressMessageLabel.Size = new System.Drawing.Size(97, 13);
             this.ProgressMessageLabel.TabIndex = 22;
             this.ProgressMessageLabel.Text = "[ProgressMessage]";
-            this.ProgressMessageLabel.Visible = false;
             // 
             // Cancel_Button
             // 
-            this.Cancel_Button.Location = new System.Drawing.Point(336, 376);
+            this.Cancel_Button.Location = new System.Drawing.Point(328, 78);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 23;
@@ -282,41 +277,70 @@ sealed partial class MainForm
             this.Cancel_Button.Visible = false;
             this.Cancel_Button.Click += new System.EventHandler(this.Cancel_Button_Click);
             // 
+            // MainPanel
+            // 
+            this.MainPanel.Controls.Add(this.SourceFMDirectoryLabel);
+            this.MainPanel.Controls.Add(this.SourceFMDirectoryTextBox);
+            this.MainPanel.Controls.Add(this.OutputArchiveTextBox);
+            this.MainPanel.Controls.Add(this.FMDirectoryBrowseButton);
+            this.MainPanel.Controls.Add(this.NumberOfCPUThreadsOutOfFLP);
+            this.MainPanel.Controls.Add(this.OutputArchiveBrowseButton);
+            this.MainPanel.Controls.Add(this.MemoryUsageForCompressingLabel);
+            this.MainPanel.Controls.Add(this.OutputArchiveLabel);
+            this.MainPanel.Controls.Add(this.MemoryUsageForCompressingComboBox);
+            this.MainPanel.Controls.Add(this.CreateSingleArchiveButton);
+            this.MainPanel.Controls.Add(this.NumberOfCPUThreadsLabel);
+            this.MainPanel.Controls.Add(this.CompressionLevelComboBox);
+            this.MainPanel.Controls.Add(this.NumberOfCPUThreadsComboBox);
+            this.MainPanel.Controls.Add(this.CompressionLevelLabel);
+            this.MainPanel.Controls.Add(this.DictionarySizeLabel);
+            this.MainPanel.Controls.Add(this.CompressionMethodComboBox);
+            this.MainPanel.Controls.Add(this.DictionarySizeComboBox);
+            this.MainPanel.Controls.Add(this.CompressionMethodLabel);
+            this.MainPanel.Controls.Add(this.Test1Button);
+            this.MainPanel.Location = new System.Drawing.Point(0, 0);
+            this.MainPanel.Name = "MainPanel";
+            this.MainPanel.Size = new System.Drawing.Size(752, 336);
+            this.MainPanel.TabIndex = 24;
+            // 
+            // StatusGroupBox
+            // 
+            this.StatusGroupBox.Controls.Add(this.ProgressMessageLabel);
+            this.StatusGroupBox.Controls.Add(this.MainProgressBar);
+            this.StatusGroupBox.Controls.Add(this.Cancel_Button);
+            this.StatusGroupBox.Location = new System.Drawing.Point(8, 344);
+            this.StatusGroupBox.Name = "StatusGroupBox";
+            this.StatusGroupBox.Size = new System.Drawing.Size(736, 112);
+            this.StatusGroupBox.TabIndex = 25;
+            this.StatusGroupBox.TabStop = false;
+            this.StatusGroupBox.Text = "Status";
+            // 
+            // MainProgressBar
+            // 
+            this.MainProgressBar.Location = new System.Drawing.Point(16, 48);
+            this.MainProgressBar.Name = "MainProgressBar";
+            this.MainProgressBar.Size = new System.Drawing.Size(704, 23);
+            this.MainProgressBar.TabIndex = 21;
+            this.MainProgressBar.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(752, 665);
-            this.Controls.Add(this.Cancel_Button);
-            this.Controls.Add(this.ProgressMessageLabel);
-            this.Controls.Add(this.MainProgressBar);
-            this.Controls.Add(this.NumberOfCPUThreadsOutOfFLP);
-            this.Controls.Add(this.MemoryUsageForCompressingLabel);
-            this.Controls.Add(this.MemoryUsageForCompressingComboBox);
-            this.Controls.Add(this.NumberOfCPUThreadsLabel);
-            this.Controls.Add(this.NumberOfCPUThreadsComboBox);
-            this.Controls.Add(this.DictionarySizeLabel);
-            this.Controls.Add(this.DictionarySizeComboBox);
-            this.Controls.Add(this.Test1Button);
-            this.Controls.Add(this.CompressionMethodLabel);
-            this.Controls.Add(this.CompressionMethodComboBox);
-            this.Controls.Add(this.CompressionLevelLabel);
-            this.Controls.Add(this.CompressionLevelComboBox);
-            this.Controls.Add(this.GoButton);
-            this.Controls.Add(this.OutputArchiveLabel);
-            this.Controls.Add(this.SourceFMDirectoryLabel);
-            this.Controls.Add(this.OutputArchiveBrowseButton);
-            this.Controls.Add(this.FMDirectoryBrowseButton);
-            this.Controls.Add(this.OutputArchiveTextBox);
-            this.Controls.Add(this.SourceFMDirectoryTextBox);
+            this.ClientSize = new System.Drawing.Size(752, 463);
+            this.Controls.Add(this.StatusGroupBox);
+            this.Controls.Add(this.MainPanel);
             this.Name = "MainForm";
             this.Text = "Loader-Friendly FM Packager";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.NumberOfCPUThreadsOutOfFLP.ResumeLayout(false);
             this.NumberOfCPUThreadsOutOfFLP.PerformLayout();
+            this.MainPanel.ResumeLayout(false);
+            this.MainPanel.PerformLayout();
+            this.StatusGroupBox.ResumeLayout(false);
+            this.StatusGroupBox.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
     }
 
@@ -327,7 +351,7 @@ sealed partial class MainForm
     private System.Windows.Forms.Label SourceFMDirectoryLabel;
     private System.Windows.Forms.TextBox OutputArchiveTextBox;
     private System.Windows.Forms.Label OutputArchiveLabel;
-    private System.Windows.Forms.Button GoButton;
+    private System.Windows.Forms.Button CreateSingleArchiveButton;
     private System.Windows.Forms.ComboBox CompressionLevelComboBox;
     private System.Windows.Forms.Label CompressionLevelLabel;
     private System.Windows.Forms.ComboBox CompressionMethodComboBox;
@@ -345,4 +369,6 @@ sealed partial class MainForm
     private ProgressBarCustom MainProgressBar;
     private System.Windows.Forms.Label ProgressMessageLabel;
     private System.Windows.Forms.Button Cancel_Button;
+    private System.Windows.Forms.Panel MainPanel;
+    private System.Windows.Forms.GroupBox StatusGroupBox;
 }
