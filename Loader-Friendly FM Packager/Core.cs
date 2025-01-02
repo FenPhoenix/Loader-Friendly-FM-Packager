@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -298,6 +299,8 @@ internal static class Core
 
         HashSet<string> dupePreventionHash = new(StringComparer.OrdinalIgnoreCase);
 
+        // TODO: Add HTML referenced files into the logic
+
         List<string> alScanFileNames = new();
         List<string> restFileNames = new();
         for (int i = 0; i < files.Length; i++)
@@ -307,7 +310,6 @@ internal static class Core
             int dirSeps;
             long fileSize = new FileInfo(files[i]).Length;
             if ((fn.IsValidReadme() || fn.IsGlTitle()) &&
-                // TODO: Should we be permissive and allow even 0-length readmes?
                 fileSize > 0 &&
                 (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
                   (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
@@ -316,21 +318,24 @@ internal static class Core
             {
                 AddScanFile(fn);
             }
-            // FMSel (both original and Sneaky Upgrade version) only look for this file in the root dir, not T3
-            // readme dir(s), tested.
-            else if (!fn.Rel_ContainsDirSep() &&
-                     fn.EqualsI(FMFiles.FMThumbJpg))
+            /*
+            FMSel (both original and Sneaky Upgrade version) only look for this file in the root dir, not T3
+            readme dir(s), tested.
+            Also, FMSel only reads fmthumb.jpg, but there's at least one FM with an fmthumb.png, so why not just
+            allow any image type.
+            */
+            else if (IsInBaseDir(fn) &&
+                     Path.GetFileNameWithoutExtension(fn).EqualsI(FMFiles.FMThumb) &&
+                     Utils.FileExtensionFound(fn, FMFileExtensions.ImageFileExtensions))
             {
                 AddScanFile(fn);
             }
-            else if (!fn.Rel_ContainsDirSep() &&
-                     (fn.ExtIsMis()
-                     || fn.ExtIsGam()
-                     ))
+            else if (IsInBaseDir(fn) &&
+                     (fn.ExtIsMis() || fn.ExtIsGam()))
             {
                 AddScanFile(fn);
             }
-            else if (!fn.Rel_ContainsDirSep() &&
+            else if (IsInBaseDir(fn) &&
                      (fn.EqualsI(FMFiles.FMInfoXml) ||
                       fn.EqualsI(FMFiles.FMIni) ||
                       fn.EqualsI(FMFiles.ModIni)))
@@ -342,11 +347,20 @@ internal static class Core
             {
                 AddScanFile(fn);
             }
-            else if (fn.PathEndsWithI(FMFiles.SNewGameStr))
+            else if (fn.PathStartsWithI(FMDirs.IntrfaceS) &&
+                     Regex.Match(Path.GetFileNameWithoutExtension(fn), "^main_[0-9]+$",
+                         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Success &&
+                     Utils.FileExtensionFound(fn, FMFileExtensions.ImageFileExtensions))
             {
                 AddScanFile(fn);
             }
-            else if (EndsWithTitleFile(fn))
+            else if (fn.PathStartsWithI(FMDirs.IntrfaceS) &&
+                     fn.PathEndsWithI(FMFiles.SNewGameStr))
+            {
+                AddScanFile(fn);
+            }
+            else if (fn.PathStartsWithI(FMDirs.StringsS) &&
+                     EndsWithTitleFile(fn))
             {
                 AddScanFile(fn);
             }
@@ -361,9 +375,14 @@ internal static class Core
             AddIfNotInList(infoFile);
         }
 
-        if (Utils.TryGetReadmeFromModIni(filesDir, out string readme))
+        var modIniValues = Utils.GetValuesFromModIni(filesDir);
+        if (!modIniValues.Readme.IsEmpty())
         {
-            AddIfNotInList(readme);
+            AddIfNotInList(modIniValues.Readme);
+        }
+        if (!modIniValues.Icon.IsEmpty())
+        {
+            AddIfNotInList(modIniValues.Icon);
         }
 
         //string listFile_ALScan = Path.Combine(TempPath, AL_Scan_Block_ListFileName);
@@ -396,18 +415,20 @@ internal static class Core
 
         void AddScanFile(string fn)
         {
-            dupePreventionHash.Add(fn);
-            alScanFileNames.Add(fn);
+            string valNormalized = fn.ToBackSlashes();
+            dupePreventionHash.Add(valNormalized);
+            alScanFileNames.Add(valNormalized);
         }
 
         void AddIfNotInList(string value)
         {
-            if (!value.IsEmpty() &&
-                File.Exists(Path.Combine(filesDir, value)) &&
-                dupePreventionHash.Add(value))
+            string valNormalized = value.ToBackSlashes();
+            if (!valNormalized.IsEmpty() &&
+                File.Exists(Path.Combine(filesDir, valNormalized)) &&
+                dupePreventionHash.Add(valNormalized))
             {
-                restFileNames.Remove(value);
-                alScanFileNames.Add(value);
+                restFileNames.Remove(valNormalized);
+                alScanFileNames.Add(valNormalized);
             }
         }
 
@@ -416,6 +437,8 @@ internal static class Core
             return fileName.PathEndsWithI("/titles.str") ||
                    fileName.PathEndsWithI("/title.str");
         }
+
+        static bool IsInBaseDir(string fn) => !fn.Rel_ContainsDirSep();
     }
 
     internal static string GetSevenZipVersion(string exe)

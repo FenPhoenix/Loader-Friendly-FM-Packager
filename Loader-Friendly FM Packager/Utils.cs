@@ -102,10 +102,22 @@ internal static class Utils
         readme.ExtIsDoc() ||
         readme.ExtIsPdf();
 
+    internal static bool FileExtensionFound(string fn, string[] extensions)
+    {
+        foreach (string extension in extensions)
+        {
+            if (fn.EndsWithI(extension))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsGlTitle(this string readme)
     {
-        return Path.HasExtension(readme) && Path.GetFileNameWithoutExtension(readme).EqualsI("gltitle");
+        return Path.GetFileNameWithoutExtension(readme).EqualsI("gltitle") && FileExtensionFound(readme, FMFileExtensions.ImageFileExtensions);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -267,15 +279,17 @@ internal static class Utils
         return !infoFile.IsEmpty();
     }
 
-    internal static bool TryGetReadmeFromModIni(string filesDir, out string readme)
+    internal static (string Readme, string Icon)
+    GetValuesFromModIni(string filesDir)
     {
-        readme = "";
+        string readme = "";
+        string icon = "";
 
         string modIniFile = Path.Combine(filesDir, FMFiles.ModIni);
 
         if (!File.Exists(modIniFile))
         {
-            return false;
+            return ("", "");
         }
 
         string[] lines = File.ReadAllLines(modIniFile);
@@ -300,9 +314,26 @@ internal static class Utils
                     i++;
                 }
             }
+            else if (lineT.EqualsI("[iconFile]"))
+            {
+                while (i < lines.Length - 1)
+                {
+                    string lt = lines[i + 1].Trim();
+                    if (lt.IsIniHeader())
+                    {
+                        break;
+                    }
+                    else if (!lt.IsEmpty() && lt[0] != ';')
+                    {
+                        icon = lt;
+                        break;
+                    }
+                    i++;
+                }
+            }
         }
 
-        return !readme.IsEmpty();
+        return (readme, icon);
     }
 
     #region Clamping
@@ -386,6 +417,23 @@ internal static class Utils
     }
 }
 
+internal static class FMFileExtensions
+{
+    internal static readonly string[] ImageFileExtensions =
+    {
+        ".bmp",
+        ".dds",
+        ".gif",
+        ".jpg",
+        ".jpeg",
+        ".pcx",
+        ".png",
+        ".tga",
+        ".tif",
+        ".tiff",
+    };
+}
+
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 internal static class FMDirs
 {
@@ -454,7 +502,7 @@ internal static class FMFiles
     // System Shock 2 file
     internal const string ModIni = "mod.ini";
 
-    internal const string FMThumbJpg = "fmthumb.jpg";
+    internal const string FMThumb = "fmthumb";
 
     // For Thief 3 missions, all of them have this file, and then any other .gmp files are the actual missions
     // TODO: Is there any possible thing a loader could do with the contents of T3 files that AL doesn't?

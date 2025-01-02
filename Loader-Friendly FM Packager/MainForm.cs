@@ -212,7 +212,7 @@ public sealed partial class MainForm : Form
             {
                 extractedDirName = Path.GetFileNameWithoutExtension(zip).Trim();
 
-                //if (extractedDirName != "Religious_conflict_V_1_5")
+                //if (extractedDirName != "2002-04-01_CalendrasLegacy")
                 //{
                 //    continue;
                 //}
@@ -223,11 +223,17 @@ public sealed partial class MainForm : Form
                     zipArchive.ExtractToDirectory(tempExtractedDir);
                 }
 
-                string outputArchive = Path.Combine(@"J:\__7z_scan_friendly_hc_off_5", extractedDirName + ".7z");
+                //string outputArchive = Path.Combine(@"J:\__7z_scan_friendly_hc_off_5", extractedDirName + ".7z");
 
                 (List<string> al_Scan_FileNames, string listFile_Rest) = Core.GetListFile(tempExtractedDir);
-                Core.Run7z_ALScanFiles(tempExtractedDir, outputArchive, al_Scan_FileNames, level, method, CancellationToken.None);
-                Core.Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, level, method, CancellationToken.None);
+
+                const string testDir = @"J:\_7z_al_scan_files_lists";
+                //Directory.CreateDirectory(testDir);
+
+                File.WriteAllLines(Path.Combine(testDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt"), al_Scan_FileNames);
+
+                //Core.Run7z_ALScanFiles(tempExtractedDir, outputArchive, al_Scan_FileNames, level, method, CancellationToken.None);
+                //Core.Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, level, method, CancellationToken.None);
 
                 try
                 {
