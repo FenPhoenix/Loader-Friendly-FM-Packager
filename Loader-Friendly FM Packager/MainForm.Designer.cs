@@ -48,6 +48,9 @@ sealed partial class MainForm
             this.MemoryUsageForCompressingComboBox = new System.Windows.Forms.ComboBox();
             this.NumberOfCPUThreadsOutOfFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.NumberOfCPUThreadsOutOfLabel = new System.Windows.Forms.Label();
+            this.MainProgressBar = new Loader_Friendly_FM_Packager.ProgressBarCustom();
+            this.ProgressMessageLabel = new System.Windows.Forms.Label();
+            this.Cancel_Button = new System.Windows.Forms.Button();
             this.NumberOfCPUThreadsOutOfFLP.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -250,11 +253,43 @@ sealed partial class MainForm
             this.NumberOfCPUThreadsOutOfLabel.TabIndex = 18;
             this.NumberOfCPUThreadsOutOfLabel.Text = "/ 12";
             // 
+            // MainProgressBar
+            // 
+            this.MainProgressBar.Location = new System.Drawing.Point(16, 344);
+            this.MainProgressBar.Name = "MainProgressBar";
+            this.MainProgressBar.Size = new System.Drawing.Size(720, 23);
+            this.MainProgressBar.TabIndex = 21;
+            this.MainProgressBar.Visible = false;
+            // 
+            // ProgressMessageLabel
+            // 
+            this.ProgressMessageLabel.AutoSize = true;
+            this.ProgressMessageLabel.Location = new System.Drawing.Point(16, 320);
+            this.ProgressMessageLabel.Name = "ProgressMessageLabel";
+            this.ProgressMessageLabel.Size = new System.Drawing.Size(97, 13);
+            this.ProgressMessageLabel.TabIndex = 22;
+            this.ProgressMessageLabel.Text = "[ProgressMessage]";
+            this.ProgressMessageLabel.Visible = false;
+            // 
+            // Cancel_Button
+            // 
+            this.Cancel_Button.Location = new System.Drawing.Point(336, 376);
+            this.Cancel_Button.Name = "Cancel_Button";
+            this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
+            this.Cancel_Button.TabIndex = 23;
+            this.Cancel_Button.Text = "Cancel";
+            this.Cancel_Button.UseVisualStyleBackColor = true;
+            this.Cancel_Button.Visible = false;
+            this.Cancel_Button.Click += new System.EventHandler(this.Cancel_Button_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(752, 665);
+            this.Controls.Add(this.Cancel_Button);
+            this.Controls.Add(this.ProgressMessageLabel);
+            this.Controls.Add(this.MainProgressBar);
             this.Controls.Add(this.NumberOfCPUThreadsOutOfFLP);
             this.Controls.Add(this.MemoryUsageForCompressingLabel);
             this.Controls.Add(this.MemoryUsageForCompressingComboBox);
@@ -307,4 +342,7 @@ sealed partial class MainForm
     private System.Windows.Forms.ComboBox MemoryUsageForCompressingComboBox;
     private System.Windows.Forms.FlowLayoutPanel NumberOfCPUThreadsOutOfFLP;
     private System.Windows.Forms.Label NumberOfCPUThreadsOutOfLabel;
+    private ProgressBarCustom MainProgressBar;
+    private System.Windows.Forms.Label ProgressMessageLabel;
+    private System.Windows.Forms.Button Cancel_Button;
 }

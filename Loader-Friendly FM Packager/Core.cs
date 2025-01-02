@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Loader_Friendly_FM_Packager;
@@ -20,11 +21,11 @@ internal static class Core
 
         ConfigIni.ReadConfigData();
 
-        View.CompressionLevel = Config.CompressionLevel;
-        View.CompressionMethod = Config.CompressionMethod;
-        View.Threads = Config.Threads;
-        View.DictionarySize = Config.DictionarySize;
-        View.MemoryUseForCompression = Config.MemoryUseForCompression;
+        View.SetCompressionLevel(Config.CompressionLevel);
+        View.SetCompressionMethod(Config.CompressionMethod);
+        View.SetThreads(Config.Threads);
+        View.SetDictionarySize(Config.DictionarySize);
+        View.SetMemoryUseForCompression(Config.MemoryUseForCompression);
 
         View.Show();
     }
@@ -40,20 +41,46 @@ internal static class Core
     string outputArchive,
     string listFile,
     int level,
-    int methodIndex)
+    CompressionMethod method,
+    CancellationToken cancellationToken)
     {
+        Progress<Fen7z.ProgressReport> progress = new(ReportProgress);
+
         Fen7z.Result result = Fen7z.Compress(
             // TODO: Cache 7z.exe path
             sevenZipPathAndExe: Path.Combine(Application.StartupPath, "7z", "7z.exe"),
             sourcePath: sourcePath,
             outputArchive: outputArchive,
-            args: GetArgs(level, methodIndex),
+            args: GetArgs(level, method),
             // TODO: Add cancellation
-            cancellationToken: CancellationToken.None,
+            cancellationToken: cancellationToken,
             listFile: listFile,
             // TODO: Add progress reporting
-            progress: null
+            progress: progress
         );
+
+        if (result.ErrorOccurred)
+        {
+            // TODO: Handle the error. Also add logging maybe?
+        }
+        else if (result.Canceled)
+        {
+            throw new OperationCanceledException(_cts.Token);
+        }
+        else
+        {
+            // TODO: Handle creation complete
+        }
+
+        return;
+
+        static void ReportProgress(Fen7z.ProgressReport pr)
+        {
+            if (!pr.Canceling)
+            {
+                View.SetProgressPercent(pr.CompressPercent);
+            }
+        }
     }
 
     /*
@@ -61,13 +88,22 @@ internal static class Core
      used .mis file.
     -Use a list file even when there's only one entry in it, to prevent any filename encoding issues.
     */
-    internal static void Run7z_ALScanFiles(string sourcePath, string outputArchive, List<string> fileNames, int level, int methodIndex)
+    internal static void Run7z_ALScanFiles(
+        string sourcePath,
+        string outputArchive,
+        List<string> fileNames,
+        int level,
+        CompressionMethod method,
+        CancellationToken cancellationToken)
     {
         string listFile = Path.Combine(Paths.Temp, AL_Scan_Block_ListFileName);
 
         for (int i = 0; i < fileNames.Count; i++)
         {
             string fileName = fileNames[i];
+
+            View.SetProgressPercent(0);
+            View.SetProgressMessage("Adding " + fileName + " to its own block...");
 
             if (!File.Exists(Path.Combine(sourcePath, fileName)))
             {
@@ -147,21 +183,32 @@ internal static class Core
                 outputArchive: outputArchive,
                 listFile: listFile,
                 level: level,
-                methodIndex: methodIndex);
+                method: method,
+                cancellationToken: cancellationToken);
         }
     }
 
-    internal static void Run7z_Rest(string sourcePath, string outputArchive, string listFile, int level, int methodIndex)
+    internal static void Run7z_Rest(
+        string sourcePath,
+        string outputArchive,
+        string listFile,
+        int level,
+        CompressionMethod method,
+        CancellationToken cancellationToken)
     {
+        View.SetProgressMessage("Adding remaining files to archive...");
+        View.SetProgressPercent(0);
+
         RunProcess(
             sourcePath: sourcePath,
             outputArchive: outputArchive,
             listFile: listFile,
             level: level,
-            methodIndex: methodIndex);
+            method: method,
+            cancellationToken: cancellationToken);
     }
 
-    private static string GetArgs(int level, int methodIndex)
+    private static string GetArgs(int level, CompressionMethod method)
     {
         if (level is < 0 or > 9)
         {
@@ -190,8 +237,8 @@ internal static class Core
         }
         else
         {
-            args += " -m0=" + CompressionMethodArgStrings[methodIndex];
-            long dictSize = View.DictionarySize;
+            args += " -m0=" + GetCompressionMethodString(method);
+            long dictSize = Config.DictionarySize;
             if (dictSize > -1)
             {
                 args += ":d=" + dictSize.ToStrInv() + "b";
@@ -204,13 +251,13 @@ internal static class Core
         */
         args += " -myv=0920";
 
-        int threads = View.Threads;
+        int threads = Config.Threads;
         if (threads > -1)
         {
             args += " -mmt=" + threads.ToStrInv();
         }
 
-        MemoryUseItem memUse = View.MemoryUseForCompression;
+        MemoryUseItem memUse = Config.MemoryUseForCompression;
         if (memUse.Value > -1)
         {
             args += " -mmemuse=";
@@ -232,33 +279,66 @@ internal static class Core
         return args;
     }
 
-    internal static void CreateSingleArchive()
+    private static CancellationTokenSource _cts = new();
+    internal static void CancelToken()
     {
-        try
-        {
-            string dir = View.SourceFMDir;
-            Directory.SetCurrentDirectory(dir);
+        View.SetProgressMessage("Canceling...");
+        _cts.CancelIfNotDisposed();
+    }
 
+    internal static async Task CreateSingleArchive()
+    {
+        await Task.Run(static () =>
+        {
             try
             {
-                File.Delete(View.OutputArchive);
+                View.StartCreateSingleArchiveOperation();
+
+                _cts = _cts.Recreate();
+
+                string dir = View.SourceFMDir;
+                Directory.SetCurrentDirectory(dir);
+
+                try
+                {
+                    // TODO: Tell user if it exists and confirm delete!
+                    File.Delete(View.OutputArchive);
+                }
+                catch
+                {
+
+                }
+
+                int level = Config.CompressionLevel;
+                CompressionMethod method = Config.CompressionMethod;
+
+                View.SetProgressMessage("Generating archive packaging logic...");
+
+                (List<string> al_Scan_FileNames, string listFile_Rest) = GetListFile(dir);
+
+                Run7z_ALScanFiles(dir, View.OutputArchive, al_Scan_FileNames, level, method, _cts.Token);
+                Run7z_Rest(dir, View.OutputArchive, listFile_Rest, level, method, _cts.Token);
             }
-            catch
+            catch (OperationCanceledException)
             {
-
+                try
+                {
+                    // TODO: Maybe we shouldn't delete the archive on cancel.
+                    //  Instead, on create start, if the archive exists we'll tell the user and ask them to delete it.
+                    //File.Delete(outputArchive);
+                }
+                catch
+                {
+                    // ignore
+                }
             }
-
-            int level = View.CompressionLevel;
-            int methodIndex = (int)View.CompressionMethod;
-
-            (List<string> al_Scan_FileNames, string listFile_Rest) = GetListFile(dir);
-            Run7z_ALScanFiles(dir, View.OutputArchive, al_Scan_FileNames, level, methodIndex);
-            Run7z_Rest(dir, View.OutputArchive, listFile_Rest, level, methodIndex);
-        }
-        finally
-        {
-            Utils.CreateOrClearTempPath(Paths.Temp);
-        }
+            finally
+            {
+                Utils.CreateOrClearTempPath(Paths.Temp);
+                View.EndCreateSingleArchiveOperation();
+                _cts.Dispose();
+            }
+        });
     }
 
     internal static (List<string> AL_FileNames, string RestListFile)
@@ -348,7 +428,7 @@ internal static class Core
                 // TODO: Handle this better - placeholder for now
                 string msg =
                     "----------\r\n" +
-                    "Filename we're about to pass to 7z via the list file (" + nameof(Run7z_ALScanFiles) +
+                    "Filename we're about to pass to 7z via the list file (" + nameof(GetListFile) +
                     ") doesn't exist on disk! Character encoding difference?\r\n" +
                     "Filename: +" + fileName + "\r\n" +
                     "----------";

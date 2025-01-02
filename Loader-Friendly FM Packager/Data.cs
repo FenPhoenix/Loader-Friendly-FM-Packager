@@ -116,11 +116,14 @@ public static class Global
     public static readonly UTF8Encoding UTF8NoBOM = new(false, true);
 
     // TODO: We should probably just always use LZMA2, I don't see any disadvantage...
-    public static readonly string[] CompressionMethodArgStrings =
+    private static readonly string[] _compressionMethodArgStrings =
     {
         "LZMA2",
         "LZMA",
     };
+
+    public static string GetCompressionMethodString(CompressionMethod method) =>
+        _compressionMethodArgStrings[(int)method];
 
     public static readonly ConfigData Config = new();
 

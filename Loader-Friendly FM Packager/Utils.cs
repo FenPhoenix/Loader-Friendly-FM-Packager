@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace Loader_Friendly_FM_Packager;
@@ -366,6 +367,23 @@ internal static class Utils
     }
 
     public static int GetPercentFromValue_Int(int current, int total) => total == 0 ? 0 : (100 * current) / total;
+
+    internal static void CancelIfNotDisposed(this CancellationTokenSource value)
+    {
+        try { value.Cancel(); } catch (ObjectDisposedException) { }
+    }
+
+    /// <summary>
+    /// Disposes and assigns a new one.
+    /// </summary>
+    /// <param name="cts"></param>
+    /// <returns></returns>
+    [MustUseReturnValue]
+    internal static CancellationTokenSource Recreate(this CancellationTokenSource cts)
+    {
+        cts.Dispose();
+        return new CancellationTokenSource();
+    }
 }
 
 [SuppressMessage("ReSharper", "IdentifierTypo")]

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Loader_Friendly_FM_Packager;
@@ -54,83 +55,90 @@ public sealed partial class MainForm : Form
         set => OutputArchiveTextBox.Text = value;
     }
 
-    public int CompressionLevel
+    public void SetCompressionLevel(int value)
     {
-        get => CompressionLevelComboBox.SelectedIndex;
-        set => CompressionLevelComboBox.SelectedIndex = CompressionLevelComboBox.IndexIsInRange(value)
+        CompressionLevelComboBox.SelectedIndex = CompressionLevelComboBox.IndexIsInRange(value)
             ? value
             : 0;
     }
 
-    public CompressionMethod CompressionMethod
+    public void SetCompressionMethod(CompressionMethod value)
     {
-        get => CompressionMethodItems[CompressionMethodComboBox.SelectedIndex].BackingValue;
-        set
+        int index = (int)value;
+        CompressionMethodComboBox.SelectedIndex =
+            CompressionMethodComboBox.IndexIsInRange(index)
+                ? index
+                : 0;
+    }
+
+    public void SetDictionarySize(long value)
+    {
+        if (value == -1)
         {
-            int index = (int)value;
-            CompressionMethodComboBox.SelectedIndex =
-                CompressionMethodComboBox.IndexIsInRange(index)
-                    ? index
-                    : 0;
+            DictionarySizeComboBox.SelectedIndex = 0;
+        }
+        else
+        {
+            FriendlyStringAndBackingValue<long>? item = DictionarySizeItems.FirstOrDefault_PastFirstIndex(x => x.BackingValue == value);
+            DictionarySizeComboBox.SelectedIndex = item != null
+                ? Array.IndexOf(DictionarySizeItems, item)
+                : 0;
         }
     }
 
-    public long DictionarySize
+    public void SetThreads(int value)
     {
-        get =>
-            DictionarySizeComboBox.SelectedIndex == 0
-                ? -1
-                : DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue;
-        set
-        {
-            if (value == -1)
-            {
-                DictionarySizeComboBox.SelectedIndex = 0;
-            }
-            else
-            {
-                FriendlyStringAndBackingValue<long>? item = DictionarySizeItems.FirstOrDefault_PastFirstIndex(x => x.BackingValue == value);
-                DictionarySizeComboBox.SelectedIndex = item != null
-                    ? Array.IndexOf(DictionarySizeItems, item)
+        NumberOfCPUThreadsComboBox.SelectedIndex =
+            value == -1
+                ? 0
+                : NumberOfCPUThreadsComboBox.IndexIsInRange(value)
+                    ? value
                     : 0;
-            }
+    }
+
+    public void SetMemoryUseForCompression(MemoryUseItem value)
+    {
+        if (value.Value == -1)
+        {
+            MemoryUsageForCompressingComboBox.SelectedIndex = 0;
+        }
+        else
+        {
+            FriendlyStringAndBackingValue<MemoryUseItem>? item =
+                MemoryUseItems.FirstOrDefault_PastFirstIndex(x => x.BackingValue.Value == value.Value && x.BackingValue.IsPercent == value.IsPercent);
+            MemoryUsageForCompressingComboBox.SelectedIndex = item != null
+                ? Array.IndexOf(MemoryUseItems, item)
+                : 0;
         }
     }
 
-    public int Threads
+    public void StartCreateSingleArchiveOperation() => Invoke(() =>
     {
-        get => NumberOfCPUThreadsComboBox.SelectedIndex == 0 ? -1 : NumberOfCPUThreadsComboBox.SelectedIndex;
-        set =>
-            NumberOfCPUThreadsComboBox.SelectedIndex =
-                value == -1
-                    ? 0
-                    : NumberOfCPUThreadsComboBox.IndexIsInRange(value)
-                        ? value
-                        : 0;
-    }
+        ProgressMessageLabel.Text = "";
+        MainProgressBar.Value = 0;
+        ProgressMessageLabel.Show();
+        MainProgressBar.Show();
+        Cancel_Button.Show();
+    });
 
-    public MemoryUseItem MemoryUseForCompression
+    public void EndCreateSingleArchiveOperation() => Invoke(() =>
     {
-        get =>
-            MemoryUsageForCompressingComboBox.SelectedIndex == 0
-                ? MemoryUseItem.Default
-                : MemoryUseItems[MemoryUsageForCompressingComboBox.SelectedIndex].BackingValue;
-        set
-        {
-            if (value.Value == -1)
-            {
-                MemoryUsageForCompressingComboBox.SelectedIndex = 0;
-            }
-            else
-            {
-                FriendlyStringAndBackingValue<MemoryUseItem>? item =
-                    MemoryUseItems.FirstOrDefault_PastFirstIndex(x => x.BackingValue.Value == value.Value && x.BackingValue.IsPercent == value.IsPercent);
-                MemoryUsageForCompressingComboBox.SelectedIndex = item != null
-                    ? Array.IndexOf(MemoryUseItems, item)
-                    : 0;
-            }
-        }
-    }
+        ProgressMessageLabel.Hide();
+        MainProgressBar.Hide();
+        Cancel_Button.Hide();
+        ProgressMessageLabel.Text = "";
+        MainProgressBar.Value = 0;
+    });
+
+    public void SetProgressMessage(string message) => Invoke(() =>
+    {
+        ProgressMessageLabel.Text = message;
+    });
+
+    public void SetProgressPercent(int percent) => Invoke(() =>
+    {
+        MainProgressBar.Value = percent;
+    });
 
     public MainForm()
     {
@@ -158,9 +166,9 @@ public sealed partial class MainForm : Form
         PopulateMemoryUseComboBox();
     }
 
-    private void GoButton_Click(object sender, EventArgs e)
+    private async void GoButton_Click(object sender, EventArgs e)
     {
-        Core.CreateSingleArchive();
+        await Core.CreateSingleArchive();
     }
 
     private void FMDirectoryBrowseButton_Click(object sender, EventArgs e)
@@ -179,8 +187,8 @@ public sealed partial class MainForm : Form
     {
         string[] zips = Directory.GetFiles(@"J:\__zip_Optimal_FMs", "*.zip", SearchOption.TopDirectoryOnly);
 
-        int level = CompressionLevelComboBox.SelectedIndex;
-        int methodIndex = CompressionMethodComboBox.SelectedIndex;
+        int level = Config.CompressionLevel;
+        CompressionMethod method = Config.CompressionMethod;
 
         for (int i = 0; i < zips.Length; i++)
         {
@@ -205,8 +213,8 @@ public sealed partial class MainForm : Form
                 string outputArchive = Path.Combine(@"J:\__7z_scan_friendly_hc_off", extractedDirName + ".7z");
 
                 (List<string> al_Scan_FileNames, string listFile_Rest) = Core.GetListFile(tempExtractedDir);
-                Core.Run7z_ALScanFiles(tempExtractedDir, outputArchive, al_Scan_FileNames, level, methodIndex);
-                Core.Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, level, methodIndex);
+                Core.Run7z_ALScanFiles(tempExtractedDir, outputArchive, al_Scan_FileNames, level, method, CancellationToken.None);
+                Core.Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, level, method, CancellationToken.None);
 
                 try
                 {
@@ -287,18 +295,11 @@ public sealed partial class MainForm : Form
 
     private void DictionarySizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (DictionarySizeComboBox.SelectedIndexIsInRange())
-        {
-            Config.DictionarySize =
-                DictionarySizeComboBox.SelectedIndex == 0
-                    ? -1
-                    : DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue;
-        }
-        else
-        {
-            Config.DictionarySize =
-                ConfigData.DefaultDictionarySize;
-        }
+        if (!DictionarySizeComboBox.SelectedIndexIsInRange()) return;
+        Config.DictionarySize =
+            DictionarySizeComboBox.SelectedIndex == 0
+                ? -1
+                : DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue;
     }
 
     private void PopulateThreadsComboBox(bool switching = false)
@@ -313,7 +314,8 @@ public sealed partial class MainForm : Form
 
         if (switching)
         {
-            Threads = -1;
+            SetThreads(-1);
+            Config.Threads = -1;
         }
     }
 
@@ -341,5 +343,10 @@ public sealed partial class MainForm : Form
             MemoryUsageForCompressingComboBox.SelectedIndex == 0
                 ? MemoryUseItem.Default
                 : MemoryUseItems[MemoryUsageForCompressingComboBox.SelectedIndex].BackingValue;
+    }
+
+    private void Cancel_Button_Click(object sender, EventArgs e)
+    {
+        Core.CancelToken();
     }
 }
