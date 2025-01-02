@@ -82,6 +82,11 @@ public sealed class FriendlyStringAndBackingValue<TBacking>
 
 public static class Global
 {
+    /// <summary>
+    /// Shorthand for <see cref="Environment.NewLine"/>
+    /// </summary>
+    public static readonly string NL = Environment.NewLine;
+
     public static readonly int CPUThreads = Environment.ProcessorCount;
 
     public static object[] ToFriendlyStrings<T>(this FriendlyStringAndBackingValue<T>[] items)

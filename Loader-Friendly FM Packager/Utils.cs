@@ -351,6 +351,21 @@ internal static class Utils
             return false;
         }
     }
+
+    /// <summary>
+    /// Calls <see langword="int"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Integer"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="int"/> <paramref name="result"/>);
+    /// </summary>
+    /// <param name="s">A string representing a number to convert.</param>
+    /// <param name="result"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Int_TryParseInv(string s, out int result)
+    {
+        return int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+    }
+
+    public static int GetPercentFromValue_Int(int current, int total) => total == 0 ? 0 : (100 * current) / total;
 }
 
 [SuppressMessage("ReSharper", "IdentifierTypo")]
