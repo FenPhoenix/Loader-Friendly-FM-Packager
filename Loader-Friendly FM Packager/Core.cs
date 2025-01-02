@@ -47,15 +47,12 @@ internal static class Core
         Progress<Fen7z.ProgressReport> progress = new(ReportProgress);
 
         Fen7z.Result result = Fen7z.Compress(
-            // TODO: Cache 7z.exe path
-            sevenZipPathAndExe: Path.Combine(Application.StartupPath, "7z", "7z.exe"),
+            sevenZipPathAndExe: Paths.SevenZipExe,
             sourcePath: sourcePath,
             outputArchive: outputArchive,
             args: GetArgs(level, method),
-            // TODO: Add cancellation
             cancellationToken: cancellationToken,
             listFile: listFile,
-            // TODO: Add progress reporting
             progress: progress
         );
 
@@ -126,57 +123,6 @@ internal static class Core
             {
                 sw.WriteLine(fileName);
             }
-
-            /*
-            TODO: .mis, .gam, missflag.str files all need separate one-file blocks each, but the rest of our
-             files can share a block, as long as all of our files are collectively in their own block or blocks
-             that don't have any non-scan-required files in them.
-
-            *Except we're thinking of other loaders now, so we should just keep all files in their own blocks.
-
-            So like:
-
-            our stuff
-            { 
-            Block 1:
-            miss20.mis
-
-            Block 2:
-            miss21.mis
-
-            Block 3:
-            miss20.gam
-
-            Block 4:
-            strings/missflag.str
-
-            Block 5:
-            readme.rtf
-            readme2.txt
-            copyright.txt
-            readme.html
-            intrface/titles.str
-            fm.ini
-            strings/newgame.str
-            }
-
-            Block 6:
-            [other stuff]
-            [other stuff]
-            [other stuff]
-
-            Block 7:
-            [other stuff]
-
-            Block 8:
-            [other stuff]
-            [other stuff]
-            [other stuff]
-            [other stuff]
-            [other stuff]
-
-            etc.
-            */
 
             RunProcess(
                 sourcePath: sourcePath,

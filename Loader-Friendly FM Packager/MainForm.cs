@@ -22,8 +22,6 @@ TODO: When re-packing from a zip file, notify the user when an unknown-encoded f
  it should be.
  We'll need to pull in the .NET zip code so as to customize it to expose the "used default encoding" situation.
 
-TODO: Match 7z 2409's logic for calculating UI values
-
 TODO: Allow adding a context menu item, so the user can just right click and run it on a folder.
 
 --
@@ -42,8 +40,6 @@ TODO: Re-run the 7z-scan-friendly convert with the final logic
 --
 
 TODO: Act on caught exceptions and add robust error handling everywhere
-
-TODO: Add built-in progress reporting like AngelLoader, copy-paste the Fen7z code etc.
 */
 
 public sealed partial class MainForm : Form
