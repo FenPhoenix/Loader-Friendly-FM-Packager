@@ -9,6 +9,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Ookii.Dialogs.WinForms;
 
 namespace Loader_Friendly_FM_Packager;
 
@@ -45,6 +46,8 @@ TODO: Add built-in progress reporting like AngelLoader, copy-paste the Fen7z cod
 
 public sealed partial class MainForm : Form
 {
+    private bool _operationInProgress;
+
     public string SourceFMPath
     {
         get => SourceFMDirectoryTextBox.Text;
@@ -116,6 +119,7 @@ public sealed partial class MainForm : Form
 
     public void StartCreateSingleArchiveOperation() => Invoke(() =>
     {
+        _operationInProgress = true;
         MainPanel.Enabled = false;
         ProgressMessageLabel.Text = "";
         MainProgressBar.Value = 0;
@@ -142,6 +146,7 @@ public sealed partial class MainForm : Form
         }
         MainProgressBar.Value = 0;
         MainPanel.Enabled = true;
+        _operationInProgress = false;
     });
 
     public void SetProgressMessage(string message) => Invoke(() =>
@@ -277,7 +282,22 @@ public sealed partial class MainForm : Form
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-        // TODO: Add check for operation in progress etc.
+        if (!_operationInProgress) return;
+
+        using TaskDialog dialog = new();
+        dialog.WindowTitle = "Alert";
+        dialog.MainIcon = TaskDialogIcon.Warning;
+        dialog.Content =
+            "An operation is in progress. You should cancel it before exiting, or 7z.exe may be left running and archive files may be left in an incomplete state.";
+        TaskDialogButton forceQuitButton = new("Exit anyway");
+        TaskDialogButton cancelButton = new(ButtonType.Cancel) { Default = true };
+        dialog.Buttons.Add(forceQuitButton);
+        dialog.Buttons.Add(cancelButton);
+        TaskDialogButton resultButton = dialog.ShowDialog(this);
+        if (resultButton != forceQuitButton)
+        {
+            e.Cancel = true;
+        }
     }
 
     private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
