@@ -310,8 +310,8 @@ internal static class Core
                 // TODO: Should we be permissive and allow even 0-length readmes?
                 fileSize > 0 &&
                 (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
-                  (fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras1S) ||
-                   fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras2S))) ||
+                  (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
+                   fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
                  dirSeps == 0))
             {
                 AddScanFile(fn);
@@ -337,7 +337,7 @@ internal static class Core
             {
                 AddScanFile(fn);
             }
-            else if (fn.PathStartsWithI_AsciiSecond(FMDirs.StringsS) &&
+            else if (fn.PathStartsWithI(FMDirs.StringsS) &&
                      fn.PathEndsWithI(FMFiles.SMissFlag))
             {
                 AddScanFile(fn);

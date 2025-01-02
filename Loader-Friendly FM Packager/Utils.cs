@@ -216,7 +216,7 @@ internal static class Utils
     /// <param name="first"></param>
     /// <param name="second"></param>
     /// <returns></returns>
-    internal static bool PathStartsWithI_AsciiSecond(this string first, string second)
+    internal static bool PathStartsWithI(this string first, string second)
     {
         return first.Length >= second.Length &&
                first.ToBackSlashes().StartsWithI(second.ToBackSlashes());
