@@ -25,8 +25,6 @@ internal static class Core
         View.Threads = Config.Threads;
         View.DictionarySize = Config.DictionarySize;
         View.MemoryUseForCompression = Config.MemoryUseForCompression;
-        View.SevenZipApp = Config.SevenZipApp;
-        View.SevenZipExternalAppPath = Config.SevenZipExternalAppPath;
 
         View.Show();
     }

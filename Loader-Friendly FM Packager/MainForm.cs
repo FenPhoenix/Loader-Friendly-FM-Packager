@@ -132,33 +132,6 @@ public sealed partial class MainForm : Form
         }
     }
 
-    public SevenZipApp SevenZipApp
-    {
-        get => SevenZipInternalRadioButton.Checked ? SevenZipApp.Internal : SevenZipApp.External;
-        set
-        {
-            if (value == SevenZipApp.Internal)
-            {
-                SevenZipInternalRadioButton.Checked = true;
-            }
-            else
-            {
-                SevenZipExternalRadioButton.Checked = true;
-            }
-            UpdateExternalSevenZipLabel();
-        }
-    }
-
-    public string SevenZipExternalAppPath
-    {
-        get => SevenZipExternalTextBox.Text;
-        set
-        {
-            SevenZipExternalTextBox.Text = value;
-            UpdateExternalSevenZipLabel();
-        }
-    }
-
     public MainForm()
     {
         InitializeComponent();
@@ -183,29 +156,6 @@ public sealed partial class MainForm : Form
         PopulateThreadsComboBox();
 
         PopulateMemoryUseComboBox();
-
-        string internal7zVersion = Core.GetSevenZipVersion(Path.Combine(Application.StartupPath, "7z", "7z.exe"));
-        if (internal7zVersion.IsEmpty())
-        {
-            internal7zVersion = "<Unable to determine version>";
-        }
-        SevenZipInternalRadioButton.Text = "Internal (" + internal7zVersion + ")";
-
-        UpdateExternalSevenZipLabel();
-        UpdateSevenZipExternalUISection();
-    }
-
-    private void UpdateExternalSevenZipLabel()
-    {
-        string external7zVersion = Core.GetSevenZipVersion(SevenZipExternalTextBox.Text);
-        if (external7zVersion.IsEmpty())
-        {
-            SevenZipExternalRadioButton.Text = "External:";
-        }
-        else
-        {
-            SevenZipExternalRadioButton.Text = "External: (" + external7zVersion + ")";
-        }
     }
 
     private void GoButton_Click(object sender, EventArgs e)
@@ -221,36 +171,6 @@ public sealed partial class MainForm : Form
     private void OutputArchiveBrowseButton_Click(object sender, EventArgs e)
     {
         // TODO: Implement
-    }
-
-    private void SevenZipExternalTextBox_Leave(object sender, EventArgs e)
-    {
-        UpdateExternalSevenZipLabel();
-    }
-
-    private void SevenZipExternalBrowseButton_Click(object sender, EventArgs e)
-    {
-        // TODO: Implement
-    }
-
-    private void SevenZipExeRadioButtons_CheckedChanged(object sender, EventArgs e)
-    {
-        UpdateSevenZipExternalUISection();
-        Config.SevenZipApp = SevenZipInternalRadioButton.Checked ? SevenZipApp.Internal : SevenZipApp.External;
-    }
-
-    private void UpdateSevenZipExternalUISection()
-    {
-        if (SevenZipInternalRadioButton.Checked)
-        {
-            SevenZipExternalTextBox.Enabled = false;
-            SevenZipExternalBrowseButton.Enabled = false;
-        }
-        else
-        {
-            SevenZipExternalTextBox.Enabled = true;
-            SevenZipExternalBrowseButton.Enabled = true;
-        }
     }
 
     #region Testing
@@ -358,11 +278,6 @@ public sealed partial class MainForm : Form
         if (!CompressionMethodComboBox.SelectedIndexIsInRange()) return;
         Config.CompressionMethod = CompressionMethodItems[CompressionMethodComboBox.SelectedIndex].BackingValue;
         PopulateThreadsComboBox(switching: true);
-    }
-
-    private void SevenZipExternalTextBox_TextChanged(object sender, EventArgs e)
-    {
-        Config.SevenZipExternalAppPath = SevenZipExternalTextBox.Text;
     }
 
     private void PopulateDictionarySizeComboBox()

@@ -39,12 +39,6 @@ sealed partial class MainForm
             this.CompressionMethodComboBox = new System.Windows.Forms.ComboBox();
             this.CompressionMethodLabel = new System.Windows.Forms.Label();
             this.OutputArchiveBrowseButton = new System.Windows.Forms.Button();
-            this.SevenZipExePanel = new System.Windows.Forms.Panel();
-            this.SevenZipAppToUseLabel = new System.Windows.Forms.Label();
-            this.SevenZipExternalBrowseButton = new System.Windows.Forms.Button();
-            this.SevenZipExternalTextBox = new System.Windows.Forms.TextBox();
-            this.SevenZipExternalRadioButton = new System.Windows.Forms.RadioButton();
-            this.SevenZipInternalRadioButton = new System.Windows.Forms.RadioButton();
             this.Test1Button = new System.Windows.Forms.Button();
             this.DictionarySizeLabel = new System.Windows.Forms.Label();
             this.DictionarySizeComboBox = new System.Windows.Forms.ComboBox();
@@ -54,7 +48,6 @@ sealed partial class MainForm
             this.MemoryUsageForCompressingComboBox = new System.Windows.Forms.ComboBox();
             this.NumberOfCPUThreadsOutOfFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.NumberOfCPUThreadsOutOfLabel = new System.Windows.Forms.Label();
-            this.SevenZipExePanel.SuspendLayout();
             this.NumberOfCPUThreadsOutOfFLP.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -171,71 +164,6 @@ sealed partial class MainForm
             this.OutputArchiveBrowseButton.UseVisualStyleBackColor = true;
             this.OutputArchiveBrowseButton.Click += new System.EventHandler(this.OutputArchiveBrowseButton_Click);
             // 
-            // SevenZipExePanel
-            // 
-            this.SevenZipExePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.SevenZipExePanel.Controls.Add(this.SevenZipAppToUseLabel);
-            this.SevenZipExePanel.Controls.Add(this.SevenZipExternalBrowseButton);
-            this.SevenZipExePanel.Controls.Add(this.SevenZipExternalTextBox);
-            this.SevenZipExePanel.Controls.Add(this.SevenZipExternalRadioButton);
-            this.SevenZipExePanel.Controls.Add(this.SevenZipInternalRadioButton);
-            this.SevenZipExePanel.Location = new System.Drawing.Point(0, 553);
-            this.SevenZipExePanel.Name = "SevenZipExePanel";
-            this.SevenZipExePanel.Size = new System.Drawing.Size(752, 112);
-            this.SevenZipExePanel.TabIndex = 7;
-            // 
-            // SevenZipAppToUseLabel
-            // 
-            this.SevenZipAppToUseLabel.AutoSize = true;
-            this.SevenZipAppToUseLabel.Location = new System.Drawing.Point(16, 8);
-            this.SevenZipAppToUseLabel.Name = "SevenZipAppToUseLabel";
-            this.SevenZipAppToUseLabel.Size = new System.Drawing.Size(87, 13);
-            this.SevenZipAppToUseLabel.TabIndex = 3;
-            this.SevenZipAppToUseLabel.Text = "7-Zip app to use:";
-            // 
-            // SevenZipExternalBrowseButton
-            // 
-            this.SevenZipExternalBrowseButton.Location = new System.Drawing.Point(656, 79);
-            this.SevenZipExternalBrowseButton.Name = "SevenZipExternalBrowseButton";
-            this.SevenZipExternalBrowseButton.Size = new System.Drawing.Size(80, 23);
-            this.SevenZipExternalBrowseButton.TabIndex = 2;
-            this.SevenZipExternalBrowseButton.Text = "Browse...";
-            this.SevenZipExternalBrowseButton.UseVisualStyleBackColor = true;
-            this.SevenZipExternalBrowseButton.Click += new System.EventHandler(this.SevenZipExternalBrowseButton_Click);
-            // 
-            // SevenZipExternalTextBox
-            // 
-            this.SevenZipExternalTextBox.Location = new System.Drawing.Point(16, 80);
-            this.SevenZipExternalTextBox.Name = "SevenZipExternalTextBox";
-            this.SevenZipExternalTextBox.Size = new System.Drawing.Size(640, 20);
-            this.SevenZipExternalTextBox.TabIndex = 1;
-            this.SevenZipExternalTextBox.TextChanged += new System.EventHandler(this.SevenZipExternalTextBox_TextChanged);
-            this.SevenZipExternalTextBox.Leave += new System.EventHandler(this.SevenZipExternalTextBox_Leave);
-            // 
-            // SevenZipExternalRadioButton
-            // 
-            this.SevenZipExternalRadioButton.AutoSize = true;
-            this.SevenZipExternalRadioButton.Location = new System.Drawing.Point(16, 56);
-            this.SevenZipExternalRadioButton.Name = "SevenZipExternalRadioButton";
-            this.SevenZipExternalRadioButton.Size = new System.Drawing.Size(66, 17);
-            this.SevenZipExternalRadioButton.TabIndex = 0;
-            this.SevenZipExternalRadioButton.Text = "External:";
-            this.SevenZipExternalRadioButton.UseVisualStyleBackColor = true;
-            this.SevenZipExternalRadioButton.CheckedChanged += new System.EventHandler(this.SevenZipExeRadioButtons_CheckedChanged);
-            // 
-            // SevenZipInternalRadioButton
-            // 
-            this.SevenZipInternalRadioButton.AutoSize = true;
-            this.SevenZipInternalRadioButton.Checked = true;
-            this.SevenZipInternalRadioButton.Location = new System.Drawing.Point(16, 33);
-            this.SevenZipInternalRadioButton.Name = "SevenZipInternalRadioButton";
-            this.SevenZipInternalRadioButton.Size = new System.Drawing.Size(60, 17);
-            this.SevenZipInternalRadioButton.TabIndex = 0;
-            this.SevenZipInternalRadioButton.TabStop = true;
-            this.SevenZipInternalRadioButton.Text = "Internal";
-            this.SevenZipInternalRadioButton.UseVisualStyleBackColor = true;
-            this.SevenZipInternalRadioButton.CheckedChanged += new System.EventHandler(this.SevenZipExeRadioButtons_CheckedChanged);
-            // 
             // Test1Button
             // 
             this.Test1Button.Location = new System.Drawing.Point(664, 440);
@@ -335,7 +263,6 @@ sealed partial class MainForm
             this.Controls.Add(this.DictionarySizeLabel);
             this.Controls.Add(this.DictionarySizeComboBox);
             this.Controls.Add(this.Test1Button);
-            this.Controls.Add(this.SevenZipExePanel);
             this.Controls.Add(this.CompressionMethodLabel);
             this.Controls.Add(this.CompressionMethodComboBox);
             this.Controls.Add(this.CompressionLevelLabel);
@@ -351,8 +278,6 @@ sealed partial class MainForm
             this.Text = "Loader-Friendly FM Packager";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
-            this.SevenZipExePanel.ResumeLayout(false);
-            this.SevenZipExePanel.PerformLayout();
             this.NumberOfCPUThreadsOutOfFLP.ResumeLayout(false);
             this.NumberOfCPUThreadsOutOfFLP.PerformLayout();
             this.ResumeLayout(false);
@@ -373,12 +298,6 @@ sealed partial class MainForm
     private System.Windows.Forms.ComboBox CompressionMethodComboBox;
     private System.Windows.Forms.Label CompressionMethodLabel;
     private System.Windows.Forms.Button OutputArchiveBrowseButton;
-    private System.Windows.Forms.Panel SevenZipExePanel;
-    private System.Windows.Forms.RadioButton SevenZipExternalRadioButton;
-    private System.Windows.Forms.RadioButton SevenZipInternalRadioButton;
-    private System.Windows.Forms.Button SevenZipExternalBrowseButton;
-    private System.Windows.Forms.TextBox SevenZipExternalTextBox;
-    private System.Windows.Forms.Label SevenZipAppToUseLabel;
     private System.Windows.Forms.Button Test1Button;
     private System.Windows.Forms.Label DictionarySizeLabel;
     private System.Windows.Forms.ComboBox DictionarySizeComboBox;
