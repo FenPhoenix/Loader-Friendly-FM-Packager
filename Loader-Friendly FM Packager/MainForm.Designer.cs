@@ -70,7 +70,7 @@ sealed partial class MainForm
             // 
             this.FMDirectoryBrowseButton.Location = new System.Drawing.Point(656, 31);
             this.FMDirectoryBrowseButton.Name = "FMDirectoryBrowseButton";
-            this.FMDirectoryBrowseButton.Size = new System.Drawing.Size(80, 23);
+            this.FMDirectoryBrowseButton.Size = new System.Drawing.Size(81, 23);
             this.FMDirectoryBrowseButton.TabIndex = 1;
             this.FMDirectoryBrowseButton.Text = "Browse...";
             this.FMDirectoryBrowseButton.UseVisualStyleBackColor = true;
@@ -104,9 +104,9 @@ sealed partial class MainForm
             // 
             // CreateSingleArchiveButton
             // 
-            this.CreateSingleArchiveButton.Location = new System.Drawing.Point(640, 264);
+            this.CreateSingleArchiveButton.Location = new System.Drawing.Point(637, 268);
             this.CreateSingleArchiveButton.Name = "CreateSingleArchiveButton";
-            this.CreateSingleArchiveButton.Size = new System.Drawing.Size(99, 23);
+            this.CreateSingleArchiveButton.Size = new System.Drawing.Size(100, 23);
             this.CreateSingleArchiveButton.TabIndex = 4;
             this.CreateSingleArchiveButton.Text = "Create 7-Zip file";
             this.CreateSingleArchiveButton.UseVisualStyleBackColor = true;
@@ -165,7 +165,7 @@ sealed partial class MainForm
             // 
             this.OutputArchiveBrowseButton.Location = new System.Drawing.Point(656, 79);
             this.OutputArchiveBrowseButton.Name = "OutputArchiveBrowseButton";
-            this.OutputArchiveBrowseButton.Size = new System.Drawing.Size(80, 23);
+            this.OutputArchiveBrowseButton.Size = new System.Drawing.Size(81, 23);
             this.OutputArchiveBrowseButton.TabIndex = 1;
             this.OutputArchiveBrowseButton.Text = "Browse...";
             this.OutputArchiveBrowseButton.UseVisualStyleBackColor = true;
@@ -173,9 +173,9 @@ sealed partial class MainForm
             // 
             // Test1Button
             // 
-            this.Test1Button.Location = new System.Drawing.Point(664, 192);
+            this.Test1Button.Location = new System.Drawing.Point(656, 120);
             this.Test1Button.Name = "Test1Button";
-            this.Test1Button.Size = new System.Drawing.Size(75, 23);
+            this.Test1Button.Size = new System.Drawing.Size(81, 23);
             this.Test1Button.TabIndex = 8;
             this.Test1Button.Text = "Test1";
             this.Test1Button.UseVisualStyleBackColor = true;
@@ -300,7 +300,7 @@ sealed partial class MainForm
             this.MainPanel.Controls.Add(this.Test1Button);
             this.MainPanel.Location = new System.Drawing.Point(0, 0);
             this.MainPanel.Name = "MainPanel";
-            this.MainPanel.Size = new System.Drawing.Size(752, 336);
+            this.MainPanel.Size = new System.Drawing.Size(752, 304);
             this.MainPanel.TabIndex = 24;
             // 
             // StatusGroupBox
@@ -308,7 +308,7 @@ sealed partial class MainForm
             this.StatusGroupBox.Controls.Add(this.ProgressMessageLabel);
             this.StatusGroupBox.Controls.Add(this.MainProgressBar);
             this.StatusGroupBox.Controls.Add(this.Cancel_Button);
-            this.StatusGroupBox.Location = new System.Drawing.Point(8, 344);
+            this.StatusGroupBox.Location = new System.Drawing.Point(8, 307);
             this.StatusGroupBox.Name = "StatusGroupBox";
             this.StatusGroupBox.Size = new System.Drawing.Size(736, 112);
             this.StatusGroupBox.TabIndex = 25;
@@ -327,9 +327,11 @@ sealed partial class MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(752, 463);
+            this.ClientSize = new System.Drawing.Size(752, 427);
             this.Controls.Add(this.StatusGroupBox);
             this.Controls.Add(this.MainPanel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Loader-Friendly FM Packager";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);

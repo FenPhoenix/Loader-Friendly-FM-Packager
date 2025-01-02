@@ -1,3 +1,5 @@
+#define DEV_TESTING
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -155,6 +157,10 @@ public sealed partial class MainForm : Form
     public MainForm()
     {
         InitializeComponent();
+
+#if !DEV_TESTING
+        Test1Button.Hide();
+#endif
 
         CompressionMethodComboBox.Items.AddRange(CompressionMethodItems.ToFriendlyStrings());
 
