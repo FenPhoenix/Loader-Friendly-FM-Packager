@@ -6,7 +6,9 @@ namespace Loader_Friendly_FM_Packager;
 
 public sealed class ConfigData
 {
-    private int _compressionLevel = 9;
+    private const int DefaultCompressionLevel = 9;
+
+    private int _compressionLevel = DefaultCompressionLevel;
     public int CompressionLevel
     {
         get => _compressionLevel;
@@ -14,8 +16,6 @@ public sealed class ConfigData
     }
 
     public CompressionMethod CompressionMethod = CompressionMethod.LZMA2;
-
-    public const long DefaultDictionarySize = ByteSize.MB * 256;
 
     private int _threads;
     public int Threads
@@ -43,7 +43,7 @@ public sealed class ConfigData
             _dictionarySize = value == -1
                 ? -1
                 : DictionarySizeItems.FirstOrDefault_PastFirstIndex(x =>
-                    x.BackingValue == value)?.BackingValue ?? DefaultDictionarySize;
+                    x.BackingValue == value)?.BackingValue ?? -1;
     }
 
     private MemoryUseItem _memoryUseForCompression = MemoryUseItem.Default;
