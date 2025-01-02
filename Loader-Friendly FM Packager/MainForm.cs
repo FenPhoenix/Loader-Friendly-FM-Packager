@@ -24,6 +24,8 @@ TODO: When re-packing from a zip file, notify the user when an unknown-encoded f
 
 TODO: Match 7z 2409's logic for calculating UI values
 
+TODO: Allow adding a context menu item, so the user can just right click and run it on a folder.
+
 --
 
 TODO: Mod.ini specifies a readme and icon file.
