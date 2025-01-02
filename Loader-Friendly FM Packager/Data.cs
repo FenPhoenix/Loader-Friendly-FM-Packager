@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Text;
 using JetBrains.Annotations;
 
@@ -15,10 +14,6 @@ public sealed class ConfigData
     }
 
     public CompressionMethod CompressionMethod = CompressionMethod.LZMA2;
-
-    public SevenZipApp SevenZipApp = SevenZipApp.Internal;
-
-    public string SevenZipExternalAppPath = "";
 
     public const long DefaultDictionarySize = ByteSize.MB * 256;
 
@@ -57,11 +52,6 @@ public sealed class ConfigData
         get => _memoryUseForCompression;
         set => _memoryUseForCompression = value.Value == -1 ? MemoryUseItem.Default : value;
     }
-
-    public bool? StoreCreationTime;
-    public bool? StoreLastAccessTime;
-    public bool? SetArchiveTimeToLatestTileTime;
-    public bool DoNotChangeSourceFilesLastAccessTime;
 }
 
 public readonly struct MemoryUseItem
@@ -118,12 +108,6 @@ public static class Global
         LZMA,
     }
 
-    public enum SevenZipApp
-    {
-        Internal,
-        External,
-    }
-
     public static readonly UTF8Encoding UTF8NoBOM = new(false, true);
 
     // TODO: We should probably just always use LZMA2, I don't see any disadvantage...
@@ -151,13 +135,6 @@ public static class Global
             ret[i] = new FriendlyStringAndBackingValue<int>(i.ToStrInv(), i);
         }
 
-        Trace.WriteLine(nameof(FillLzma2ThreadItems));
-        for (int i = 0; i < ret.Length; i++)
-        {
-            var item = ret[i];
-            Trace.WriteLine(item?.FriendlyString ?? "<null at " + i + ">");
-        }
-
         return ret;
     }
 
@@ -177,13 +154,6 @@ public static class Global
         for (int i = 1; i < count; i++)
         {
             ret[i] = new FriendlyStringAndBackingValue<int>(i.ToStrInv(), i);
-        }
-
-        Trace.WriteLine(nameof(FillLzmaThreadItems));
-        for (int i = 0; i < ret.Length; i++)
-        {
-            var item = ret[i];
-            Trace.WriteLine(item?.FriendlyString ?? "<null at " + i + ">");
         }
 
         return ret;

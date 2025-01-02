@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Windows.Forms;
 
 namespace Loader_Friendly_FM_Packager;
@@ -18,7 +17,7 @@ internal static class Core
     {
         View = new MainForm();
 
-        ReadConfigData();
+        ConfigIni.ReadConfigData();
 
         View.CompressionLevel = Config.CompressionLevel;
         View.CompressionMethod = Config.CompressionMethod;
@@ -31,145 +30,11 @@ internal static class Core
 
     internal static void Shutdown()
     {
-        WriteConfigData();
+        ConfigIni.WriteConfigData();
         Application.Exit();
     }
 
-    private static void ReadConfigData()
-    {
-        if (!File.Exists(Paths.ConfigFile))
-        {
-            return;
-        }
 
-        const BindingFlags _bFlagsEnum =
-        BindingFlags.Instance |
-        BindingFlags.Static |
-        BindingFlags.Public |
-        BindingFlags.NonPublic;
-
-        string[] lines = File.ReadAllLines(Paths.ConfigFile);
-        for (int i = 0; i < lines.Length; i++)
-        {
-            string lineT = lines[i].Trim();
-            if (lineT.TryGetValueO("CompressionLevel=", out string value))
-            {
-                if (int.TryParse(value, out int result))
-                {
-                    Config.CompressionLevel = result;
-                }
-            }
-            else if (lineT.TryGetValueO("CompressionMethod=", out value))
-            {
-                FieldInfo? field = typeof(CompressionMethod).GetField(value, _bFlagsEnum);
-                if (field != null)
-                {
-                    Config.CompressionMethod = (CompressionMethod)field.GetValue(null);
-                }
-            }
-            else if (lineT.TryGetValueO("Threads=", out value))
-            {
-                if (int.TryParse(value, out int result))
-                {
-                    Config.Threads = result;
-                }
-            }
-            else if (lineT.TryGetValueO("DictionarySize=", out value))
-            {
-                if (long.TryParse(value, out long result))
-                {
-                    Config.DictionarySize = result;
-                }
-            }
-            else if (lineT.TryGetValueO("SevenZipApp=", out value))
-            {
-                FieldInfo? field = typeof(SevenZipApp).GetField(value, _bFlagsEnum);
-                if (field != null)
-                {
-                    Config.SevenZipApp = (SevenZipApp)field.GetValue(null);
-                }
-            }
-            else if (lineT.TryGetValueO("SevenZipExternalAppPath=", out value))
-            {
-                Config.SevenZipExternalAppPath = value.Trim();
-            }
-            else if (lineT.TryGetValueO("MemoryUsageForCompressing=", out value))
-            {
-                bool isPercent = false;
-                if (value.Length > 0 && value[^1] == '%')
-                {
-                    isPercent = true;
-                    value = value.TrimEnd('%');
-                }
-                if (long.TryParse(value, out long result))
-                {
-                    Config.MemoryUseForCompression = new MemoryUseItem(result, isPercent);
-                }
-            }
-            else if (lineT.TryGetValueO("StoreCreationTime=", out value))
-            {
-                Config.StoreCreationTime = GetNullableBoolValue(value);
-            }
-            else if (lineT.TryGetValueO("StoreLastAccessTime=", out value))
-            {
-                Config.StoreLastAccessTime = GetNullableBoolValue(value);
-            }
-            else if (lineT.TryGetValueO("SetArchiveTimeToLatestTileTime=", out value))
-            {
-                Config.SetArchiveTimeToLatestTileTime = GetNullableBoolValue(value);
-            }
-            else if (lineT.TryGetValueO("DoNotChangeSourceFilesLastAccessTime=", out value))
-            {
-                Config.DoNotChangeSourceFilesLastAccessTime = value.EqualsI(bool.TrueString);
-            }
-        }
-
-        return;
-
-        static bool? GetNullableBoolValue(string value)
-        {
-            if (value == bool.TrueString)
-            {
-                return true;
-            }
-            else if (value == bool.FalseString)
-            {
-                return false;
-            }
-            else
-            {
-                return null;
-            }
-        }
-    }
-
-    private static void WriteConfigData()
-    {
-        using var sw = new StreamWriter(Paths.ConfigFile);
-        sw.WriteLine("CompressionLevel=" + Config.CompressionLevel.ToStrInv());
-        sw.WriteLine("CompressionMethod=" + Config.CompressionMethod);
-        sw.WriteLine("Threads=" + Config.Threads.ToStrInv());
-        sw.WriteLine("DictionarySize=" + Config.DictionarySize.ToStrInv());
-        sw.WriteLine("SevenZipApp=" + Config.SevenZipApp);
-        sw.WriteLine("MemoryUsageForCompressing=" +
-                     (Config.MemoryUseForCompression.IsPercent && Config.MemoryUseForCompression.Value != -1
-                         ? Config.MemoryUseForCompression.Value + "%"
-                         : Config.MemoryUseForCompression.Value));
-        sw.WriteLine("StoreCreationTime=" + GetNullableBoolValue(Config.StoreCreationTime));
-        sw.WriteLine("StoreLastAccessTime=" + GetNullableBoolValue(Config.StoreLastAccessTime));
-        sw.WriteLine("SetArchiveTimeToLatestTileTime=" + GetNullableBoolValue(Config.SetArchiveTimeToLatestTileTime));
-        sw.WriteLine("DoNotChangeSourceFilesLastAccessTime=" + Config.DoNotChangeSourceFilesLastAccessTime);
-        sw.WriteLine("SevenZipExternalAppPath=" + Config.SevenZipExternalAppPath);
-
-        return;
-
-        static string GetNullableBoolValue(bool? value) => value switch
-        {
-            true => bool.TrueString,
-            false => bool.FalseString,
-            _ => "",
-        };
-    }
 
     private static void RunProcess(
     string sourcePath,
