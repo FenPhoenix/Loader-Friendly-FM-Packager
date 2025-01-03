@@ -155,7 +155,7 @@ internal static class Core
             cancellationToken: cancellationToken);
     }
 
-    private static string GetArgs(int level, CompressionMethod method)
+    internal static string GetArgs(int level, CompressionMethod method, bool friendly = true)
     {
         if (level is < 0 or > 9)
         {
@@ -218,7 +218,12 @@ internal static class Core
             }
         }
 
-        args += " -y -r -bsp1 -bb1 -sas -scsUTF-8 -t7z -mhc=off";
+        args += " -y -r -bsp1 -bb1 -sas -t7z";
+
+        if (friendly)
+        {
+            args += " -scsUTF-8 -mhc=off";
+        }
 
         // TODO: "Word size" for LZMA/LZMA2 is actually "fast bytes" (-m0=LZMA2:fb=N)
 
@@ -290,6 +295,64 @@ internal static class Core
         });
     }
 
+    /*
+    TODO(Logic): We need to have fewer things in blocks by themselves; it's causing large file size increases in
+     a bunch of files. We need to see if 7z will pack the files into blocks in the order they're specified in
+     the list file. We need to know if we can just put the smallest used mis file as the first line in the list
+     file for example, and have 7z be guaranteed to put it at the start of the block.
+
+    That way, we could lay out the blocks like this:
+
+    {
+    miss24.mis <- smallest
+    miss20.mis
+    miss21.mis
+    miss22.mis
+    miss23.mis
+    }
+
+    {
+    bar.gam <- smallest
+    foo.gam
+    }
+
+    {
+    [all readme files]
+    }
+
+    // These are in their own block and not with the readmes, because we don't want to have them in the way during
+    // the scan
+    {
+    [all html referenced files]
+    }
+
+    {
+    [all main_* image files]
+    }
+
+    {
+    gltitle.*
+    fmthumb.*
+    }
+
+    {
+    fm.ini
+    mod.ini
+    fminfo.xml
+    }
+
+    {
+    all title(s).str (in order scanner wants them)
+    all newgame.str  (in order scanner wants them)
+    all missflag.str (order doesn't matter - they're language agnostic)
+    }
+
+    // It's unlikely anything extra will end up here that isn't already elsewhere, so we don't have to care too
+    // much about the size effect of this block
+    {
+    [all files referenced in fm.ini and mod.ini]
+    }
+    */
     internal static (List<string> AL_FileNames, string RestListFile)
     GetListFile(string filesDir)
     {

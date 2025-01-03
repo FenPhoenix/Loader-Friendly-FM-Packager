@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using Ookii.Dialogs.WinForms;
 
@@ -233,29 +234,39 @@ public sealed partial class MainForm : Form
                 string tempExtractedDir = Path.Combine(@"J:\_7z_temp", extractedDirName);
                 using (var zipArchive = GetReadModeZipArchiveCharEnc(zip))
                 {
-                    bool anyHtmlFiles = false;
-                    foreach (var entry in zipArchive.Entries)
-                    {
-                        if (entry.FullName.ExtIsHtml())
-                        {
-                            anyHtmlFiles = true;
-                        }
-                    }
-                    if (!anyHtmlFiles) continue;
+                    //bool anyHtmlFiles = false;
+                    //foreach (var entry in zipArchive.Entries)
+                    //{
+                    //    if (entry.FullName.ExtIsHtml())
+                    //    {
+                    //        anyHtmlFiles = true;
+                    //    }
+                    //}
+                    //if (!anyHtmlFiles) continue;
                     zipArchive.ExtractToDirectory(tempExtractedDir);
                 }
 
-                //string outputArchive = Path.Combine(@"J:\__7z_scan_friendly_hc_off_5", extractedDirName + ".7z");
+                const string outputDir = @"J:\__7z_scan_friendly_final_9";
+
+                //string outputArchive = Path.Combine(outputDir, extractedDirName + ".7z");
+                //Directory.CreateDirectory(outputDir);
 
                 (List<string> al_Scan_FileNames, string listFile_Rest) = Core.GetListFile(tempExtractedDir);
 
                 const string testDir = @"J:\_7z_al_scan_files_lists";
-                //Directory.CreateDirectory(testDir);
+                Directory.CreateDirectory(testDir);
 
                 File.WriteAllLines(Path.Combine(testDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt"), al_Scan_FileNames);
 
                 //Core.Run7z_ALScanFiles(tempExtractedDir, outputArchive, al_Scan_FileNames, level, method, CancellationToken.None);
                 //Core.Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, level, method, CancellationToken.None);
+
+                //Fen7z.Compress(
+                //    Paths.SevenZipExe,
+                //    tempExtractedDir,
+                //    outputArchive,
+                //    Core.GetArgs(level, method, friendly: false),
+                //    CancellationToken.None);
 
                 try
                 {

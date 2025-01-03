@@ -304,7 +304,11 @@ public static class Fen7z
             p.StartInfo.Arguments =
                 "a " + args + " \"" +
                 outputArchive + "\" " +
-                "@\"" + listFile + "\"";
+                (!listFile.IsEmpty()
+                    ? "@\"" + listFile + "\""
+                    // We have to say eg. "C:\FM_dir\*" not "C:\fm_dir", because the latter creates a subfolder
+                    // within the archive.
+                    : "\"" + sourcePath.TrimEnd('/', '\\') + "\\*\"");
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.UseShellExecute = false;
 
