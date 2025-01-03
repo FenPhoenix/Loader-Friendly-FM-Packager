@@ -299,13 +299,13 @@ internal static class Core
 
         HashSet<string> dupePreventionHash = new(StringComparer.OrdinalIgnoreCase);
 
-        // TODO: Add HTML referenced files into the logic
+        List<string> readmeFullFilePaths = new();
 
         List<string> alScanFileNames = new();
         List<string> restFileNames = new();
         for (int i = 0; i < files.Length; i++)
         {
-            string fn = files[i].Substring(filesDir.Length).TrimStart('/', '\\');
+            string fn = files[i].RemoveLeadingPath(filesDir);
 
             int dirSeps;
             long fileSize = new FileInfo(files[i]).Length;
@@ -317,6 +317,7 @@ internal static class Core
                  dirSeps == 0))
             {
                 AddScanFile(fn);
+                readmeFullFilePaths.Add(files[i]);
             }
             /*
             FMSel (both original and Sneaky Upgrade version) only look for this file in the root dir, not T3
@@ -383,6 +384,12 @@ internal static class Core
         if (!modIniValues.Icon.IsEmpty())
         {
             AddIfNotInList(modIniValues.Icon);
+        }
+
+        List<string> htmlRefFiles = HtmlReference.GetHtmlReferenceFiles(filesDir, readmeFullFilePaths, files);
+        foreach (string htmlRefFile in htmlRefFiles)
+        {
+            AddIfNotInList(htmlRefFile);
         }
 
         //string listFile_ALScan = Path.Combine(TempPath, AL_Scan_Block_ListFileName);

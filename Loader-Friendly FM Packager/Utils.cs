@@ -205,6 +205,25 @@ internal static class Utils
         }
     }
 
+    public static bool Contains(this string value, string substring, StringComparison comparison) =>
+        // If substring is empty, IndexOf(string) returns 0, which would be a false "success" return
+        !value.IsEmpty() && !substring.IsEmpty() && value.IndexOf(substring, comparison) >= 0;
+
+    /// <summary>
+    /// Determines whether a string contains a specified substring. Uses <see cref="StringComparison.OrdinalIgnoreCase"/>.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="substring"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ContainsI(this string value, string substring) => value.Contains(substring, StringComparison.OrdinalIgnoreCase);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool StartsWithDirSep(this string value) => value.Length > 0 && value[0].IsDirSep();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool EndsWithDirSep(this string value) => value.Length > 0 && value[^1].IsDirSep();
+
     internal static string ToBackSlashes(this string value) => value.Replace('/', '\\');
 
     /// <summary>
@@ -244,6 +263,11 @@ internal static class Utils
     {
         return first.Length >= second.Length &&
                first.ToBackSlashes().EndsWithI(second.ToBackSlashes());
+    }
+
+    internal static string RemoveLeadingPath(this string fullPath, string leadingPath)
+    {
+        return fullPath.Substring(leadingPath.Length).TrimStart('/', '\\');
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

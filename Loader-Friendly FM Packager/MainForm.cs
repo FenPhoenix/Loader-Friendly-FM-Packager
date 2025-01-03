@@ -26,15 +26,6 @@ TODO: Allow adding a context menu item, so the user can just right click and run
 
 --
 
-TODO: Mod.ini specifies a readme and icon file.
- There are no icon files in any SS2 FMs in the set that I have. But we could put it in the logic anyway.
-
-TODO: GarrettLoader grabs the intrface/Main_*.pcx file(s). Main_1.pcx for static display at the top of the readme,
- and the rest to show the animation at the bottom of the window.
- It only supports pcx files. But NewDark can have .png and .tga and who knows what else.
- AFAIK only GarrettLoader uses these, but if we wanted to try to future-proof then we COULD add these to the logic.
- We could put them all in one block to avoid too much dilution of solid archives.
-
 TODO: Re-run the 7z-scan-friendly convert with the final logic
 
 --
@@ -212,7 +203,7 @@ public sealed partial class MainForm : Form
             {
                 extractedDirName = Path.GetFileNameWithoutExtension(zip).Trim();
 
-                //if (extractedDirName != "2002-04-01_CalendrasLegacy")
+                //if (extractedDirName != "2013-04-16_NiceGameofChess")
                 //{
                 //    continue;
                 //}
@@ -220,6 +211,15 @@ public sealed partial class MainForm : Form
                 string tempExtractedDir = Path.Combine(@"J:\_7z_temp", extractedDirName);
                 using (var zipArchive = GetReadModeZipArchiveCharEnc(zip))
                 {
+                    bool anyHtmlFiles = false;
+                    foreach (var entry in zipArchive.Entries)
+                    {
+                        if (entry.FullName.ExtIsHtml())
+                        {
+                            anyHtmlFiles = true;
+                        }
+                    }
+                    if (!anyHtmlFiles) continue;
                     zipArchive.ExtractToDirectory(tempExtractedDir);
                 }
 

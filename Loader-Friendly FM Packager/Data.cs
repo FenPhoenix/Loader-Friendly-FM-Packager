@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 using JetBrains.Annotations;
 
@@ -253,4 +254,26 @@ public static class Global
         new("* LZMA2", CompressionMethod.LZMA2),
         new("LZMA", CompressionMethod.LZMA),
     };
+
+    /// <summary>
+    /// Stores a filename/index pair for quick lookups into a zip file.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly struct NameAndIndex
+    {
+        public readonly string Name;
+        public readonly int Index;
+
+        public NameAndIndex(string name, int index)
+        {
+            Name = name;
+            Index = index;
+        }
+
+        public NameAndIndex(string name)
+        {
+            Name = name;
+            Index = -1;
+        }
+    }
 }
