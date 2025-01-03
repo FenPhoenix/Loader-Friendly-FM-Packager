@@ -7,7 +7,6 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 using Ookii.Dialogs.WinForms;
 
@@ -36,6 +35,30 @@ TODO: Act on caught exceptions and add robust error handling everywhere
 public sealed partial class MainForm : Form
 {
     private bool _operationInProgress;
+
+    public MainForm()
+    {
+        InitializeComponent();
+
+#if !DEV_TESTING
+        Test1Button.Hide();
+#endif
+
+        CompressionMethodComboBox.Items.AddRange(CompressionMethodItems.ToFriendlyStrings());
+
+        DictionarySizeComboBox.Items.AddRange(DictionarySizeItems.ToFriendlyStrings());
+
+        PopulateThreadsComboBox();
+
+        MemoryUsageForCompressingComboBox.Items.AddRange(MemoryUseItems.ToFriendlyStrings());
+
+        MainProgressBar.CenterH(StatusGroupBox);
+        Cancel_Button.CenterH(StatusGroupBox);
+        ResetProgressMessage();
+        ProgressMessageLabel.Location = ProgressMessageLabel.Location with { X = MainProgressBar.Left };
+    }
+
+    #region Getters and setters
 
     public string SourceFMPath
     {
@@ -106,6 +129,10 @@ public sealed partial class MainForm : Form
         }
     }
 
+    #endregion
+
+    #region Progress reporting
+
     public void StartCreateSingleArchiveOperation() => Invoke(() =>
     {
         _operationInProgress = true;
@@ -115,11 +142,6 @@ public sealed partial class MainForm : Form
         MainProgressBar.Show();
         Cancel_Button.Show();
     });
-
-    private void ResetProgressMessage()
-    {
-        ProgressMessageLabel.Text = "No operation in progress.";
-    }
 
     public void EndCreateSingleArchiveOperation(string? message = null) => Invoke(() =>
     {
@@ -148,42 +170,42 @@ public sealed partial class MainForm : Form
         MainProgressBar.Value = percent;
     });
 
-    public MainForm()
+    private void ResetProgressMessage()
     {
-        InitializeComponent();
-
-#if !DEV_TESTING
-        Test1Button.Hide();
-#endif
-
-        CompressionMethodComboBox.Items.AddRange(CompressionMethodItems.ToFriendlyStrings());
-
-        PopulateDictionarySizeComboBox();
-
-        PopulateThreadsComboBox();
-
-        PopulateMemoryUseComboBox();
-
-        MainProgressBar.CenterH(StatusGroupBox);
-        Cancel_Button.CenterH(StatusGroupBox);
-        ResetProgressMessage();
-        ProgressMessageLabel.Location = ProgressMessageLabel.Location with { X = MainProgressBar.Left };
+        ProgressMessageLabel.Text = "No operation in progress.";
     }
 
-    private async void CreateSingleArchiveButton_Click(object sender, EventArgs e)
-    {
-        await Core.CreateSingleArchive();
-    }
+    #endregion
+
+    #region Directories
 
     private void FMDirectoryBrowseButton_Click(object sender, EventArgs e)
     {
-        // TODO: Implement
+        using VistaFolderBrowserDialog dialog = new();
+        dialog.Description = "Choose source FM directory";
+        dialog.UseDescriptionForTitle = true;
+
+        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+        SourceFMDirectoryTextBox.Text = dialog.SelectedPath;
     }
 
     private void OutputArchiveBrowseButton_Click(object sender, EventArgs e)
     {
-        // TODO: Implement
+        using VistaSaveFileDialog dialog = new();
+        dialog.Title = "Choose output archive";
+        dialog.AddExtension = true;
+        dialog.Filter = "7-Zip file|*.7z";
+        dialog.DefaultExt = "7z";
+        dialog.ValidateNames = true;
+        dialog.OverwritePrompt = true;
+
+        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+        OutputArchiveTextBox.Text = dialog.FileName;
     }
+
+    #endregion
 
     #region Testing
 
@@ -284,6 +306,8 @@ public sealed partial class MainForm : Form
 
     #endregion
 
+    #region Form events
+
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
         if (!_operationInProgress) return;
@@ -309,6 +333,10 @@ public sealed partial class MainForm : Form
         Core.Shutdown();
     }
 
+    #endregion
+
+    #region 7-Zip fields
+
     private void CompressionLevelComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         if (!CompressionLevelComboBox.SelectedIndexIsInRange()) return;
@@ -320,11 +348,6 @@ public sealed partial class MainForm : Form
         if (!CompressionMethodComboBox.SelectedIndexIsInRange()) return;
         Config.CompressionMethod = CompressionMethodItems[CompressionMethodComboBox.SelectedIndex].BackingValue;
         PopulateThreadsComboBox(switching: true);
-    }
-
-    private void PopulateDictionarySizeComboBox()
-    {
-        DictionarySizeComboBox.Items.AddRange(DictionarySizeItems.ToFriendlyStrings());
     }
 
     private void DictionarySizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -364,12 +387,6 @@ public sealed partial class MainForm : Form
                     : LzmaThreadItems[NumberOfCPUThreadsComboBox.SelectedIndex].BackingValue;
     }
 
-    private void PopulateMemoryUseComboBox()
-    {
-        MemoryUsageForCompressingComboBox.Items.Clear();
-        MemoryUsageForCompressingComboBox.Items.AddRange(MemoryUseItems.ToFriendlyStrings());
-    }
-
     private void MemoryUsageForCompressingComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         if (!MemoryUsageForCompressingComboBox.SelectedIndexIsInRange()) return;
@@ -377,6 +394,13 @@ public sealed partial class MainForm : Form
             MemoryUsageForCompressingComboBox.SelectedIndex == 0
                 ? MemoryUseItem.Default
                 : MemoryUseItems[MemoryUsageForCompressingComboBox.SelectedIndex].BackingValue;
+    }
+
+    #endregion
+
+    private async void CreateSingleArchiveButton_Click(object sender, EventArgs e)
+    {
+        await Core.CreateSingleArchive();
     }
 
     private void Cancel_Button_Click(object sender, EventArgs e)
