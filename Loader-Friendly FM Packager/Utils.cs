@@ -525,85 +525,86 @@ internal static class Utils
 
         string stringsPath = Path.Combine(fmDir, "strings");
 
-        if (!Directory.Exists(stringsPath)) return false;
+        if (Directory.Exists(stringsPath))
+        {
+            string loc1 = Path.Combine(stringsPath, Paths.MissFlagStr);
+            string loc2 = Path.Combine(stringsPath, "english", Paths.MissFlagStr);
 
-        string loc1 = Path.Combine(stringsPath, Paths.MissFlagStr);
-        string loc2 = Path.Combine(stringsPath, "english", Paths.MissFlagStr);
-
-        if (File.Exists(loc1))
-        {
-            missFlag = loc1;
-        }
-        else if (File.Exists(loc2))
-        {
-            missFlag = loc2;
-        }
-        else
-        {
-            try
+            if (File.Exists(loc1))
             {
-                string[] files = Directory.GetFiles(stringsPath, Paths.MissFlagStr, SearchOption.AllDirectories);
-                if (files.Length > 0) missFlag = files[0];
+                missFlag = loc1;
             }
-            catch (Exception ex)
+            else if (File.Exists(loc2))
+            {
+                missFlag = loc2;
+            }
+            else
+            {
+                try
+                {
+                    string[] files = Directory.GetFiles(stringsPath, Paths.MissFlagStr, SearchOption.AllDirectories);
+                    if (files.Length > 0) missFlag = files[0];
+                }
+                catch (Exception ex)
+                {
+                    // TODO: Error handling needed
+                    //string msg = "Error trying to get " + Paths.MissFlagStr + " files in " + stringsPath + " or any subdirectory.";
+                    //fm.LogInfo(msg + " " + ErrorText.RetF, ex);
+                    //Core.Dialogs.ShowError(msg + $"{NL}{NL}" + ErrorText.OldDarkDependentFeaturesWillFail);
+                    return false;
+                }
+            }
+
+            if (missFlag != null)
             {
                 // TODO: Error handling needed
-                //string msg = "Error trying to get " + Paths.MissFlagStr + " files in " + stringsPath + " or any subdirectory.";
-                //fm.LogInfo(msg + " " + ErrorText.RetF, ex);
-                //Core.Dialogs.ShowError(msg + $"{NL}{NL}" + ErrorText.OldDarkDependentFeaturesWillFail);
-                return false;
-            }
-        }
+                List<string> mfLines = File.ReadLines(missFlag).ToList();
+                //if (!TryReadAllLines(missFlag, out List<string>? mfLines))
+                //{
+                //    Core.Dialogs.ShowError("Error trying to read '" + missFlag + $"'.{NL}{NL}" + ErrorText.OldDarkDependentFeaturesWillFail);
+                //    return false;
+                //}
 
-        if (missFlag != null)
-        {
-            // TODO: Error handling needed
-            List<string> mfLines = File.ReadLines(missFlag).ToList();
-            //if (!TryReadAllLines(missFlag, out List<string>? mfLines))
-            //{
-            //    Core.Dialogs.ShowError("Error trying to read '" + missFlag + $"'.{NL}{NL}" + ErrorText.OldDarkDependentFeaturesWillFail);
-            //    return false;
-            //}
-
-            // Stupid alloc-allergic logic copied from AngelLoader; we don't need to be so optimized here but whatever
-            for (int mfI = 0; mfI < misFileInfos.Count; mfI++)
-            {
-                FileInfo mf = misFileInfos[mfI];
-
-                // Obtuse nonsense to avoid string allocations (perf)
-                if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
+                // Stupid alloc-allergic logic copied from AngelLoader; we don't need to be so optimized here but whatever
+                for (int mfI = 0; mfI < misFileInfos.Count; mfI++)
                 {
-                    // Since only files ending in .mis are in the misFiles list, we're guaranteed to find a .
-                    // character and not get a -1 index. And since we know our file starts with "miss", the
-                    // -4 is guaranteed not to take us negative either.
-                    int count = mf.Name.IndexOf('.') - 4;
-                    for (int mflI = 0; mflI < mfLines.Count; mflI++)
+                    FileInfo mf = misFileInfos[mfI];
+
+                    // Obtuse nonsense to avoid string allocations (perf)
+                    if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
                     {
-                        string line = mfLines[mflI];
-                        if (line.StartsWithI("miss_") && line.Length > 5 + count && line[5 + count] == ':')
+                        // Since only files ending in .mis are in the misFiles list, we're guaranteed to find a .
+                        // character and not get a -1 index. And since we know our file starts with "miss", the
+                        // -4 is guaranteed not to take us negative either.
+                        int count = mf.Name.IndexOf('.') - 4;
+                        for (int mflI = 0; mflI < mfLines.Count; mflI++)
                         {
-                            bool numsMatch = true;
-                            for (int li = 4; li < 4 + count; li++)
+                            string line = mfLines[mflI];
+                            if (line.StartsWithI("miss_") && line.Length > 5 + count && line[5 + count] == ':')
                             {
-                                if (line[li + 1] != mf.Name[li])
+                                bool numsMatch = true;
+                                for (int li = 4; li < 4 + count; li++)
                                 {
-                                    numsMatch = false;
-                                    break;
+                                    if (line[li + 1] != mf.Name[li])
+                                    {
+                                        numsMatch = false;
+                                        break;
+                                    }
                                 }
-                            }
-                            int qIndex;
-                            if (numsMatch && (qIndex = line.IndexOf('\"')) > -1)
-                            {
-                                if (!(line.Length > qIndex + 5 &&
-                                      // I don't think any files actually have "skip" in anything other than
-                                      // lowercase, but I'm supporting any case anyway. You never know.
-                                      (line[qIndex + 1] == 's' || line[qIndex + 1] == 'S') &&
-                                      (line[qIndex + 2] == 'k' || line[qIndex + 2] == 'K') &&
-                                      (line[qIndex + 3] == 'i' || line[qIndex + 3] == 'I') &&
-                                      (line[qIndex + 4] == 'p' || line[qIndex + 4] == 'P') &&
-                                      line[qIndex + 5] == '\"'))
+                                int qIndex;
+                                if (numsMatch && (qIndex = line.IndexOf('\"')) > -1)
                                 {
-                                    usedMisFileInfos.Add(mf);
+                                    if (!(line.Length > qIndex + 5 &&
+                                          // I don't think any files actually have "skip" in anything other than
+                                          // lowercase, but I'm supporting any case anyway. You never know.
+                                          (line[qIndex + 1] == 's' || line[qIndex + 1] == 'S') &&
+                                          (line[qIndex + 2] == 'k' || line[qIndex + 2] == 'K') &&
+                                          (line[qIndex + 3] == 'i' || line[qIndex + 3] == 'I') &&
+                                          (line[qIndex + 4] == 'p' || line[qIndex + 4] == 'P') &&
+                                          line[qIndex + 5] == '\"'))
+                                    {
+                                        usedMisFileInfos.Add(mf);
+                                    }
                                 }
                             }
                         }
