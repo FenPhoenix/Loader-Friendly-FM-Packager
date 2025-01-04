@@ -383,7 +383,7 @@ internal static class Core
 
     Make sure we pass -qs=off as an arg (even though it's the default) just to be explicit.
 
-    I guess also pass =mhc=off again in case it wants to compress the header when it changes the file name in it?
+    I guess also pass -mhc=off again in case it wants to compress the header when it changes the file name in it?
     Presumably?
 
     Also if any relevant file names are non-ascii then I guess maybe just skip this step and fall back? Cause you
