@@ -278,13 +278,13 @@ public static class Fen7z
     }
 
     public static Result Compress(
-    string sevenZipPathAndExe,
-    string sourcePath,
-    string outputArchive,
-    string args,
-    CancellationToken cancellationToken,
-    string listFile = "",
-    IProgress<ProgressReport>? progress = null)
+        string sevenZipPathAndExe,
+        string sourcePath,
+        string outputArchive,
+        string args,
+        CancellationToken cancellationToken,
+        string listFile = "",
+        IProgress<ProgressReport>? progress = null)
     {
         bool selectiveFiles = !listFile.IsWhiteSpace();
 
@@ -362,6 +362,90 @@ public static class Fen7z
                 catch
                 {
                     // ignore, it just means we won't report progress... meh
+                }
+            };
+
+            p.ErrorDataReceived += (_, e) =>
+            {
+                if (!e.Data.IsWhiteSpace()) errorText += $"{NL}---" + e.Data;
+            };
+
+            p.Start();
+            p.BeginOutputReadLine();
+            p.BeginErrorReadLine();
+
+            p.WaitForExit();
+
+            (SevenZipExitCode exitCode, int? exitCodeInt, Exception? exception) = GetExitCode(p);
+
+            return new Result(exception, errorText, exitCode, exitCodeInt, canceled);
+        }
+        catch (Exception ex)
+        {
+            return new Result(ex, errorText, SevenZipExitCode.Unknown, canceled);
+        }
+        finally
+        {
+            EndProcess(p, selectiveFiles, listFile);
+        }
+    }
+
+    public static Result Update(
+        string sevenZipPathAndExe,
+        string sourcePath,
+        string outputArchive,
+        string originalFileName,
+        string newFileName,
+        CancellationToken cancellationToken,
+        string listFile = "",
+        IProgress<ProgressReport>? progress = null)
+    {
+        bool selectiveFiles = !listFile.IsWhiteSpace();
+
+        bool canceled = false;
+
+        string errorText = "";
+
+        var report = new ProgressReport();
+
+        var p = new Process { EnableRaisingEvents = true };
+        try
+        {
+            p.StartInfo.FileName = sevenZipPathAndExe;
+            p.StartInfo.WorkingDirectory = sourcePath;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.Arguments =
+                "rn \"" + outputArchive + "\" " +
+                "\"" + originalFileName + "\" \"" + newFileName + "\"";
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.UseShellExecute = false;
+
+            p.OutputDataReceived += (sender, e) =>
+            {
+                var proc = (Process)sender;
+                if (!canceled && cancellationToken.IsCancellationRequested)
+                {
+                    canceled = true;
+
+                    report.Canceling = true;
+                    progress?.Report(report);
+                    try
+                    {
+                        proc.CancelErrorRead();
+                        proc.CancelOutputRead();
+                        /*
+                        We should be sending Ctrl+C to it, but since that's apparently deep-level black
+                        magic on Windows, we just kill it. We expect the caller to understand that the
+                        extracted files will be in an indeterminate state, and to delete them or do whatever
+                        it deems fit.
+                        */
+                        proc.Kill();
+                    }
+                    catch
+                    {
+                        // Ignore, it's going to throw but work anyway (even on non-admin, tested)
+                    }
                 }
             };
 

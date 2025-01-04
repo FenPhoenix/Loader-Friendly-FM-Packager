@@ -314,7 +314,7 @@ public sealed partial class MainForm : Form
 
     private void Test1Button_Click(object sender, EventArgs e)
     {
-#if false
+#if true
         const string testBaseDir = @"F:\Local Storage HDD\AngelLoader local\__7z_order_test";
         const string outputDir = @"F:\Local Storage HDD\AngelLoader local\__7z_order_test\output";
         const string misFilesDir = @"F:\Local Storage HDD\AngelLoader local\__7z_order_test\mis_files";
@@ -326,9 +326,9 @@ public sealed partial class MainForm : Form
         //}
         string[] misFiles =
         {
-            "miss22.mis",
-            "miss21.mis",
             "miss20.mis",
+            "miss21.mis",
+            "aaaaaaa_miss22.mis",
         };
 
         string listFile = Path.Combine(testBaseDir, "list.txt");
@@ -340,10 +340,19 @@ public sealed partial class MainForm : Form
             Paths.SevenZipExe,
             misFilesDir,
             outputArchive,
-            Core.GetArgs(Config.CompressionLevel, Config.CompressionMethod, friendly: false)+" -mqs=on",
+            Core.GetArgs(Config.CompressionLevel, Config.CompressionMethod, friendly: false),
             CancellationToken.None);
+
+        Fen7z.Update(
+            sevenZipPathAndExe: Paths.SevenZipExe,
+            sourcePath: misFilesDir,
+            outputArchive: outputArchive,
+            originalFileName: "aaaaaaa_miss22.mis",
+            newFileName: "miss22.mis",
+            cancellationToken: CancellationToken.None);
 #endif
 
+#if false
         string[] zips = Directory.GetFiles(@"J:\__zip_Optimal_FMs", "*.zip", SearchOption.TopDirectoryOnly);
 
         int level = Config.CompressionLevel;
@@ -399,7 +408,7 @@ public sealed partial class MainForm : Form
                 //al_Scan_FileNames.AddRange(listFileData.MainImages);
 
                 //File.WriteAllLines(Path.Combine(testDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt"), al_Scan_FileNames);
-                using (var sw = new StreamWriter(Path.Combine(testDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt")))
+                using (var sw =new StreamWriter(Path.Combine(testDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt")))
                 {
                     if (listFileData.Readmes.Count > 0)
                     {
@@ -479,6 +488,7 @@ public sealed partial class MainForm : Form
             //Run7z_ALScanFiles(dir, OutputArchiveTextBox.Text, al_Scan_FileNames, level, methodIndex);
             //Run7z_Rest(dir, OutputArchiveTextBox.Text, listFile_Rest, level, methodIndex);
         }
+#endif
     }
 
     private static ZipArchive GetReadModeZipArchiveCharEnc(string fileName)

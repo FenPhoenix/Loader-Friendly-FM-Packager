@@ -360,6 +360,38 @@ internal static class Core
     To get better, we'd have to make a custom version of 7-zip that allows determining block position by more
     than just name or extension, neither of which work for our particular case.
 
+    ---
+
+    TODO(Update on size testing): We can actually just do like this:
+
+    Say we had these files:
+
+    miss20.mis
+    miss21.mis
+    miss22.mis
+
+    And miss22.mis was our smallest used .mis file. We then just rename it so it sorts at the top:
+
+    miss22.mis -> aaaaaaa_miss22.mis
+
+    (but then we're renaming a user's file, so we should I guess just copy the entire FM source dir to a temp dir
+    first?)
+
+    Then we add all 3 files to the archive, then we just rename the file inside the archive ("7z.exe rn")
+    back to miss22.mis. Its name will now be correct but it will also still be at the start of the block.
+    Hacky but whatever, it prevents having to have a whole custom version of 7-zip and all.
+
+    Make sure we pass -qs=off as an arg (even though it's the default) just to be explicit.
+
+    I guess also pass =mhc=off again in case it wants to compress the header when it changes the file name in it?
+    Presumably?
+
+    Also if any relevant file names are non-ascii then I guess maybe just skip this step and fall back? Cause you
+    can only pass renames on the command line, not in a list file or anything, and the command line has never even
+    heard of Unicode...
+
+    ---
+
     That way, we could lay out the blocks like this:
 
     {
