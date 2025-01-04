@@ -299,6 +299,8 @@ internal static class Core
             long dictSize = Config.DictionarySize;
             if (dictSize > -1)
             {
+                Trace.WriteLine("********** dict size non-default: " + dictSize);
+
                 args += ":d=" + dictSize.ToStrInv() + "b";
             }
         }
@@ -312,12 +314,16 @@ internal static class Core
         int threads = Config.Threads;
         if (threads > -1)
         {
+            Trace.WriteLine("********** threads non-default: " + threads);
+
             args += " -mmt=" + threads.ToStrInv();
         }
 
         MemoryUseItem memUse = Config.MemoryUseForCompression;
         if (memUse.Value > -1)
         {
+            Trace.WriteLine("********** memUse non-default: " + memUse.Value);
+
             args += " -mmemuse=";
             if (memUse.IsPercent)
             {
@@ -508,6 +514,12 @@ internal static class Core
     }
     */
 
+    /*
+    For certain types of files, we want to keep them in a multi-file block, but put them at the start of said
+    block. The only way to force 7-Zip to do this is by making sure the file you want at the start of the block
+    has a name that sorts to the top. So we temporarily rename the appropriate files to ensure this, then rename
+    them back to their correct names once they're in the archive.
+    */
     internal sealed class NameAndTempName
     {
         internal readonly string Name;
@@ -553,12 +565,12 @@ internal static class Core
     {
         /*
         We get much better compression by putting as many binary files into the same block as possible. This
-        includes both .mis and .gam files, and many other types of files in an FM. However, we need both .mis and
-        .gam files to be at the start of their block, so we can't put them both in with the big remaining-files
-        block. We choose to put .mis files in with the remaining-files block because they're almost always larger
-        (and usually MUCH larger) than .gam files, and there are more likely to be more of them. Thus, a larger
-        amount of data gets packed into the block, resulting in much better compression ratios, and greatly
-        lowering the outlier size increases.
+        includes both .mis and .gam files, and many other types of files in an FM. However, we need both smallest
+        used .mis and smallest .gam files to be at the start of their respective blocks, so we can't put them
+        both in with the big remaining-files block. We choose to put .mis files in with the remaining-files block
+        because they're almost always larger (and usually MUCH larger) than .gam files, and there are more likely
+        to be more of them. Thus, a larger amount of data gets packed into the block, resulting in much better
+        compression ratios, and greatly lowering the outlier size increases.
         */
 
         internal readonly List<string> GamFiles = new();

@@ -25,6 +25,8 @@ TODO: When re-packing from a zip file, notify the user when an unknown-encoded f
 
 TODO: Allow adding a context menu item, so the user can just right click and run it on a folder.
 
+TODO: Default dictionary size changes with compression level in 7-Zip official, we need to match it
+
 --
 
 TODO: Re-run the 7z-scan-friendly convert with the final logic
@@ -372,10 +374,10 @@ public sealed partial class MainForm : Form
                 //    continue;
                 //}
 
-                if (!LargeSizeFiles.Contains(extractedDirName, StringComparer.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
+                //if (!LargeSizeFiles.Contains(extractedDirName, StringComparer.OrdinalIgnoreCase))
+                //{
+                //    continue;
+                //}
 
                 //if (extractedDirName != "2003-09-01_FriendBasso_v2")
                 //{
@@ -397,15 +399,15 @@ public sealed partial class MainForm : Form
                     zipArchive.ExtractToDirectory(tempExtractedDir);
                 }
 
-                const string outputDir = @"J:\__7z_large_size_test_set_5";
+                const string outputDir = @"J:\__7z_scan_friendly_final_5";
 
                 string outputArchive = Path.Combine(outputDir, extractedDirName + ".7z");
                 Directory.CreateDirectory(outputDir);
 
                 (Core.ListFileData listFileData, string listFile_Rest) = Core.GetListFile(tempExtractedDir);
 
-                const string testDir = @"J:\_7z_al_scan_files_lists_large_test_set";
-                Directory.CreateDirectory(testDir);
+                const string entriesListsDir = @"J:\_7z_al_scan_files_lists";
+                Directory.CreateDirectory(entriesListsDir);
 
                 //List<string> al_Scan_FileNames = new();
                 //al_Scan_FileNames.AddRange(listFileData.Readmes);
@@ -413,7 +415,7 @@ public sealed partial class MainForm : Form
                 //al_Scan_FileNames.AddRange(listFileData.MainImages);
 
                 //File.WriteAllLines(Path.Combine(testDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt"), al_Scan_FileNames);
-                using (var sw = new StreamWriter(Path.Combine(testDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt")))
+                using (var sw = new StreamWriter(Path.Combine(entriesListsDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt")))
                 {
                     if (listFileData.Readmes.Count > 0)
                     {
