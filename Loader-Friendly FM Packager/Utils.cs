@@ -95,6 +95,9 @@ internal static class Utils
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ExtIsPdf(this string value) => value.EndsWithI(".pdf");
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool ExtIsIco(this string value) => value.EndsWithI(".ico");
+
     internal static bool IsValidReadme(this string readme) =>
         readme.ExtIsTxt() ||
         readme.ExtIsRtf() ||

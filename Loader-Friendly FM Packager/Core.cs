@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -81,6 +82,38 @@ internal static class Core
         }
     }
 
+    private static void RunProcess_Update(
+        string sourcePath,
+        string outputArchive,
+        List<FileToRename> itemsToRename,
+        CancellationToken cancellationToken)
+    {
+        foreach (var item in itemsToRename)
+        {
+            Fen7z.Result updateResult = Fen7z.Update(
+                sevenZipPathAndExe: Paths.SevenZipExe,
+                sourcePath: sourcePath,
+                outputArchive: outputArchive,
+                originalFileName: item.TempSortedName,
+                newFileName: item.Name,
+                cancellationToken: cancellationToken
+            );
+
+            if (updateResult.ErrorOccurred)
+            {
+                // TODO: Handle the error. Also add logging maybe?
+            }
+            else if (updateResult.Canceled)
+            {
+                throw new OperationCanceledException(_cts.Token);
+            }
+            else
+            {
+                // TODO: Handle update complete
+            }
+        }
+    }
+
     /*
     -Put every file in its own block - that way AL can do extract cost calculations and really just get the first
      used .mis file.
@@ -144,6 +177,22 @@ internal static class Core
                 cancellationToken: cancellationToken);
         }
 
+        if (listFileData.GamFiles.Count > 0)
+        {
+            View.SetProgressPercent(0);
+            View.SetProgressMessage("Adding .gam files to their own block...");
+
+            File.WriteAllLines(listFile, listFileData.GamFiles);
+
+            RunProcess(
+                sourcePath: sourcePath,
+                outputArchive: outputArchive,
+                listFile: listFile,
+                level: level,
+                method: method,
+                cancellationToken: cancellationToken);
+        }
+
         for (int i = 0; i < listFileData.OnePerBlockItems.Count; i++)
         {
             string fileName = listFileData.OnePerBlockItems[i];
@@ -187,6 +236,7 @@ internal static class Core
         string sourcePath,
         string outputArchive,
         string listFile,
+        ListFileData listFileData,
         int level,
         CompressionMethod method,
         CancellationToken cancellationToken)
@@ -201,6 +251,19 @@ internal static class Core
             level: level,
             method: method,
             cancellationToken: cancellationToken);
+
+        // TODO: Maybe run a compare on the archive filenames to the disk ones, to detect any failed renames
+        if (listFileData.FilesToRename.Count > 0)
+        {
+            View.SetProgressPercent(0);
+            View.SetProgressMessage("Finishing...");
+
+            RunProcess_Update(
+                sourcePath: sourcePath,
+                outputArchive: outputArchive,
+                listFileData.FilesToRename,
+                cancellationToken: cancellationToken);
+        }
     }
 
     internal static string GetArgs(int level, CompressionMethod method, bool friendly = true)
@@ -319,7 +382,7 @@ internal static class Core
                 (ListFileData listFileData, string listFile_Rest) = GetListFile(sourcePath);
 
                 Run7z_ALScanFiles(sourcePath, outputArchive, listFileData, level, method, _cts.Token);
-                Run7z_Rest(sourcePath, outputArchive, listFile_Rest, level, method, _cts.Token);
+                Run7z_Rest(sourcePath, outputArchive, listFile_Rest, listFileData, level, method, _cts.Token);
             }
             catch (OperationCanceledException)
             {
@@ -445,19 +508,76 @@ internal static class Core
     }
     */
 
+    internal sealed class NameAndTempName
+    {
+        internal readonly string Name;
+        internal string TempSortedName;
+        internal readonly bool IsInBaseDir;
+        internal string PhysicalName => !TempSortedName.IsEmpty() ? TempSortedName : Name;
+
+        public NameAndTempName(string name, string tempSortedName, bool isInBaseDir)
+        {
+            Name = name;
+            TempSortedName = tempSortedName;
+            IsInBaseDir = isInBaseDir;
+        }
+    }
+
+    internal sealed class FileToRename
+    {
+        internal readonly string Name;
+        internal readonly string TempSortedName;
+
+        internal static bool TryCreate(NameAndTempName item, [NotNullWhen(true)] out FileToRename? result)
+        {
+            if (!item.Name.IsEmpty() && !item.TempSortedName.IsEmpty())
+            {
+                result = new FileToRename(item.Name, item.TempSortedName);
+                return true;
+            }
+            else
+            {
+                result = null;
+                return false;
+            }
+        }
+
+        private FileToRename(string name, string tempSortedName)
+        {
+            Name = name;
+            TempSortedName = tempSortedName;
+        }
+    }
+
     internal sealed class ListFileData
     {
-        internal readonly List<string> OnePerBlockItems = new();
+        /*
+        We get much better compression by putting as many binary files into the same block as possible. This
+        includes both .mis and .gam files, and many other types of files in an FM. However, we need both .mis and
+        .gam files to be at the start of their block, so we can't put them both in with the big remaining-files
+        block. We choose to put .mis files in with the remaining-files block because they're almost always larger
+        (and usually MUCH larger) than .gam files, and there are more likely to be more of them. Thus, a larger
+        amount of data gets packed into the block, resulting in much better compression ratios, and greatly
+        lowering the outlier size increases.
+        */
 
+        internal readonly List<string> GamFiles = new();
         internal readonly List<string> Readmes = new();
         internal readonly List<string> MainImages = new();
         internal readonly List<string> Thumbs = new();
+
+        internal readonly List<string> OnePerBlockItems = new();
+
+        internal readonly List<FileToRename> FilesToRename = new();
     }
 
     internal static (ListFileData ListFileData, string RestListFile)
     GetListFile(string filesDir)
     {
         ListFileData ret = new();
+
+        List<NameAndTempName> misFiles = new();
+        List<NameAndTempName> gamFiles = new();
 
         Utils.CreateOrClearTempPath(Paths.Temp);
 
@@ -497,11 +617,14 @@ internal static class Core
             {
                 AddScanFile(ret.Thumbs, fn);
             }
-            //else if (IsInBaseDir(fn) &&
-            //         (fn.ExtIsMis() || fn.ExtIsGam()))
-            //{
-            //    AddScanFile(ret.OnePerBlockItems, fn);
-            //}
+            else if (fn.ExtIsMis())
+            {
+                AddScanFile_Renameable(misFiles, fn);
+            }
+            else if (fn.ExtIsGam())
+            {
+                AddScanFile_Renameable(gamFiles, fn);
+            }
             else if (IsInBaseDir(fn) &&
                      (fn.EqualsI(FMFiles.FMInfoXml) ||
                       fn.EqualsI(FMFiles.FMIni) ||
@@ -537,17 +660,21 @@ internal static class Core
             }
         }
 
-        if (Utils.TryGetInfoFileFromFmIni(filesDir, out string infoFile))
+        /*
+        Limit the values to the formats they're supposed to be, to keep their hands off any of our temp-renamed
+        files
+        */
+        if (Utils.TryGetInfoFileFromFmIni(filesDir, out string infoFile) && infoFile.IsValidReadme())
         {
             AddIfNotInList(ret.Readmes, infoFile);
         }
 
         var modIniValues = Utils.GetValuesFromModIni(filesDir);
-        if (!modIniValues.Readme.IsEmpty())
+        if (!modIniValues.Readme.IsEmpty() && modIniValues.Readme.IsValidReadme())
         {
             AddIfNotInList(ret.Readmes, modIniValues.Readme);
         }
-        if (!modIniValues.Icon.IsEmpty())
+        if (!modIniValues.Icon.IsEmpty() && modIniValues.Icon.ExtIsIco())
         {
             AddIfNotInList(ret.Thumbs, modIniValues.Icon);
         }
@@ -555,25 +682,80 @@ internal static class Core
         List<string> htmlRefFiles = HtmlReference.GetHtmlReferenceFiles(filesDir, readmeFullFilePaths, files);
         foreach (string htmlRefFile in htmlRefFiles)
         {
-            AddIfNotInList(ret.OnePerBlockItems, htmlRefFile);
+            // If it's referencing a .mis or .gam file then it will probably be broken by our renaming, so just
+            // leave those alone and take whatever hit we take
+            if (!htmlRefFile.ExtIsMis() && !htmlRefFile.ExtIsGam())
+            {
+                AddIfNotInList(ret.OnePerBlockItems, htmlRefFile);
+            }
         }
+
+        #region Temp rename files for sorting
+
+        // If we wanted to be super paranoid, we could check that this name does end up sorting at the top
+        // (duplicate 7-Zip's sorting logic)
+        const string sortAtTopPrefix = "!!!!!!!!_";
 
         if (Utils.TryGetSmallestUsedMisFile(filesDir, out string smallestUsedMisFile))
         {
-            //ret.OnePerBlockItems.Remove(smallestUsedMisFile);
-            AddIfNotInList(ret.OnePerBlockItems, smallestUsedMisFile);
+            int index = misFiles.FindIndex(x => x.Name.EqualsI(smallestUsedMisFile));
+            Trace.Assert(index > -1);
+
+            NameAndTempName item = misFiles[index];
+            Trace.Assert(IsInBaseDir(item.Name));
+
+            item.TempSortedName = sortAtTopPrefix + item.Name;
+
+            // TODO: Error handling needed
+            File.Move(
+                Path.Combine(filesDir, item.Name),
+                Path.Combine(filesDir, item.TempSortedName));
         }
 
         if (Utils.TryGetSmallestGamFile(filesDir, out string smallestGamFile))
         {
-            //ret.OnePerBlockItems.Remove(smallestGamFile);
-            AddIfNotInList(ret.OnePerBlockItems, smallestGamFile);
+            int index = gamFiles.FindIndex(x => x.Name.EqualsI(smallestGamFile));
+            Trace.Assert(index > -1);
+
+            NameAndTempName item = gamFiles[index];
+            Trace.Assert(IsInBaseDir(item.Name));
+
+            item.TempSortedName = sortAtTopPrefix + item.Name;
+
+            // TODO: Error handling needed
+            File.Move(
+                Path.Combine(filesDir, item.Name),
+                Path.Combine(filesDir, item.TempSortedName));
         }
+
+        #endregion
+
+        List<string> finalRestFileNames = new();
+
+        foreach (NameAndTempName item in gamFiles)
+        {
+            ret.GamFiles.Add(item.PhysicalName);
+            if (FileToRename.TryCreate(item, out FileToRename? fileToRename))
+            {
+                ret.FilesToRename.Add(fileToRename);
+            }
+        }
+
+        foreach (NameAndTempName item in misFiles)
+        {
+            finalRestFileNames.Add(item.PhysicalName);
+            if (FileToRename.TryCreate(item, out FileToRename? fileToRename))
+            {
+                ret.FilesToRename.Add(fileToRename);
+            }
+        }
+
+        finalRestFileNames.AddRange(restFileNames);
 
         //string listFile_ALScan = Path.Combine(TempPath, AL_Scan_Block_ListFileName);
         string listFile_Rest = Path.Combine(Paths.Temp, Rest_Block_ListFileName);
 
-        foreach (string fileName in restFileNames)
+        foreach (string fileName in finalRestFileNames)
         {
             if (!File.Exists(Path.Combine(filesDir, fileName)))
             {
@@ -594,7 +776,7 @@ internal static class Core
         }
 
         //File.WriteAllLines(listFile_ALScan, alScanFileNames);
-        File.WriteAllLines(listFile_Rest, restFileNames);
+        File.WriteAllLines(listFile_Rest, finalRestFileNames);
 
         return (ret, listFile_Rest);
 
@@ -603,6 +785,12 @@ internal static class Core
             string valNormalized = fn.ToBackSlashes();
             dupePreventionHash.Add(valNormalized);
             list.Add(valNormalized);
+        }
+
+        void AddScanFile_Renameable(List<NameAndTempName> list, string fn)
+        {
+            dupePreventionHash.Add(fn);
+            list.Add(new NameAndTempName(fn, "", IsInBaseDir(fn)));
         }
 
         void AddIfNotInList(List<string> list, string value)

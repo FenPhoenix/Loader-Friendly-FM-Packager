@@ -314,7 +314,7 @@ public sealed partial class MainForm : Form
 
     private void Test1Button_Click(object sender, EventArgs e)
     {
-#if true
+#if false
         const string testBaseDir = @"F:\Local Storage HDD\AngelLoader local\__7z_order_test";
         const string outputDir = @"F:\Local Storage HDD\AngelLoader local\__7z_order_test\output";
         const string misFilesDir = @"F:\Local Storage HDD\AngelLoader local\__7z_order_test\mis_files";
@@ -352,7 +352,7 @@ public sealed partial class MainForm : Form
             cancellationToken: CancellationToken.None);
 #endif
 
-#if false
+#if true
         string[] zips = Directory.GetFiles(@"J:\__zip_Optimal_FMs", "*.zip", SearchOption.TopDirectoryOnly);
 
         int level = Config.CompressionLevel;
@@ -376,6 +376,11 @@ public sealed partial class MainForm : Form
                 {
                     continue;
                 }
+
+                //if (extractedDirName != "2003-09-01_FriendBasso_v2")
+                //{
+                //    continue;
+                //}
 
                 string tempExtractedDir = Path.Combine(@"J:\_7z_temp", extractedDirName);
                 using (var zipArchive = GetReadModeZipArchiveCharEnc(zip))
@@ -408,12 +413,11 @@ public sealed partial class MainForm : Form
                 //al_Scan_FileNames.AddRange(listFileData.MainImages);
 
                 //File.WriteAllLines(Path.Combine(testDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt"), al_Scan_FileNames);
-                using (var sw =new StreamWriter(Path.Combine(testDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt")))
+                using (var sw = new StreamWriter(Path.Combine(testDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt")))
                 {
                     if (listFileData.Readmes.Count > 0)
                     {
                         sw.WriteLine("Readme block:");
-                        sw.WriteLine("-------------");
                         foreach (string readme in listFileData.Readmes)
                         {
                             sw.WriteLine(readme);
@@ -424,7 +428,6 @@ public sealed partial class MainForm : Form
                     if (listFileData.Thumbs.Count > 0)
                     {
                         sw.WriteLine("Thumbs block:");
-                        sw.WriteLine("-------------");
                         foreach (string thumb in listFileData.Thumbs)
                         {
                             sw.WriteLine(thumb);
@@ -435,7 +438,6 @@ public sealed partial class MainForm : Form
                     if (listFileData.MainImages.Count > 0)
                     {
                         sw.WriteLine("MainImages block:");
-                        sw.WriteLine("-------------");
                         foreach (string mainImage in listFileData.MainImages)
                         {
                             sw.WriteLine(mainImage);
@@ -443,19 +445,37 @@ public sealed partial class MainForm : Form
                         sw.WriteLine("-------------");
                     }
 
+                    if (listFileData.GamFiles.Count > 0)
+                    {
+                        sw.WriteLine(".gam files block:");
+                        foreach (var gamFile in listFileData.GamFiles)
+                        {
+                            sw.WriteLine(gamFile);
+                        }
+                        sw.WriteLine("-------------");
+                    }
+
                     if (listFileData.OnePerBlockItems.Count > 0)
                     {
                         sw.WriteLine("One-per-block items:");
-                        sw.WriteLine("-------------");
                         foreach (string item in listFileData.OnePerBlockItems)
                         {
                             sw.WriteLine(item);
                         }
                     }
+
+                    if (listFileData.FilesToRename.Count > 0)
+                    {
+                        sw.WriteLine("FilesToRename items:");
+                        foreach (Core.FileToRename item in listFileData.FilesToRename)
+                        {
+                            sw.WriteLine(item.Name + " / " + item.TempSortedName);
+                        }
+                    }
                 }
 
                 Core.Run7z_ALScanFiles(tempExtractedDir, outputArchive, listFileData, level, method, CancellationToken.None);
-                Core.Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, level, method, CancellationToken.None);
+                Core.Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, listFileData, level, method, CancellationToken.None);
 
                 //Fen7z.Compress(
                 //    Paths.SevenZipExe,

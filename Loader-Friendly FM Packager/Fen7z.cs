@@ -397,11 +397,8 @@ public static class Fen7z
         string originalFileName,
         string newFileName,
         CancellationToken cancellationToken,
-        string listFile = "",
         IProgress<ProgressReport>? progress = null)
     {
-        bool selectiveFiles = !listFile.IsWhiteSpace();
-
         bool canceled = false;
 
         string errorText = "";
@@ -470,7 +467,7 @@ public static class Fen7z
         }
         finally
         {
-            EndProcess(p, selectiveFiles, listFile);
+            EndProcess(p, false, "");
         }
     }
 
