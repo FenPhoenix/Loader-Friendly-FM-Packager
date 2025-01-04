@@ -89,16 +89,64 @@ internal static class Core
     internal static void Run7z_ALScanFiles(
         string sourcePath,
         string outputArchive,
-        List<string> fileNames,
+        ListFileData listFileData,
         int level,
         CompressionMethod method,
         CancellationToken cancellationToken)
     {
         string listFile = Path.Combine(Paths.Temp, AL_Scan_Block_ListFileName);
 
-        for (int i = 0; i < fileNames.Count; i++)
+        if (listFileData.Readmes.Count > 0)
         {
-            string fileName = fileNames[i];
+            View.SetProgressPercent(0);
+            View.SetProgressMessage("Adding readmes to their own block...");
+
+            File.WriteAllLines(listFile, listFileData.Readmes);
+
+            RunProcess(
+                sourcePath: sourcePath,
+                outputArchive: outputArchive,
+                listFile: listFile,
+                level: level,
+                method: method,
+                cancellationToken: cancellationToken);
+        }
+
+        if (listFileData.Thumbs.Count > 0)
+        {
+            View.SetProgressPercent(0);
+            View.SetProgressMessage("Adding thumbs to their own block...");
+
+            File.WriteAllLines(listFile, listFileData.Thumbs);
+
+            RunProcess(
+                sourcePath: sourcePath,
+                outputArchive: outputArchive,
+                listFile: listFile,
+                level: level,
+                method: method,
+                cancellationToken: cancellationToken);
+        }
+
+        if (listFileData.MainImages.Count > 0)
+        {
+            View.SetProgressPercent(0);
+            View.SetProgressMessage("Adding \"main_\" images to their own block...");
+
+            File.WriteAllLines(listFile, listFileData.MainImages);
+
+            RunProcess(
+                sourcePath: sourcePath,
+                outputArchive: outputArchive,
+                listFile: listFile,
+                level: level,
+                method: method,
+                cancellationToken: cancellationToken);
+        }
+
+        for (int i = 0; i < listFileData.OnePerBlockItems.Count; i++)
+        {
+            string fileName = listFileData.OnePerBlockItems[i];
 
             View.SetProgressPercent(0);
             View.SetProgressMessage("Adding " + fileName + " to its own block...");
@@ -268,9 +316,9 @@ internal static class Core
 
                 View.SetProgressMessage("Generating archive packaging logic...");
 
-                (List<string> al_Scan_FileNames, string listFile_Rest) = GetListFile(sourcePath);
+                (ListFileData listFileData, string listFile_Rest) = GetListFile(sourcePath);
 
-                Run7z_ALScanFiles(sourcePath, outputArchive, al_Scan_FileNames, level, method, _cts.Token);
+                Run7z_ALScanFiles(sourcePath, outputArchive, listFileData, level, method, _cts.Token);
                 Run7z_Rest(sourcePath, outputArchive, listFile_Rest, level, method, _cts.Token);
             }
             catch (OperationCanceledException)
@@ -300,6 +348,17 @@ internal static class Core
      a bunch of files. We need to see if 7z will pack the files into blocks in the order they're specified in
      the list file. We need to know if we can just put the smallest used mis file as the first line in the list
      file for example, and have 7z be guaranteed to put it at the start of the block.
+
+    IMPORTANT(Update on order): 7z puts the files in name order (or extension-then-name order) no matter what
+     order you put them in the list file. So we can't do the start-of-block thing.
+
+    But we could still put just the file we need in its own block, and the rest in another block together, that
+    should at least help.
+
+    TODO(Update on size testing):
+    Of the 97 files that were >=2% larger, now only 13 are >=5%, and the largest is 67% rather than 94%.
+    To get better, we'd have to make a custom version of 7-zip that allows determining block position by more
+    than just name or extension, neither of which work for our particular case.
 
     That way, we could lay out the blocks like this:
 
@@ -353,9 +412,21 @@ internal static class Core
     [all files referenced in fm.ini and mod.ini]
     }
     */
-    internal static (List<string> AL_FileNames, string RestListFile)
+
+    internal sealed class ListFileData
+    {
+        internal readonly List<string> OnePerBlockItems = new();
+
+        internal readonly List<string> Readmes = new();
+        internal readonly List<string> MainImages = new();
+        internal readonly List<string> Thumbs = new();
+    }
+
+    internal static (ListFileData ListFileData, string RestListFile)
     GetListFile(string filesDir)
     {
+        ListFileData ret = new();
+
         Utils.CreateOrClearTempPath(Paths.Temp);
 
         string[] files = Directory.GetFiles(filesDir, "*", SearchOption.AllDirectories);
@@ -364,7 +435,7 @@ internal static class Core
 
         List<string> readmeFullFilePaths = new();
 
-        List<string> alScanFileNames = new();
+        //List<string> alScanFileNames = new();
         List<string> restFileNames = new();
         for (int i = 0; i < files.Length; i++)
         {
@@ -379,7 +450,7 @@ internal static class Core
                    fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
                  dirSeps == 0))
             {
-                AddScanFile(fn);
+                AddScanFile(fn.IsGlTitle() ? ret.Thumbs : ret.Readmes, fn);
                 readmeFullFilePaths.Add(files[i]);
             }
             /*
@@ -392,41 +463,41 @@ internal static class Core
                      Path.GetFileNameWithoutExtension(fn).EqualsI(FMFiles.FMThumb) &&
                      Utils.FileExtensionFound(fn, FMFileExtensions.ImageFileExtensions))
             {
-                AddScanFile(fn);
+                AddScanFile(ret.Thumbs, fn);
             }
-            else if (IsInBaseDir(fn) &&
-                     (fn.ExtIsMis() || fn.ExtIsGam()))
-            {
-                AddScanFile(fn);
-            }
+            //else if (IsInBaseDir(fn) &&
+            //         (fn.ExtIsMis() || fn.ExtIsGam()))
+            //{
+            //    AddScanFile(ret.OnePerBlockItems, fn);
+            //}
             else if (IsInBaseDir(fn) &&
                      (fn.EqualsI(FMFiles.FMInfoXml) ||
                       fn.EqualsI(FMFiles.FMIni) ||
                       fn.EqualsI(FMFiles.ModIni)))
             {
-                AddScanFile(fn);
+                AddScanFile(ret.OnePerBlockItems, fn);
             }
             else if (fn.PathStartsWithI(FMDirs.StringsS) &&
                      fn.PathEndsWithI(FMFiles.SMissFlag))
             {
-                AddScanFile(fn);
+                AddScanFile(ret.OnePerBlockItems, fn);
             }
             else if (fn.PathStartsWithI(FMDirs.IntrfaceS) &&
                      Regex.Match(Path.GetFileNameWithoutExtension(fn), "^main_[0-9]+$",
                          RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Success &&
                      Utils.FileExtensionFound(fn, FMFileExtensions.ImageFileExtensions))
             {
-                AddScanFile(fn);
+                AddScanFile(ret.MainImages, fn);
             }
             else if (fn.PathStartsWithI(FMDirs.IntrfaceS) &&
                      fn.PathEndsWithI(FMFiles.SNewGameStr))
             {
-                AddScanFile(fn);
+                AddScanFile(ret.OnePerBlockItems, fn);
             }
             else if (fn.PathStartsWithI(FMDirs.StringsS) &&
                      EndsWithTitleFile(fn))
             {
-                AddScanFile(fn);
+                AddScanFile(ret.OnePerBlockItems, fn);
             }
             else
             {
@@ -436,23 +507,35 @@ internal static class Core
 
         if (Utils.TryGetInfoFileFromFmIni(filesDir, out string infoFile))
         {
-            AddIfNotInList(infoFile);
+            AddIfNotInList(ret.Readmes, infoFile);
         }
 
         var modIniValues = Utils.GetValuesFromModIni(filesDir);
         if (!modIniValues.Readme.IsEmpty())
         {
-            AddIfNotInList(modIniValues.Readme);
+            AddIfNotInList(ret.Readmes, modIniValues.Readme);
         }
         if (!modIniValues.Icon.IsEmpty())
         {
-            AddIfNotInList(modIniValues.Icon);
+            AddIfNotInList(ret.Thumbs, modIniValues.Icon);
         }
 
         List<string> htmlRefFiles = HtmlReference.GetHtmlReferenceFiles(filesDir, readmeFullFilePaths, files);
         foreach (string htmlRefFile in htmlRefFiles)
         {
-            AddIfNotInList(htmlRefFile);
+            AddIfNotInList(ret.OnePerBlockItems, htmlRefFile);
+        }
+
+        if (Utils.TryGetSmallestUsedMisFile(filesDir, out string smallestUsedMisFile))
+        {
+            //ret.OnePerBlockItems.Remove(smallestUsedMisFile);
+            AddIfNotInList(ret.OnePerBlockItems, smallestUsedMisFile);
+        }
+
+        if (Utils.TryGetSmallestGamFile(filesDir, out string smallestGamFile))
+        {
+            //ret.OnePerBlockItems.Remove(smallestGamFile);
+            AddIfNotInList(ret.OnePerBlockItems, smallestGamFile);
         }
 
         //string listFile_ALScan = Path.Combine(TempPath, AL_Scan_Block_ListFileName);
@@ -481,16 +564,16 @@ internal static class Core
         //File.WriteAllLines(listFile_ALScan, alScanFileNames);
         File.WriteAllLines(listFile_Rest, restFileNames);
 
-        return (alScanFileNames, listFile_Rest);
+        return (ret, listFile_Rest);
 
-        void AddScanFile(string fn)
+        void AddScanFile(List<string> list, string fn)
         {
             string valNormalized = fn.ToBackSlashes();
             dupePreventionHash.Add(valNormalized);
-            alScanFileNames.Add(valNormalized);
+            list.Add(valNormalized);
         }
 
-        void AddIfNotInList(string value)
+        void AddIfNotInList(List<string> list, string value)
         {
             string valNormalized = value.ToBackSlashes();
             if (!valNormalized.IsEmpty() &&
@@ -498,7 +581,7 @@ internal static class Core
                 dupePreventionHash.Add(valNormalized))
             {
                 restFileNames.Remove(valNormalized);
-                alScanFileNames.Add(valNormalized);
+                list.Add(valNormalized);
             }
         }
 

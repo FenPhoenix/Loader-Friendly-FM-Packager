@@ -10,4 +10,6 @@ internal static class Paths
     // TODO: Make a better / more unique temp folder name
     internal static readonly string Temp = Path.Combine(Path.GetTempPath(), "LFFMP");
     internal static readonly string SevenZipExe = Path.Combine(Startup, "7z", "7z.exe");
+
+    internal const string MissFlagStr = "missflag.str";
 }
