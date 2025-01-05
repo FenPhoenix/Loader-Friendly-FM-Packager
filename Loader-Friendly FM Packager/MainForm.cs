@@ -26,6 +26,7 @@ TODO: When re-packing from a zip file, notify the user when an unknown-encoded f
 TODO: Allow adding a context menu item, so the user can just right click and run it on a folder.
 
 TODO: Default dictionary size changes with compression level in 7-Zip official, we need to match it
+TODO: Threads is supposed to change with memory use for compression too...
 
 --
 
@@ -399,14 +400,14 @@ public sealed partial class MainForm : Form
                     zipArchive.ExtractToDirectory(tempExtractedDir);
                 }
 
-                const string outputDir = @"J:\__7z_scan_friendly_final_5";
+                const string outputDir = @"J:\__7z_scan_friendly_final_9";
 
                 string outputArchive = Path.Combine(outputDir, extractedDirName + ".7z");
                 Directory.CreateDirectory(outputDir);
 
                 (Core.ListFileData listFileData, string listFile_Rest) = Core.GetListFile(tempExtractedDir);
 
-                const string entriesListsDir = @"J:\_7z_al_scan_files_lists";
+                const string entriesListsDir = @"J:\_7z_al_scan_files_lists_9";
                 Directory.CreateDirectory(entriesListsDir);
 
                 //List<string> al_Scan_FileNames = new();
@@ -415,6 +416,7 @@ public sealed partial class MainForm : Form
                 //al_Scan_FileNames.AddRange(listFileData.MainImages);
 
                 //File.WriteAllLines(Path.Combine(testDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt"), al_Scan_FileNames);
+#if true
                 using (var sw = new StreamWriter(Path.Combine(entriesListsDir, Path.GetFileNameWithoutExtension(zip) + "__al_scan_entries.txt")))
                 {
                     if (listFileData.Readmes.Count > 0)
@@ -464,6 +466,7 @@ public sealed partial class MainForm : Form
                         {
                             sw.WriteLine(item);
                         }
+                        sw.WriteLine("-------------");
                     }
 
                     if (listFileData.FilesToRename.Count > 0)
@@ -475,6 +478,7 @@ public sealed partial class MainForm : Form
                         }
                     }
                 }
+#endif
 
                 Core.Run7z_ALScanFiles(tempExtractedDir, outputArchive, listFileData, level, method, CancellationToken.None);
                 Core.Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, listFileData, level, method, CancellationToken.None);

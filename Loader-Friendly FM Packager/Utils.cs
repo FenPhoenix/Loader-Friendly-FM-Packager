@@ -617,7 +617,7 @@ internal static class Utils
 
         usedMisFileInfos = usedMisFileInfos.OrderBy(static x => x.Length).ToList();
 
-        // We can use bare name because .gam files will only be in the base directory
+        // We can use bare name because .mis files will only be in the base directory
         smallestUsedMisFile = usedMisFileInfos[0].Name;
 
         return true;
