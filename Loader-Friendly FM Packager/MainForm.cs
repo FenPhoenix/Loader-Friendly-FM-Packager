@@ -25,6 +25,8 @@ TODO: When re-packing from a zip file, notify the user when an unknown-encoded f
 
 TODO: Allow adding a context menu item, so the user can just right click and run it on a folder.
 
+TODO: Allow drag and drop for archives to repack
+
 --
 
 TODO: Re-run the 7z-scan-friendly convert with the final logic
