@@ -355,8 +355,6 @@ internal static class Core
                 int level = Config.CompressionLevel;
                 CompressionMethod method = Config.CompressionMethod;
 
-                View.SetProgressMessage("Generating archive packaging logic...");
-
                 (ListFileData listFileData, string listFile_Rest) = GetListFile(ref sourcePath, makeCopyOfFilesDir: true);
 
                 Run7z_ALScanFiles(sourcePath, outputArchive, listFileData, level, method, _cts.Token);
@@ -558,6 +556,8 @@ internal static class Core
     internal static (ListFileData ListFileData, string RestListFile)
     GetListFile(ref string filesDir, bool makeCopyOfFilesDir)
     {
+        View.SetProgressMessage("Preparing...");
+
         ListFileData ret = new();
 
         List<NameAndTempName> misFiles = new();
@@ -581,11 +581,15 @@ internal static class Core
         */
         if (makeCopyOfFilesDir)
         {
+            View.SetProgressMessage("Making a safe temp copy of the source directory...");
+
             // TODO: Error handling needed
             Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(filesDir, Paths.Temp_SourceCopy);
             filesDir = Paths.Temp_SourceCopy;
             files = Directory.GetFiles(filesDir, "*", SearchOption.AllDirectories);
         }
+
+        View.SetProgressMessage("Generating archive packaging logic...");
 
         HashSet<string> dupePreventionHash = new(StringComparer.OrdinalIgnoreCase);
 
