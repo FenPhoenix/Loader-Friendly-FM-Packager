@@ -102,10 +102,10 @@ public static class Global
             return Array.Empty<FriendlyStringAndBackingValue<int>>();
         }
 
-        int count = (CPUThreads * 2) + 1;
+        int count = (CPUThreads * 2).Clamp(0, 256) + 1;
 
         FriendlyStringAndBackingValue<int>[] ret = new FriendlyStringAndBackingValue<int>[count];
-        ret[0] = new FriendlyStringAndBackingValue<int>("* " + CPUThreads.ToStrInv(), CPUThreads);
+        ret[0] = new FriendlyStringAndBackingValue<int>("Auto", -1);
         for (int i = 1; i < count; i++)
         {
             ret[i] = new FriendlyStringAndBackingValue<int>(i.ToStrInv(), i);
@@ -126,7 +126,7 @@ public static class Global
         int count = threads + 1;
 
         FriendlyStringAndBackingValue<int>[] ret = new FriendlyStringAndBackingValue<int>[count];
-        ret[0] = new FriendlyStringAndBackingValue<int>("* " + threads, CPUThreads);
+        ret[0] = new FriendlyStringAndBackingValue<int>("Auto", -1);
         for (int i = 1; i < count; i++)
         {
             ret[i] = new FriendlyStringAndBackingValue<int>(i.ToStrInv(), i);
