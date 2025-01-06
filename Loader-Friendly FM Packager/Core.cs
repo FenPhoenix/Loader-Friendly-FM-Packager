@@ -363,6 +363,7 @@ internal static class Core
             }
             catch (OperationCanceledException)
             {
+                View.SetProgressMessage("Canceled.");
                 try
                 {
                     // TODO: Maybe we shouldn't delete the archive on cancel.
@@ -585,6 +586,7 @@ internal static class Core
             View.SetProgressMessage("Making a copy of source FM directory...");
 
             // TODO: Error handling needed
+            // TODO: We need this as a manual loop so we can poll for cancellation
             Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(filesDir, Paths.Temp_SourceCopy);
             filesDir = Paths.Temp_SourceCopy;
             files = Directory.GetFiles(filesDir, "*", SearchOption.AllDirectories);
