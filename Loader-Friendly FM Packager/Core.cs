@@ -26,8 +26,6 @@ internal static class Core
         View.SetCompressionLevel(Config.CompressionLevel);
         View.SetCompressionMethod(Config.CompressionMethod);
         View.SetThreads(Config.Threads);
-        View.SetDictionarySize(Config.DictionarySize);
-        View.SetMemoryUseForCompression(Config.MemoryUseForCompression);
 
         View.Show();
     }
@@ -296,13 +294,6 @@ internal static class Core
         else
         {
             args += " -m0=" + GetCompressionMethodString(method);
-            long dictSize = Config.DictionarySize;
-            if (dictSize > -1)
-            {
-                Trace.WriteLine("********** dict size non-default: " + dictSize);
-
-                args += ":d=" + dictSize.ToStrInv() + "b";
-            }
         }
 
         /*
@@ -317,22 +308,6 @@ internal static class Core
             Trace.WriteLine("********** threads non-default: " + threads);
 
             args += " -mmt=" + threads.ToStrInv();
-        }
-
-        MemoryUseItem memUse = Config.MemoryUseForCompression;
-        if (memUse.Value > -1)
-        {
-            Trace.WriteLine("********** memUse non-default: " + memUse.Value);
-
-            args += " -mmemuse=";
-            if (memUse.IsPercent)
-            {
-                args += "p" + memUse.Value.ToStrInv();
-            }
-            else
-            {
-                args += memUse.Value.ToStrInv() + "b";
-            }
         }
 
         args += " -y -r -bsp1 -bb1 -sas -t7z";

@@ -44,26 +44,6 @@ internal static class ConfigIni
                     Config.Threads = result;
                 }
             }
-            else if (lineT.TryGetValueO("DictionarySize=", out value))
-            {
-                if (long.TryParse(value, out long result))
-                {
-                    Config.DictionarySize = result;
-                }
-            }
-            else if (lineT.TryGetValueO("MemoryUsageForCompressing=", out value))
-            {
-                bool isPercent = false;
-                if (value.Length > 0 && value[^1] == '%')
-                {
-                    isPercent = true;
-                    value = value.TrimEnd('%');
-                }
-                if (long.TryParse(value, out long result))
-                {
-                    Config.MemoryUseForCompression = new MemoryUseItem(result, isPercent);
-                }
-            }
         }
 
         return;
@@ -91,11 +71,6 @@ internal static class ConfigIni
         sw.WriteLine("CompressionLevel=" + Config.CompressionLevel.ToStrInv());
         sw.WriteLine("CompressionMethod=" + Config.CompressionMethod);
         sw.WriteLine("Threads=" + Config.Threads.ToStrInv());
-        sw.WriteLine("DictionarySize=" + Config.DictionarySize.ToStrInv());
-        sw.WriteLine("MemoryUsageForCompressing=" +
-                     (Config.MemoryUseForCompression.IsPercent && Config.MemoryUseForCompression.Value != -1
-                         ? Config.MemoryUseForCompression.Value + "%"
-                         : Config.MemoryUseForCompression.Value));
         return;
 
         static string GetNullableBoolValue(bool? value) => value switch

@@ -1,12 +1,10 @@
 #define DEV_TESTING
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -24,9 +22,6 @@ TODO: When re-packing from a zip file, notify the user when an unknown-encoded f
  We'll need to pull in the .NET zip code so as to customize it to expose the "used default encoding" situation.
 
 TODO: Allow adding a context menu item, so the user can just right click and run it on a folder.
-
-TODO: Default dictionary size changes with compression level in 7-Zip official, we need to match it
-TODO: Threads is supposed to change with memory use for compression too...
 
 --
 
@@ -51,11 +46,7 @@ public sealed partial class MainForm : Form
 
         CompressionMethodComboBox.Items.AddRange(CompressionMethodItems.ToFriendlyStrings());
 
-        DictionarySizeComboBox.Items.AddRange(DictionarySizeItems.ToFriendlyStrings());
-
         PopulateThreadsComboBox();
-
-        MemoryUsageForCompressingComboBox.Items.AddRange(MemoryUseItems.ToFriendlyStrings());
 
         MainProgressBar.CenterH(StatusGroupBox);
         Cancel_Button.CenterH(StatusGroupBox);
@@ -93,21 +84,6 @@ public sealed partial class MainForm : Form
                 : 0;
     }
 
-    public void SetDictionarySize(long value)
-    {
-        if (value == -1)
-        {
-            DictionarySizeComboBox.SelectedIndex = 0;
-        }
-        else
-        {
-            FriendlyStringAndBackingValue<long>? item = DictionarySizeItems.FirstOrDefault_PastFirstIndex(x => x.BackingValue == value);
-            DictionarySizeComboBox.SelectedIndex = item != null
-                ? Array.IndexOf(DictionarySizeItems, item)
-                : 0;
-        }
-    }
-
     public void SetThreads(int value)
     {
         NumberOfCPUThreadsComboBox.SelectedIndex =
@@ -116,22 +92,7 @@ public sealed partial class MainForm : Form
                 : NumberOfCPUThreadsComboBox.IndexIsInRange(value)
                     ? value
                     : 0;
-    }
-
-    public void SetMemoryUseForCompression(MemoryUseItem value)
-    {
-        if (value.Value == -1)
-        {
-            MemoryUsageForCompressingComboBox.SelectedIndex = 0;
-        }
-        else
-        {
-            FriendlyStringAndBackingValue<MemoryUseItem>? item =
-                MemoryUseItems.FirstOrDefault_PastFirstIndex(x => x.BackingValue.Value == value.Value && x.BackingValue.IsPercent == value.IsPercent);
-            MemoryUsageForCompressingComboBox.SelectedIndex = item != null
-                ? Array.IndexOf(MemoryUseItems, item)
-                : 0;
-        }
+        NumberOfCPUThreadsOutOfLabel.Text = CPUThreads.ToStrInv();
     }
 
     #endregion
@@ -584,15 +545,6 @@ public sealed partial class MainForm : Form
         PopulateThreadsComboBox(switching: true);
     }
 
-    private void DictionarySizeComboBox_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (!DictionarySizeComboBox.SelectedIndexIsInRange()) return;
-        Config.DictionarySize =
-            DictionarySizeComboBox.SelectedIndex == 0
-                ? -1
-                : DictionarySizeItems[DictionarySizeComboBox.SelectedIndex].BackingValue;
-    }
-
     private void PopulateThreadsComboBox(bool switching = false)
     {
         FriendlyStringAndBackingValue<int>[] items =
@@ -619,15 +571,6 @@ public sealed partial class MainForm : Form
                 : Config.CompressionMethod == CompressionMethod.LZMA2
                     ? Lzma2ThreadItems[NumberOfCPUThreadsComboBox.SelectedIndex].BackingValue
                     : LzmaThreadItems[NumberOfCPUThreadsComboBox.SelectedIndex].BackingValue;
-    }
-
-    private void MemoryUsageForCompressingComboBox_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (!MemoryUsageForCompressingComboBox.SelectedIndexIsInRange()) return;
-        Config.MemoryUseForCompression =
-            MemoryUsageForCompressingComboBox.SelectedIndex == 0
-                ? MemoryUseItem.Default
-                : MemoryUseItems[MemoryUsageForCompressingComboBox.SelectedIndex].BackingValue;
     }
 
     #endregion
