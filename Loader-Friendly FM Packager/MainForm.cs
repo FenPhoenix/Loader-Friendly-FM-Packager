@@ -548,8 +548,6 @@ public sealed partial class MainForm : Form, IEventDisabler
 
     private void CompressionMethodComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (EventsDisabled > 0) return;
-
         if (!CompressionMethodComboBox.SelectedIndexIsInRange()) return;
         Config.CompressionMethod = CompressionMethodItems[CompressionMethodComboBox.SelectedIndex].BackingValue;
         PopulateThreadsComboBox(switching: true);
@@ -565,7 +563,7 @@ public sealed partial class MainForm : Form, IEventDisabler
         NumberOfCPUThreadsComboBox.Items.Clear();
         NumberOfCPUThreadsComboBox.Items.AddRange(items.ToFriendlyStrings());
 
-        if (switching)
+        if (switching && EventsDisabled <= 0)
         {
             SetThreads(-1);
             Config.Threads = -1;
