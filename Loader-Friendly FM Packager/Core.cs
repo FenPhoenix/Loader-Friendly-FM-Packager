@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -700,40 +701,42 @@ internal static class Core
 
         #region Temp rename files for sorting
 
-        // If we wanted to be super paranoid, we could check that this name does end up sorting at the top
-        // (duplicate 7-Zip's sorting logic)
+        // If this name doesn't end up sorting at the top then someone's being a troll, so oh well.
         const string sortAtTopPrefix = "!!!!!!!!_";
 
         if (Utils.TryGetSmallestUsedMisFile(filesDir, out string smallestUsedMisFile))
         {
-            int index = misFiles.FindIndex(x => x.Name.EqualsI(smallestUsedMisFile));
-            Trace.Assert(index > -1);
-
-            NameAndTempName item = misFiles[index];
-            Trace.Assert(IsInBaseDir(item.Name));
-
-            item.TempSortedName = sortAtTopPrefix + item.Name;
-
-            // TODO: Error handling needed
-            File.Move(
-                Path.Combine(filesDir, item.Name),
-                Path.Combine(filesDir, item.TempSortedName));
+            AddRenameable(misFiles, smallestUsedMisFile, ref filesDir);
         }
 
         if (Utils.TryGetSmallestGamFile(filesDir, out string smallestGamFile))
         {
-            int index = gamFiles.FindIndex(x => x.Name.EqualsI(smallestGamFile));
+            AddRenameable(gamFiles, smallestGamFile, ref filesDir);
+        }
+
+        static void AddRenameable(List<NameAndTempName> potentialRenameables, string targetFileName, ref string filesDir)
+        {
+            int index = potentialRenameables.FindIndex(x => x.Name.EqualsI(targetFileName));
             Trace.Assert(index > -1);
 
-            NameAndTempName item = gamFiles[index];
+            NameAndTempName item = potentialRenameables[index];
             Trace.Assert(IsInBaseDir(item.Name));
 
-            item.TempSortedName = sortAtTopPrefix + item.Name;
+            string newName = sortAtTopPrefix + item.Name;
 
-            // TODO: Error handling needed
-            File.Move(
-                Path.Combine(filesDir, item.Name),
-                Path.Combine(filesDir, item.TempSortedName));
+            // If there actually is already a file named like "!!!!!!!!_miss21.mis" then someone's being a troll
+            // so just give up.
+            // TODO: But we should log it... it could be we couldn't or didn't clear our source folder and we
+            //  have leftover renamed files?
+            if (!potentialRenameables.Any(x => x.Name.EqualsI(newName)))
+            {
+                item.TempSortedName = newName;
+
+                // TODO: Error handling needed
+                File.Move(
+                    Path.Combine(filesDir, item.Name),
+                    Path.Combine(filesDir, item.TempSortedName));
+            }
         }
 
         #endregion
