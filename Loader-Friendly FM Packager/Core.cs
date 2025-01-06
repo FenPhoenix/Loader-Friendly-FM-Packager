@@ -356,7 +356,7 @@ internal static class Core
                 int level = Config.CompressionLevel;
                 CompressionMethod method = Config.CompressionMethod;
 
-                (ListFileData listFileData, string listFile_Rest) = GetListFile(ref sourcePath, makeCopyOfFilesDir: true);
+                (ListFileData listFileData, string listFile_Rest) = GetListFile(ref sourcePath, makeCopyOfFilesDir: true, _cts.Token);
 
                 Run7z_ALScanFiles(sourcePath, outputArchive, listFileData, level, method, _cts.Token);
                 Run7z_Rest(sourcePath, outputArchive, listFile_Rest, listFileData, level, method, _cts.Token);
@@ -556,7 +556,7 @@ internal static class Core
     }
 
     internal static (ListFileData ListFileData, string RestListFile)
-    GetListFile(ref string filesDir, bool makeCopyOfFilesDir)
+    GetListFile(ref string filesDir, bool makeCopyOfFilesDir, CancellationToken cancellationToken)
     {
         View.SetProgressMessage("Preparing...");
 
@@ -584,15 +584,34 @@ internal static class Core
         if (makeCopyOfFilesDir)
         {
             View.SetProgressMessage("Making a copy of source FM directory...");
+            View.SetProgressPercent(0);
 
             // TODO: Error handling needed
-            // TODO: We need this as a manual loop so we can poll for cancellation
-            Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(filesDir, Paths.Temp_SourceCopy);
+            string[] sourceFiles = Directory.GetFiles(filesDir, "*", SearchOption.AllDirectories);
+            for (int i = 0; i < sourceFiles.Length; i++)
+            {
+                string file = sourceFiles[i];
+                string destFile = Path.Combine(Paths.Temp_SourceCopy, file.RemoveLeadingPath(filesDir));
+                string? dirName = Path.GetDirectoryName(destFile);
+                if (!dirName.IsEmpty())
+                {
+                    Directory.CreateDirectory(dirName);
+
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+                File.Copy(file, destFile);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                View.SetProgressPercent(Utils.GetPercentFromValue_Int(i + 1, sourceFiles.Length));
+            }
+
             filesDir = Paths.Temp_SourceCopy;
             files = Directory.GetFiles(filesDir, "*", SearchOption.AllDirectories);
         }
 
         View.SetProgressMessage("Generating archive packaging logic...");
+        View.SetProgressPercent(0);
 
         HashSet<string> dupePreventionHash = new(StringComparer.OrdinalIgnoreCase);
 
