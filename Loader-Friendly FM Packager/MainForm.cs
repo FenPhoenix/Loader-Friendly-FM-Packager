@@ -1,6 +1,7 @@
 #define DEV_TESTING
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -32,9 +33,13 @@ TODO: Re-run the 7z-scan-friendly convert with the final logic
 TODO: Act on caught exceptions and add robust error handling everywhere
 */
 
-public sealed partial class MainForm : Form
+public sealed partial class MainForm : Form, IEventDisabler
 {
     private bool _operationInProgress;
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int EventsDisabled { get; set; }
 
     public MainForm()
     {
@@ -78,10 +83,13 @@ public sealed partial class MainForm : Form
     public void SetCompressionMethod(CompressionMethod value)
     {
         int index = (int)value;
-        CompressionMethodComboBox.SelectedIndex =
-            CompressionMethodComboBox.IndexIsInRange(index)
-                ? index
-                : 0;
+        using (new DisableEvents(this))
+        {
+            CompressionMethodComboBox.SelectedIndex =
+                CompressionMethodComboBox.IndexIsInRange(index)
+                    ? index
+                    : 0;
+        }
     }
 
     public void SetThreads(int value)
@@ -540,6 +548,8 @@ public sealed partial class MainForm : Form
 
     private void CompressionMethodComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
+        if (EventsDisabled > 0) return;
+
         if (!CompressionMethodComboBox.SelectedIndexIsInRange()) return;
         Config.CompressionMethod = CompressionMethodItems[CompressionMethodComboBox.SelectedIndex].BackingValue;
         PopulateThreadsComboBox(switching: true);
