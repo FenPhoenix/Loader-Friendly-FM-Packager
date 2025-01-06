@@ -58,6 +58,8 @@ public sealed partial class MainForm : Form, IEventDisabler
         Cancel_Button.CenterH(StatusGroupBox);
         ResetProgressMessage();
         ProgressMessageLabel.Location = ProgressMessageLabel.Location with { X = MainProgressBar.Left };
+
+        UpdateModeEnabledState();
     }
 
     #region Getters and setters
@@ -589,5 +591,24 @@ public sealed partial class MainForm : Form, IEventDisabler
     private void Cancel_Button_Click(object sender, EventArgs e)
     {
         Core.CancelToken();
+    }
+
+    private void ModeRadioButtons_CheckedChanged(object sender, EventArgs e)
+    {
+        UpdateModeEnabledState();
+    }
+
+    private void UpdateModeEnabledState()
+    {
+        if (CreateRadioButton.Checked)
+        {
+            CreatePanel.Enabled = true;
+            RepackPanel.Enabled = false;
+        }
+        else
+        {
+            CreatePanel.Enabled = false;
+            RepackPanel.Enabled = true;
+        }
     }
 }
