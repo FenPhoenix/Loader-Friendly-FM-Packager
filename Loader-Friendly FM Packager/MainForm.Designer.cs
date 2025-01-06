@@ -366,6 +366,7 @@ sealed partial class MainForm
             this.RepackButton.TabIndex = 22;
             this.RepackButton.Text = "Repack all";
             this.RepackButton.UseVisualStyleBackColor = true;
+            this.RepackButton.Click += new System.EventHandler(this.RepackButton_Click);
             // 
             // AddSourceArchiveButton
             // 

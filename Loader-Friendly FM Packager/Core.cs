@@ -342,6 +342,8 @@ internal static class Core
 
                 _cts = _cts.Recreate();
 
+                Utils.CreateOrClearTempPath(Paths.Temp);
+
                 Directory.SetCurrentDirectory(sourcePath);
 
                 try
@@ -364,6 +366,7 @@ internal static class Core
             }
             catch (OperationCanceledException)
             {
+                // TODO: Below success message overrides this one.
                 View.SetProgressMessage("Canceled.");
                 try
                 {
@@ -387,7 +390,95 @@ internal static class Core
 
     internal static async Task RepackBatch()
     {
-        // TODO: Implement
+        await Task.Run(static () =>
+        {
+            try
+            {
+                View.StartCreateSingleArchiveOperation();
+
+                _cts = _cts.Recreate();
+
+                Utils.CreateOrClearTempPath(Paths.Temp);
+
+                Progress<Fen7z.ProgressReport> progress = new(ReportProgress);
+
+                string tempExtractedDir = Path.Combine(Paths.Temp_SourceCopy);
+                int level = Config.CompressionLevel;
+                CompressionMethod method = Config.CompressionMethod;
+
+                string[] sourceArchives = View.Repack_Archives;
+                string outputDir = View.Repack_OutputDirectory;
+
+                for (int i = 0; i < sourceArchives.Length; i++)
+                {
+                    string archive = sourceArchives[i];
+                    string extractedDirName = Path.GetFileName(archive).Trim();
+                    string outputArchive = Path.Combine(outputDir, Path.GetFileNameWithoutExtension(extractedDirName) + ".7z");
+
+                    Utils.CreateOrClearTempPath(tempExtractedDir);
+
+                    View.SetProgressMessage("Unpacking archive '" + archive + "'...");
+
+                    var result = Fen7z.Extract(
+                        sevenZipPathAndExe: Paths.SevenZipExe,
+                        archivePath: archive,
+                        outputPath: tempExtractedDir,
+                        cancellationToken: _cts.Token,
+                        progress: progress);
+
+                    if (result.ErrorOccurred)
+                    {
+                        // TODO: Handle the error. Also add logging maybe?
+                    }
+                    else if (result.Canceled)
+                    {
+                        throw new OperationCanceledException(_cts.Token);
+                    }
+                    else
+                    {
+                        // TODO: Handle extract complete
+                    }
+
+                    (ListFileData listFileData, string listFile_Rest) =
+                        GetListFile(
+                            ref tempExtractedDir,
+                            makeCopyOfFilesDir: false,
+                            _cts.Token);
+                    Run7z_ALScanFiles(tempExtractedDir, outputArchive, listFileData, level, method, CancellationToken.None);
+                    Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, listFileData, level, method, CancellationToken.None);
+                }
+
+                return;
+
+                static void ReportProgress(Fen7z.ProgressReport pr)
+                {
+                    if (!pr.Canceling)
+                    {
+                        View.SetProgressPercent(pr.CompressPercent);
+                    }
+                }
+            }
+            catch (OperationCanceledException ex)
+            {
+                // TODO: Below success message overrides this one.
+                View.SetProgressMessage("Canceled.");
+                try
+                {
+                    // TODO: Handle cancellation
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+            finally
+            {
+                Utils.CreateOrClearTempPath(Paths.Temp);
+                // TODO: Fail, success?
+                View.EndCreateSingleArchiveOperation("Finished repacking archives.");
+                _cts.Dispose();
+            }
+        });
     }
 
     /*
@@ -571,9 +662,6 @@ internal static class Core
         List<NameAndTempName> misFiles = new();
         List<NameAndTempName> gamFiles = new();
 
-        Utils.CreateOrClearTempPath(Paths.Temp);
-        Utils.CreateOrClearTempPath(Paths.Temp_SourceCopy);
-
         string[] files = Directory.GetFiles(filesDir, "*", SearchOption.AllDirectories);
 
         /*
@@ -589,6 +677,8 @@ internal static class Core
         */
         if (makeCopyOfFilesDir)
         {
+            Utils.CreateOrClearTempPath(Paths.Temp_SourceCopy);
+
             View.SetProgressMessage("Making a copy of source FM directory...");
             View.SetProgressPercent(0);
 

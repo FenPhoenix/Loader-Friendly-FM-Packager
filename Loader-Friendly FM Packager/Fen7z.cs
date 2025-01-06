@@ -95,7 +95,6 @@ public static class Fen7z
     /// <summary>
     /// Extract a .7z file wholly or partially.
     /// </summary>
-    /// <param name="sevenZipWorkingPath"></param>
     /// <param name="sevenZipPathAndExe"></param>
     /// <param name="archivePath"></param>
     /// <param name="outputPath"></param>
@@ -105,7 +104,6 @@ public static class Fen7z
     /// <param name="progress"></param>
     /// <returns></returns>
     public static Result Extract(
-        string sevenZipWorkingPath,
         string sevenZipPathAndExe,
         string archivePath,
         string outputPath,
@@ -115,7 +113,6 @@ public static class Fen7z
         IProgress<ProgressReport>? progress = null)
     {
         return Extract(
-            sevenZipWorkingPath: sevenZipWorkingPath,
             sevenZipPathAndExe: sevenZipPathAndExe,
             archivePath: archivePath,
             outputPath: outputPath,
@@ -129,7 +126,6 @@ public static class Fen7z
     /// <summary>
     /// Extract a .7z file wholly or partially.
     /// </summary>
-    /// <param name="sevenZipWorkingPath"></param>
     /// <param name="sevenZipPathAndExe"></param>
     /// <param name="archivePath"></param>
     /// <param name="outputPath"></param>
@@ -140,7 +136,6 @@ public static class Fen7z
     /// <param name="progress"></param>
     /// <returns></returns>
     public static Result Extract(
-        string sevenZipWorkingPath,
         string sevenZipPathAndExe,
         string archivePath,
         string outputPath,
@@ -178,7 +173,7 @@ public static class Fen7z
         try
         {
             p.StartInfo.FileName = sevenZipPathAndExe;
-            p.StartInfo.WorkingDirectory = sevenZipWorkingPath;
+            p.StartInfo.WorkingDirectory = outputPath;
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true;
             // x     = Extract with full paths

@@ -85,6 +85,10 @@ public sealed partial class MainForm : Form, IEventDisabler
         set => OutputArchiveTextBox.Text = value;
     }
 
+    public string[] Repack_Archives => ArchivesToRepackListBox.ItemsAsStrings();
+
+    public string Repack_OutputDirectory => RepackOutputDirectoryTextBox.Text;
+
     public void SetCompressionLevel(int value)
     {
         CompressionLevelComboBox.SelectedIndex = CompressionLevelComboBox.IndexIsInRange(value)
@@ -611,11 +615,12 @@ public sealed partial class MainForm : Form, IEventDisabler
         using var d = new OpenFileDialog();
 
         d.Title = "Add source FM archive(s)";
-        d.Filter = "7-Zip files (*.7z)|*.7z|" +
-                   "Zip files (*.zip)|*.zip|" +
-                   "Rar files (*.rar)|*.rar|" +
-                   "All archive files (*.7z, *.zip, *.rar)|*.7z;*.zip;*.rar|" +
-                   "All files (*.*)|*.*";
+        d.Filter =
+            "All archive files (*.7z, *.zip, *.rar)|*.7z;*.zip;*.rar|" +
+            "Zip files (*.zip)|*.zip|" +
+            "7-Zip files (*.7z)|*.7z|" +
+            "Rar files (*.rar)|*.rar|" +
+            "All files (*.*)|*.*";
 
         ListBox lb = ArchivesToRepackListBox;
         string selectedItem =
@@ -665,13 +670,23 @@ public sealed partial class MainForm : Form, IEventDisabler
         ArchivesToRepackListBox.Items.Clear();
     }
 
-    private async void RepackOutputDirectoryBrowseButton_Click(object sender, EventArgs e)
+    private void RepackOutputDirectoryBrowseButton_Click(object sender, EventArgs e)
     {
-        await Core.RepackBatch();
+        using VistaFolderBrowserDialog dialog = new();
+        dialog.Title = "Choose output directory";
+
+        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+        RepackOutputDirectoryTextBox.Text = dialog.DirectoryName;
     }
 
     private void ModeTabControl_Selected(object sender, TabControlEventArgs e)
     {
         Config.Mode = ModeTabControl.SelectedTab == RepackTabPage ? Mode.Repack : Mode.Create;
+    }
+
+    private async void RepackButton_Click(object sender, EventArgs e)
+    {
+        await Core.RepackBatch();
     }
 }
