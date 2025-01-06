@@ -24,6 +24,7 @@ internal static class Core
 
         ConfigIni.ReadConfigData();
 
+        View.SetMode(Config.Mode);
         View.SetCompressionLevel(Config.CompressionLevel);
         View.SetCompressionMethod(Config.CompressionMethod);
         View.SetThreads(Config.Threads);
@@ -382,6 +383,11 @@ internal static class Core
                 _cts.Dispose();
             }
         });
+    }
+
+    internal static async Task RepackBatch()
+    {
+        // TODO: Implement
     }
 
     /*

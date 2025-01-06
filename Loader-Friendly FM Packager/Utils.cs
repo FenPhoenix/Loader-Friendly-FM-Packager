@@ -13,6 +13,50 @@ namespace Loader_Friendly_FM_Packager;
 
 internal static class Utils
 {
+    public static HashSetPathI ToHashSetPathI(this IEnumerable<string> source) => new(source);
+
+    private static readonly PathComparer _pathComparer = new();
+    public sealed class PathComparer : StringComparer
+    {
+        // Allocations here, but this doesn't ever seem to get hit for Add() or Contains() calls
+        public override int Compare(string? x, string? y)
+        {
+            return x == y ? 0 :
+                x == null ? -1 :
+                y == null ? 1 :
+                string.Compare(x.ToBackSlashes(), y.ToBackSlashes(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        public override bool Equals(string? x, string? y)
+        {
+            if (x == y) return true;
+            if (x == null || y == null) return false;
+
+            return x.PathEqualsI(y);
+        }
+
+        public override int GetHashCode(string obj) => obj == null
+            ? throw new ArgumentNullException(nameof(obj))
+            : OrdinalIgnoreCase.GetHashCode(obj.ToBackSlashes());
+    }
+
+    /// <summary>
+    /// A HashSet&lt;<see cref="string"/>&gt; where lookups are case-insensitive and directory separator-insensitive
+    /// </summary>
+    public sealed class HashSetPathI : HashSet<string>
+    {
+        public HashSetPathI() : base(_pathComparer) { }
+
+        public HashSetPathI(int capacity) : base(capacity, _pathComparer) { }
+
+        public HashSetPathI(IEnumerable<string> collection) : base(collection, _pathComparer) { }
+
+        /// <inheritdoc cref="HashSet{T}.Add"/>
+        public new bool Add(string value) => base.Add(value.ToBackSlashes());
+    }
+
+    public static string ToStringOrEmpty(this object? obj) => obj?.ToString() ?? "";
+
     public static TSource? FirstOrDefault_PastFirstIndex<TSource>(this TSource[] source, Func<TSource, bool> predicate)
     {
         for (int i = 0; i < source.Length; i++)
@@ -247,6 +291,18 @@ internal static class Utils
             if (value[i].IsDirSep()) return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// Path equality check ignoring case and directory separator differences.
+    /// </summary>
+    /// <param name="first"></param>
+    /// <param name="second"></param>
+    /// <returns></returns>
+    public static bool PathEqualsI(this string first, string second)
+    {
+        return first.Length >= second.Length &&
+               first.ToBackSlashes().EqualsI(second.ToBackSlashes());
     }
 
     /// <summary>

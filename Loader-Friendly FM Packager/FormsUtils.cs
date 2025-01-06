@@ -6,6 +6,38 @@ namespace Loader_Friendly_FM_Packager;
 
 internal static class FormsUtils
 {
+    internal static void RemoveAndSelectNearest(this ListBox listBox)
+    {
+        if (listBox.SelectedIndex == -1) return;
+
+        int oldSelectedIndex = listBox.SelectedIndex;
+
+        listBox.Items.RemoveAt(listBox.SelectedIndex);
+
+        if (oldSelectedIndex < listBox.Items.Count && listBox.Items.Count > 1)
+        {
+            listBox.SelectedIndex = oldSelectedIndex;
+        }
+        else if (listBox.Items.Count > 1)
+        {
+            listBox.SelectedIndex = oldSelectedIndex - 1;
+        }
+        else if (listBox.Items.Count == 1)
+        {
+            listBox.SelectedIndex = 0;
+        }
+    }
+
+    public static string[] ItemsAsStrings(this ListBox listBox)
+    {
+        string[] ret = new string[listBox.Items.Count];
+        for (int i = 0; i < listBox.Items.Count; i++)
+        {
+            ret[i] = listBox.Items[i].ToStringOrEmpty();
+        }
+        return ret;
+    }
+
     internal static bool SelectedIndexIsInRange(this ComboBox comboBox) =>
         comboBox.SelectedIndex > -1 && comboBox.SelectedIndex < comboBox.Items.Count;
 

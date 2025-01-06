@@ -22,7 +22,15 @@ internal static class ConfigIni
         for (int i = 0; i < lines.Length; i++)
         {
             string lineT = lines[i].Trim();
-            if (lineT.TryGetValueO("CompressionLevel=", out string value))
+            if (lineT.TryGetValueO("Mode=", out string value))
+            {
+                FieldInfo? field = typeof(Mode).GetField(value, _bFlagsEnum);
+                if (field != null)
+                {
+                    Config.Mode = (Mode)field.GetValue(null);
+                }
+            }
+            if (lineT.TryGetValueO("CompressionLevel=", out value))
             {
                 if (int.TryParse(value, out int result))
                 {
@@ -68,6 +76,7 @@ internal static class ConfigIni
     internal static void WriteConfigData()
     {
         using var sw = new StreamWriter(Paths.ConfigFile);
+        sw.WriteLine("Mode=" + Config.Mode);
         sw.WriteLine("CompressionLevel=" + Config.CompressionLevel.ToStrInv());
         sw.WriteLine("CompressionMethod=" + Config.CompressionMethod);
         sw.WriteLine("Threads=" + Config.Threads.ToStrInv());

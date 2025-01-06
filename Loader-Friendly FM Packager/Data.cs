@@ -7,6 +7,8 @@ namespace Loader_Friendly_FM_Packager;
 
 public sealed class ConfigData
 {
+    public Mode Mode = Mode.Create;
+
     private const int DefaultCompressionLevel = 9;
 
     private int _compressionLevel = DefaultCompressionLevel;
@@ -51,6 +53,12 @@ public sealed class FriendlyStringAndBackingValue<TBacking>
 
 public static class Global
 {
+    public enum Mode
+    {
+        Create,
+        Repack,
+    }
+
     /// <summary>
     /// Shorthand for <see cref="Environment.NewLine"/>
     /// </summary>

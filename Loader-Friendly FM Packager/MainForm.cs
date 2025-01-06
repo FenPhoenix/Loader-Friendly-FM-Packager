@@ -9,8 +9,8 @@ using System.IO.Compression;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using AngelLoader.Forms.WinFormsNative.Dialogs;
 using Loader_Friendly_FM_Packager.WinFormsNative.Taskbar;
-using Ookii.Dialogs.WinForms;
 
 namespace Loader_Friendly_FM_Packager;
 
@@ -63,6 +63,15 @@ public sealed partial class MainForm : Form, IEventDisabler
     }
 
     #region Getters and setters
+
+    public void SetMode(Mode mode)
+    {
+        ModeTabControl.SelectedTab = mode switch
+        {
+            Mode.Repack => RepackTabPage,
+            _ => CreateTabPage,
+        };
+    }
 
     public string SourceFMPath
     {
@@ -162,20 +171,19 @@ public sealed partial class MainForm : Form, IEventDisabler
     private void FMDirectoryBrowseButton_Click(object sender, EventArgs e)
     {
         using VistaFolderBrowserDialog dialog = new();
-        dialog.Description = "Choose source FM directory";
-        dialog.UseDescriptionForTitle = true;
+        dialog.Title = "Choose source FM directory";
 
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
 
-        SourceFMDirectoryTextBox.Text = dialog.SelectedPath;
+        SourceFMDirectoryTextBox.Text = dialog.DirectoryName;
     }
 
     private void OutputArchiveBrowseButton_Click(object sender, EventArgs e)
     {
-        using VistaSaveFileDialog dialog = new();
-        dialog.Title = "Choose output archive";
+        using SaveFileDialog dialog = new();
+        dialog.Title = "Create output archive";
         dialog.AddExtension = true;
-        dialog.Filter = "7-Zip file|*.7z";
+        dialog.Filter = "7-Zip files (*.7z)|*.7z";
         dialog.DefaultExt = "7z";
         dialog.ValidateNames = true;
         dialog.OverwritePrompt = true;
@@ -593,22 +601,77 @@ public sealed partial class MainForm : Form, IEventDisabler
         Core.CancelToken();
     }
 
-    private void ModeRadioButtons_CheckedChanged(object sender, EventArgs e)
-    {
-        UpdateModeEnabledState();
-    }
-
     private void UpdateModeEnabledState()
     {
-        if (CreateRadioButton.Checked)
+        // TODO: Set from config
+    }
+
+    private void AddSourceArchiveButton_Click(object sender, EventArgs e)
+    {
+        using var d = new OpenFileDialog();
+
+        d.Title = "Add source FM archive(s)";
+        d.Filter = "7-Zip files (*.7z)|*.7z|" +
+                   "Zip files (*.zip)|*.zip|" +
+                   "Rar files (*.rar)|*.rar|" +
+                   "All archive files (*.7z, *.zip, *.rar)|*.7z;*.zip;*.rar|" +
+                   "All files (*.*)|*.*";
+
+        ListBox lb = ArchivesToRepackListBox;
+        string selectedItem =
+            lb.SelectedIndex > -1 ? lb.SelectedItem.ToStringOrEmpty() :
+            lb.Items.Count > 0 ? lb.ItemsAsStrings()[lb.Items.Count - 1] :
+            "";
+
+        if (!selectedItem.IsWhiteSpace())
         {
-            CreatePanel.Enabled = true;
-            RepackPanel.Enabled = false;
+            try
+            {
+                d.InitialDirectory = Path.GetDirectoryName(selectedItem) ?? "";
+            }
+            catch
+            {
+                // ignore
+            }
         }
-        else
+        d.Multiselect = true;
+        if (d.ShowDialog(this) == DialogResult.OK)
         {
-            CreatePanel.Enabled = false;
-            RepackPanel.Enabled = true;
+            try
+            {
+                lb.BeginUpdate();
+
+                Utils.HashSetPathI hash = lb.ItemsAsStrings().ToHashSetPathI();
+
+                foreach (string dir in d.FileNames)
+                {
+                    if (!hash.Contains(dir)) lb.Items.Add(dir);
+                }
+            }
+            finally
+            {
+                lb.EndUpdate();
+            }
         }
+    }
+
+    private void RemoveSourceArchiveButton_Click(object sender, EventArgs e)
+    {
+        ArchivesToRepackListBox.RemoveAndSelectNearest();
+    }
+
+    private void ClearSourceArchivesButton_Click(object sender, EventArgs e)
+    {
+        ArchivesToRepackListBox.Items.Clear();
+    }
+
+    private async void RepackOutputDirectoryBrowseButton_Click(object sender, EventArgs e)
+    {
+        await Core.RepackBatch();
+    }
+
+    private void ModeTabControl_Selected(object sender, TabControlEventArgs e)
+    {
+        Config.Mode = ModeTabControl.SelectedTab == RepackTabPage ? Mode.Repack : Mode.Create;
     }
 }
