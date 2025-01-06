@@ -541,6 +541,7 @@ public sealed partial class MainForm : Form, IEventDisabler
     {
         if (!CompressionLevelComboBox.SelectedIndexIsInRange()) return;
         Config.CompressionLevel = CompressionLevelComboBox.SelectedIndex;
+        CompressionMethodComboBox.Visible = CompressionLevelComboBox.SelectedIndex > 0;
     }
 
     private void CompressionMethodComboBox_SelectedIndexChanged(object sender, EventArgs e)
