@@ -517,20 +517,13 @@ public sealed partial class MainForm : Form, IEventDisabler
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-        if (!_operationInProgress) return;
-
-        using TaskDialog dialog = new();
-        dialog.WindowTitle = "Alert";
-        dialog.MainIcon = TaskDialogIcon.Warning;
-        dialog.Content =
-            "An operation is in progress. You should cancel it before exiting, or 7z.exe may be left running and archive files may be left in an incomplete state.";
-        TaskDialogButton forceQuitButton = new("Exit anyway");
-        TaskDialogButton cancelButton = new(ButtonType.Cancel) { Default = true };
-        dialog.Buttons.Add(forceQuitButton);
-        dialog.Buttons.Add(cancelButton);
-        TaskDialogButton resultButton = dialog.ShowDialog(this);
-        if (resultButton != forceQuitButton)
+        if (_operationInProgress)
         {
+            MessageBox.Show(
+                text: "An operation is in progress. Please cancel it first.",
+                caption: "Alert",
+                buttons: MessageBoxButtons.OK,
+                icon: MessageBoxIcon.Warning);
             e.Cancel = true;
         }
     }
