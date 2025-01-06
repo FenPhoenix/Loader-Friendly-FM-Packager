@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -181,6 +182,7 @@ internal static class Utils
             }
             catch (Exception ex)
             {
+                Trace.WriteLine(ex);
             }
 
             try
@@ -189,13 +191,14 @@ internal static class Utils
                 {
                     File.Delete(f);
                 }
-                foreach (string d in Directory.GetFiles(tempPath, "*"))
+                foreach (string d in Directory.GetDirectories(tempPath, "*"))
                 {
                     Directory.Delete(d, recursive: true);
                 }
             }
             catch (Exception ex)
             {
+                Trace.WriteLine(ex);
             }
         }
         else

@@ -374,7 +374,7 @@ public sealed partial class MainForm : Form, IEventDisabler
                 string outputArchive = Path.Combine(outputDir, extractedDirName + ".7z");
                 Directory.CreateDirectory(outputDir);
 
-                (Core.ListFileData listFileData, string listFile_Rest) = Core.GetListFile(tempExtractedDir);
+                (Core.ListFileData listFileData, string listFile_Rest) = Core.GetListFile(ref tempExtractedDir, makeCopyOfFilesDir: true);
 
                 const string entriesListsDir = @"J:\_7z_al_scan_files_lists_9";
                 Directory.CreateDirectory(entriesListsDir);

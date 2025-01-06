@@ -357,7 +357,7 @@ internal static class Core
 
                 View.SetProgressMessage("Generating archive packaging logic...");
 
-                (ListFileData listFileData, string listFile_Rest) = GetListFile(sourcePath);
+                (ListFileData listFileData, string listFile_Rest) = GetListFile(ref sourcePath, makeCopyOfFilesDir: true);
 
                 Run7z_ALScanFiles(sourcePath, outputArchive, listFileData, level, method, _cts.Token);
                 Run7z_Rest(sourcePath, outputArchive, listFile_Rest, listFileData, level, method, _cts.Token);
@@ -556,7 +556,7 @@ internal static class Core
     }
 
     internal static (ListFileData ListFileData, string RestListFile)
-    GetListFile(string filesDir)
+    GetListFile(ref string filesDir, bool makeCopyOfFilesDir)
     {
         ListFileData ret = new();
 
@@ -564,8 +564,28 @@ internal static class Core
         List<NameAndTempName> gamFiles = new();
 
         Utils.CreateOrClearTempPath(Paths.Temp);
+        Utils.CreateOrClearTempPath(Paths.Temp_SourceCopy);
 
         string[] files = Directory.GetFiles(filesDir, "*", SearchOption.AllDirectories);
+
+        /*
+        TODO: This is slow. We can't just copy our to-be-renamed files either because they need to be in the
+         stupid list file with paths relative to the main folder if they want to be in the same block as other
+         stuff, which they do.
+         We could:
+         -Keep this slow copy.
+         -Do some crazy garbage with symbolic links (assuming that works).
+         -Compile our own version of 7-zip that can take a list of files to sort to the top of their block.
+         -Renaming the files in-place is too dangerous no matter how carefully we backup and restore the originals,
+          as we'd be messing with a user's actual working FM files, which to me is a hard no.
+        */
+        if (makeCopyOfFilesDir)
+        {
+            // TODO: Error handling needed
+            Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(filesDir, Paths.Temp_SourceCopy);
+            filesDir = Paths.Temp_SourceCopy;
+            files = Directory.GetFiles(filesDir, "*", SearchOption.AllDirectories);
+        }
 
         HashSet<string> dupePreventionHash = new(StringComparer.OrdinalIgnoreCase);
 
@@ -650,17 +670,17 @@ internal static class Core
         */
         if (Utils.TryGetInfoFileFromFmIni(filesDir, out string infoFile) && infoFile.IsValidReadme())
         {
-            AddIfNotInList(ret.Readmes, infoFile);
+            AddIfNotInList(ret.Readmes, infoFile, ref filesDir);
         }
 
         var modIniValues = Utils.GetValuesFromModIni(filesDir);
         if (!modIniValues.Readme.IsEmpty() && modIniValues.Readme.IsValidReadme())
         {
-            AddIfNotInList(ret.Readmes, modIniValues.Readme);
+            AddIfNotInList(ret.Readmes, modIniValues.Readme, ref filesDir);
         }
         if (!modIniValues.Icon.IsEmpty() && modIniValues.Icon.ExtIsIco())
         {
-            AddIfNotInList(ret.Thumbs, modIniValues.Icon);
+            AddIfNotInList(ret.Thumbs, modIniValues.Icon, ref filesDir);
         }
 
         List<string> htmlRefFiles = HtmlReference.GetHtmlReferenceFiles(filesDir, readmeFullFilePaths, files);
@@ -670,7 +690,7 @@ internal static class Core
             // leave those alone and take whatever hit we take
             if (!htmlRefFile.ExtIsMis() && !htmlRefFile.ExtIsGam())
             {
-                AddIfNotInList(ret.OnePerBlockItems, htmlRefFile);
+                AddIfNotInList(ret.OnePerBlockItems, htmlRefFile, ref filesDir);
             }
         }
 
@@ -777,11 +797,11 @@ internal static class Core
             list.Add(new NameAndTempName(fn, "", IsInBaseDir(fn)));
         }
 
-        void AddIfNotInList(List<string> list, string value)
+        void AddIfNotInList(List<string> list, string value, ref string filesDir_)
         {
             string valNormalized = value.ToBackSlashes();
             if (!valNormalized.IsEmpty() &&
-                File.Exists(Path.Combine(filesDir, valNormalized)) &&
+                File.Exists(Path.Combine(filesDir_, valNormalized)) &&
                 dupePreventionHash.Add(valNormalized))
             {
                 restFileNames.Remove(valNormalized);
