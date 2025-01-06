@@ -582,7 +582,7 @@ internal static class Core
         */
         if (makeCopyOfFilesDir)
         {
-            View.SetProgressMessage("Making a safe temp copy of the source directory...");
+            View.SetProgressMessage("Making a copy of source FM directory...");
 
             // TODO: Error handling needed
             Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(filesDir, Paths.Temp_SourceCopy);
