@@ -9,6 +9,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Loader_Friendly_FM_Packager.WinFormsNative.Taskbar;
 using Ookii.Dialogs.WinForms;
 
 namespace Loader_Friendly_FM_Packager;
@@ -109,6 +110,7 @@ public sealed partial class MainForm : Form, IEventDisabler
 
     public void StartCreateSingleArchiveOperation() => Invoke(() =>
     {
+        TaskBarProgress.SetState(Handle, TaskbarStates.Normal);
         _operationInProgress = true;
         MainPanel.Enabled = false;
         ProgressMessageLabel.Text = "";
@@ -119,6 +121,7 @@ public sealed partial class MainForm : Form, IEventDisabler
 
     public void EndCreateSingleArchiveOperation(string? message = null) => Invoke(() =>
     {
+        TaskBarProgress.SetState(Handle, TaskbarStates.NoProgress);
         MainProgressBar.Hide();
         Cancel_Button.Hide();
         if (message != null)
@@ -141,6 +144,7 @@ public sealed partial class MainForm : Form, IEventDisabler
 
     public void SetProgressPercent(int percent) => Invoke(() =>
     {
+        TaskBarProgress.SetValue(Handle, percent.Clamp(0, 100), 100);
         MainProgressBar.Value = percent;
     });
 
