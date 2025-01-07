@@ -25,6 +25,10 @@ TODO: When re-packing from a zip file, notify the user when an unknown-encoded f
 
 TODO: Allow adding a context menu item, so the user can just right click and run it on a folder.
 
+TODO: Repack needs a second "overall" progress bar, and needs to say which FM it's doing.
+
+TODO: Repack should maybe have like a log on the UI that shows any errors and the FM where the error occurred?
+
 --
 
 TODO: Re-run the 7z-scan-friendly convert with the final logic
