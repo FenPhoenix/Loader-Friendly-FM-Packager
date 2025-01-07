@@ -92,6 +92,8 @@ internal static class Core
         string outputArchive,
         ListFileData listFileData,
         List<FileToRename> itemsToRename,
+        int level,
+        CompressionMethod method,
         CancellationToken cancellationToken)
     {
         foreach (var item in itemsToRename)
@@ -107,6 +109,7 @@ internal static class Core
                 outputArchive: outputArchive,
                 originalFileName: item.TempSortedName,
                 newFileName: item.Name,
+                args: GetArgs(level, method),
                 cancellationToken: cancellationToken
             );
 
@@ -342,11 +345,13 @@ internal static class Core
                 outputArchive: outputArchive,
                 listFileData,
                 listFileData.FilesToRename,
+                level: level,
+                method: method,
                 cancellationToken: cancellationToken);
         }
     }
 
-    internal static string GetArgs(int level, CompressionMethod method, bool friendly = true)
+    internal static string GetArgs(int level, CompressionMethod method)
     {
         if (level is < 0 or > 9)
         {
@@ -359,6 +364,7 @@ internal static class Core
                 as a string
         -myv  = Don't use filters not supported by this version and below. 4 digits, ex. 1600 for 16.00
         -mhc  = Enable or disable header compression
+        -mqs  = Enable or disable sorting by file types in archive. Off = sort by name only.
         -y    = Say yes to all prompts automatically
         -r    = Recurse directories - basic thing required to put the files into the archive keeping the folder
                 structure
@@ -391,13 +397,9 @@ internal static class Core
 
             args += " -mmt=" + threads.ToStrInv();
         }
+        args += " -mhc=off -mqs=off";
 
-        args += " -y -r -bsp1 -bb1 -sas -t7z";
-
-        if (friendly)
-        {
-            args += " -scsUTF-8 -mhc=off";
-        }
+        args += " -y -r -bsp1 -bb1 -sas -t7z -scsUTF-8";
 
         return args;
     }
@@ -498,6 +500,7 @@ internal static class Core
         });
     }
 
+    // TODO: Check for existence of dest file and put like a (1) on the end etc.
     internal static async Task RepackBatch()
     {
         await Task.Run(static () =>
@@ -522,8 +525,8 @@ internal static class Core
                 for (int i = 0; i < sourceArchives.Length; i++)
                 {
                     string archive = sourceArchives[i];
-                    string extractedDirName = Path.GetFileName(archive).Trim();
-                    string outputArchive = Path.Combine(outputDir, Path.GetFileNameWithoutExtension(extractedDirName) + ".7z");
+                    string extractedDirName = Path.GetFileNameWithoutExtension(archive).Trim();
+                    string outputArchive = Path.Combine(outputDir, extractedDirName + ".7z");
 
                     Paths.CreateOrClearTempPath(Paths.TempPaths.SourceCopy);
 
@@ -604,24 +607,6 @@ internal static class Core
     }
 
     /*
-    TODO(Logic): We need to have fewer things in blocks by themselves; it's causing large file size increases in
-     a bunch of files. We need to see if 7z will pack the files into blocks in the order they're specified in
-     the list file. We need to know if we can just put the smallest used mis file as the first line in the list
-     file for example, and have 7z be guaranteed to put it at the start of the block.
-
-    IMPORTANT(Update on order): 7z puts the files in name order (or extension-then-name order) no matter what
-     order you put them in the list file. So we can't do the start-of-block thing.
-
-    But we could still put just the file we need in its own block, and the rest in another block together, that
-    should at least help.
-
-    TODO(Update on size testing):
-    Of the 97 files that were >=2% larger, now only 13 are >=5%, and the largest is 67% rather than 94%.
-    To get better, we'd have to make a custom version of 7-zip that allows determining block position by more
-    than just name or extension, neither of which work for our particular case.
-
-    ---
-
     TODO(Update on size testing): We can actually just do like this:
 
     Say we had these files:
