@@ -671,6 +671,10 @@ internal static class Core
         because they're almost always larger (and usually MUCH larger) than .gam files, and there are more likely
         to be more of them. Thus, a larger amount of data gets packed into the block, resulting in much better
         compression ratios, and greatly lowering the outlier size increases.
+
+        A happy side effect of this logic is that it also puts the smallest used .mis file as the first .mis file
+        in the filenames list, so loaders that just run through the entries and grab the first valid .mis file
+        they see will also get the one that has instant access. Friggin' score.
         */
 
         internal readonly List<string> GamFiles = new();
