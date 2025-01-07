@@ -87,7 +87,7 @@ internal static class Core
         }
     }
 
-    private static void RunProcess_Update(
+    private static void RunProcess_Rename(
         string sourcePath,
         string outputArchive,
         ListFileData listFileData,
@@ -101,7 +101,7 @@ internal static class Core
             it simply doesn't rename anything and reports success. So we need to run a verify pass afterwards to
             make sure we don't have our temp-named files still in there.
             */
-            Fen7z.Result result = Fen7z.Update(
+            Fen7z.Result result = Fen7z.Rename(
                 sevenZipPathAndExe: Paths.SevenZipExe,
                 sourcePath: sourcePath,
                 outputArchive: outputArchive,
@@ -113,7 +113,7 @@ internal static class Core
             if (result.ErrorOccurred)
             {
                 // TODO: This could be a batch process so we should gather up errors and show a dialog only once at the end.
-                Log("7z.exe (Update mode) returned an error:" + $"{NL}" + result);
+                Log("7z.exe (Rename mode) returned an error:" + $"{NL}" + result);
                 View.ShowError("Failed to finalize creation of archive '" + outputArchive +
                                "'. The archive may appear complete but certain file names may be wrong. See log for details.");
                 return;
@@ -124,7 +124,7 @@ internal static class Core
             }
             else
             {
-                // TODO: Handle update complete
+                // TODO: Handle rename complete
             }
         }
 
@@ -337,7 +337,7 @@ internal static class Core
             View.SetProgressMessage("Finalizing archive...");
             View.SetProgressPercent(100);
 
-            RunProcess_Update(
+            RunProcess_Rename(
                 sourcePath: sourcePath,
                 outputArchive: outputArchive,
                 listFileData,

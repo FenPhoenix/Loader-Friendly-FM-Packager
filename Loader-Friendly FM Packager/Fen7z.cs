@@ -384,7 +384,7 @@ public static class Fen7z
         }
     }
 
-    public static Result Update(
+    public static Result Rename(
         string sevenZipPathAndExe,
         string sourcePath,
         string outputArchive,

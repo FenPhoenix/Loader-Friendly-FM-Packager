@@ -335,7 +335,7 @@ public sealed partial class MainForm : Form, IEventDisabler
             Core.GetArgs(Config.CompressionLevel, Config.CompressionMethod, friendly: false),
             CancellationToken.None);
 
-        Fen7z.Update(
+        Fen7z.Rename(
             sevenZipPathAndExe: Paths.SevenZipExe,
             sourcePath: misFilesDir,
             outputArchive: outputArchive,
