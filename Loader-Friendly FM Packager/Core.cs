@@ -97,10 +97,9 @@ internal static class Core
         foreach (var item in itemsToRename)
         {
             /*
-            TODO: 7z.exe doesn't report an error or any fail state when trying to rename a file that doesn't exist;
-             it simply doesn't rename anything and reports success. So we need to run a verify pass afterwards to
-             make sure we don't have our temp-named files still in there. To do this we'll need SevenZipExtract
-             or something just to go through the file names.
+            7z.exe doesn't report an error or any fail state when trying to rename a file that doesn't exist;
+            it simply doesn't rename anything and reports success. So we need to run a verify pass afterwards to
+            make sure we don't have our temp-named files still in there.
             */
             Fen7z.Result result = Fen7z.Update(
                 sevenZipPathAndExe: Paths.SevenZipExe,
@@ -129,6 +128,9 @@ internal static class Core
             }
         }
 
+        View.SetProgressMessage("Verifying archive...");
+        View.SetProgressPercent(100);
+
         if (!ArchiveVerificationSucceeded(outputArchive, listFileData, out List<string> filesInArchive, out List<string> filesOnDisk))
         {
             string filesStr = "Files on disk:" + $"{NL}" +
@@ -155,7 +157,9 @@ internal static class Core
         //  report that with certainly if it happens, rather than just saying "maybe it's this".
         static bool ArchiveVerificationSucceeded(string outputArchive, ListFileData listFileData, out List<string> filesInArchive, out List<string> filesOnDisk)
         {
-            using var archive = new ArchiveFile(outputArchive, libraryFilePath: Paths.SevenZipDll);
+            // Use SevenZipExtractor as it's a wrapper around 7z.dll so we can get the names straight out of the
+            // dll to guarantee correctness as much as we can.
+            using ArchiveFile archive = new(outputArchive, libraryFilePath: Paths.SevenZipDll);
 
             filesInArchive = new List<string>();
             foreach (Entry entry in archive.Entries)
@@ -328,11 +332,10 @@ internal static class Core
             method: method,
             cancellationToken: cancellationToken);
 
-        // TODO: Maybe run a compare on the archive filenames to the disk ones, to detect any failed renames
         if (listFileData.FilesToRename.Count > 0)
         {
-            View.SetProgressPercent(0);
-            View.SetProgressMessage("Finishing...");
+            View.SetProgressMessage("Finalizing archive...");
+            View.SetProgressPercent(100);
 
             RunProcess_Update(
                 sourcePath: sourcePath,
@@ -486,6 +489,8 @@ internal static class Core
             }
             finally
             {
+                View.SetProgressMessage("Cleaning up...");
+                View.SetProgressPercent(100);
                 Paths.CreateOrClearTempPath(Paths.TempPaths.Base);
                 View.EndCreateSingleArchiveOperation("Successfully created '" + outputArchive + "'.");
                 _cts.Dispose();
