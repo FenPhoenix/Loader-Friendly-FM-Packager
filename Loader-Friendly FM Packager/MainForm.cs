@@ -1,6 +1,7 @@
 #define DEV_TESTING
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -24,8 +25,6 @@ TODO: When re-packing from a zip file, notify the user when an unknown-encoded f
  We'll need to pull in the .NET zip code so as to customize it to expose the "used default encoding" situation.
 
 TODO: Allow adding a context menu item, so the user can just right click and run it on a folder.
-
-TODO: Allow drag and drop for archives to repack
 
 --
 
@@ -65,6 +64,8 @@ public sealed partial class MainForm : Form, IEventDisabler
     }
 
     #region Getters and setters
+
+    public bool DragDropEnabled => !_operationInProgress;
 
     public void SetMode(Mode mode)
     {
@@ -623,6 +624,7 @@ public sealed partial class MainForm : Form, IEventDisabler
             "7-Zip files (*.7z)|*.7z|" +
             "Rar files (*.rar)|*.rar|" +
             "All files (*.*)|*.*";
+        d.Multiselect = true;
 
         ListBox lb = ArchivesToRepackListBox;
         string selectedItem =
@@ -641,24 +643,10 @@ public sealed partial class MainForm : Form, IEventDisabler
                 // ignore
             }
         }
-        d.Multiselect = true;
+
         if (d.ShowDialog(this) == DialogResult.OK)
         {
-            try
-            {
-                lb.BeginUpdate();
-
-                Utils.HashSetPathI hash = lb.ItemsAsStrings().ToHashSetPathI();
-
-                foreach (string dir in d.FileNames)
-                {
-                    if (!hash.Contains(dir)) lb.Items.Add(dir);
-                }
-            }
-            finally
-            {
-                lb.EndUpdate();
-            }
+            lb.AddUniqueItems(d.FileNames);
         }
     }
 
@@ -690,5 +678,27 @@ public sealed partial class MainForm : Form, IEventDisabler
     private async void RepackButton_Click(object sender, EventArgs e)
     {
         await Core.RepackBatch();
+    }
+
+    private void ArchivesToRepackListBox_DragEnter(object sender, DragEventArgs e)
+    {
+        object? data = e.Data?.GetData(DataFormats.FileDrop);
+        if (data == null) return;
+
+        if (Core.FilesDropped(data, out _))
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+    }
+
+    private void ArchivesToRepackListBox_DragDrop(object sender, DragEventArgs e)
+    {
+        object? data = e.Data?.GetData(DataFormats.FileDrop);
+        if (data == null) return;
+
+        if (Core.FilesDropped(data, out string[]? droppedItems))
+        {
+            ArchivesToRepackListBox.AddUniqueItems(Core.GetStronglyCheckedFiles(droppedItems));
+        }
     }
 }

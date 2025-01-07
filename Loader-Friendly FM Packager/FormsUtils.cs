@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -6,6 +7,25 @@ namespace Loader_Friendly_FM_Packager;
 
 internal static class FormsUtils
 {
+    internal static void AddUniqueItems(this ListBox listBox, IEnumerable<string> items)
+    {
+        try
+        {
+            listBox.BeginUpdate();
+
+            Utils.HashSetPathI hash = listBox.ItemsAsStrings().ToHashSetPathI();
+
+            foreach (string dir in items)
+            {
+                if (!hash.Contains(dir)) listBox.Items.Add(dir);
+            }
+        }
+        finally
+        {
+            listBox.EndUpdate();
+        }
+    }
+
     internal static void RemoveAndSelectNearest(this ListBox listBox)
     {
         if (listBox.SelectedIndex == -1) return;

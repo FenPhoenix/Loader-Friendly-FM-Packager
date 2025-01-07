@@ -143,6 +143,12 @@ internal static class Utils
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ExtIsIco(this string value) => value.EndsWithI(".ico");
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool ExtIsExpectedFMArchiveFormat(this string value) =>
+        value.EndsWithI(".zip") ||
+        value.EndsWithI(".7z") ||
+        value.EndsWithI(".rar");
+
     internal static bool IsValidReadme(this string readme) =>
         readme.ExtIsTxt() ||
         readme.ExtIsRtf() ||

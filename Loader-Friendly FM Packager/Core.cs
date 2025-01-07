@@ -966,4 +966,34 @@ internal static class Core
             return "";
         }
     }
+
+    internal static bool FilesDropped(object data, [NotNullWhen(true)] out string[]? droppedItems)
+    {
+        if (View.DragDropEnabled &&
+            data is string[] droppedItems_Internal)
+        {
+            droppedItems = droppedItems_Internal;
+            return true;
+        }
+        else
+        {
+            droppedItems = null;
+            return false;
+        }
+    }
+
+    internal static List<string> GetStronglyCheckedFiles(string[] droppedItems)
+    {
+        List<string> tempList = new(droppedItems.Length);
+        foreach (string item in droppedItems)
+        {
+            if (!item.IsWhiteSpace() &&
+                item.ExtIsExpectedFMArchiveFormat() &&
+                !Directory.Exists(item))
+            {
+                tempList.Add(item);
+            }
+        }
+        return tempList;
+    }
 }

@@ -47,25 +47,25 @@ sealed partial class MainForm
             this.ProgressMessageLabel = new System.Windows.Forms.Label();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.MainPanel = new System.Windows.Forms.Panel();
-            this.ArchivesToRepackListBox = new System.Windows.Forms.ListBox();
-            this.RepackOutputDirectoryLabel = new System.Windows.Forms.Label();
-            this.RepackOutputDirectoryTextBox = new System.Windows.Forms.TextBox();
-            this.RepackOutputDirectoryBrowseButton = new System.Windows.Forms.Button();
-            this.StatusGroupBox = new System.Windows.Forms.GroupBox();
             this.ModeTabControl = new System.Windows.Forms.TabControl();
             this.CreateTabPage = new System.Windows.Forms.TabPage();
             this.RepackTabPage = new System.Windows.Forms.TabPage();
-            this.RepackButton = new System.Windows.Forms.Button();
-            this.AddSourceArchiveButton = new System.Windows.Forms.Button();
-            this.RemoveSourceArchiveButton = new System.Windows.Forms.Button();
             this.ClearSourceArchivesButton = new System.Windows.Forms.Button();
+            this.RemoveSourceArchiveButton = new System.Windows.Forms.Button();
+            this.AddSourceArchiveButton = new System.Windows.Forms.Button();
+            this.RepackButton = new System.Windows.Forms.Button();
+            this.ArchivesToRepackListBox = new System.Windows.Forms.ListBox();
+            this.RepackOutputDirectoryLabel = new System.Windows.Forms.Label();
+            this.RepackOutputDirectoryBrowseButton = new System.Windows.Forms.Button();
+            this.RepackOutputDirectoryTextBox = new System.Windows.Forms.TextBox();
+            this.StatusGroupBox = new System.Windows.Forms.GroupBox();
             this.MainProgressBar = new Loader_Friendly_FM_Packager.ProgressBarCustom();
             this.NumberOfCPUThreadsOutOfFLP.SuspendLayout();
             this.MainPanel.SuspendLayout();
-            this.StatusGroupBox.SuspendLayout();
             this.ModeTabControl.SuspendLayout();
             this.CreateTabPage.SuspendLayout();
             this.RepackTabPage.SuspendLayout();
+            this.StatusGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // SourceFMDirectoryTextBox
@@ -265,53 +265,6 @@ sealed partial class MainForm
             this.MainPanel.Size = new System.Drawing.Size(1072, 400);
             this.MainPanel.TabIndex = 24;
             // 
-            // ArchivesToRepackListBox
-            // 
-            this.ArchivesToRepackListBox.FormattingEnabled = true;
-            this.ArchivesToRepackListBox.Location = new System.Drawing.Point(12, 10);
-            this.ArchivesToRepackListBox.Name = "ArchivesToRepackListBox";
-            this.ArchivesToRepackListBox.Size = new System.Drawing.Size(720, 212);
-            this.ArchivesToRepackListBox.TabIndex = 21;
-            // 
-            // RepackOutputDirectoryLabel
-            // 
-            this.RepackOutputDirectoryLabel.AutoSize = true;
-            this.RepackOutputDirectoryLabel.Location = new System.Drawing.Point(12, 260);
-            this.RepackOutputDirectoryLabel.Name = "RepackOutputDirectoryLabel";
-            this.RepackOutputDirectoryLabel.Size = new System.Drawing.Size(85, 13);
-            this.RepackOutputDirectoryLabel.TabIndex = 2;
-            this.RepackOutputDirectoryLabel.Text = "Output directory:";
-            // 
-            // RepackOutputDirectoryTextBox
-            // 
-            this.RepackOutputDirectoryTextBox.Location = new System.Drawing.Point(12, 276);
-            this.RepackOutputDirectoryTextBox.Name = "RepackOutputDirectoryTextBox";
-            this.RepackOutputDirectoryTextBox.Size = new System.Drawing.Size(640, 20);
-            this.RepackOutputDirectoryTextBox.TabIndex = 0;
-            // 
-            // RepackOutputDirectoryBrowseButton
-            // 
-            this.RepackOutputDirectoryBrowseButton.Location = new System.Drawing.Point(652, 275);
-            this.RepackOutputDirectoryBrowseButton.Name = "RepackOutputDirectoryBrowseButton";
-            this.RepackOutputDirectoryBrowseButton.Size = new System.Drawing.Size(81, 23);
-            this.RepackOutputDirectoryBrowseButton.TabIndex = 1;
-            this.RepackOutputDirectoryBrowseButton.Text = "Browse...";
-            this.RepackOutputDirectoryBrowseButton.UseVisualStyleBackColor = true;
-            this.RepackOutputDirectoryBrowseButton.Click += new System.EventHandler(this.RepackOutputDirectoryBrowseButton_Click);
-            // 
-            // StatusGroupBox
-            // 
-            this.StatusGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.StatusGroupBox.Controls.Add(this.ProgressMessageLabel);
-            this.StatusGroupBox.Controls.Add(this.MainProgressBar);
-            this.StatusGroupBox.Controls.Add(this.Cancel_Button);
-            this.StatusGroupBox.Location = new System.Drawing.Point(8, 401);
-            this.StatusGroupBox.Name = "StatusGroupBox";
-            this.StatusGroupBox.Size = new System.Drawing.Size(1056, 112);
-            this.StatusGroupBox.TabIndex = 25;
-            this.StatusGroupBox.TabStop = false;
-            this.StatusGroupBox.Text = "Status";
-            // 
             // ModeTabControl
             // 
             this.ModeTabControl.Controls.Add(this.CreateTabPage);
@@ -358,25 +311,15 @@ sealed partial class MainForm
             this.RepackTabPage.Text = "Repack";
             this.RepackTabPage.UseVisualStyleBackColor = true;
             // 
-            // RepackButton
+            // ClearSourceArchivesButton
             // 
-            this.RepackButton.Location = new System.Drawing.Point(636, 320);
-            this.RepackButton.Name = "RepackButton";
-            this.RepackButton.Size = new System.Drawing.Size(97, 23);
-            this.RepackButton.TabIndex = 22;
-            this.RepackButton.Text = "Repack all";
-            this.RepackButton.UseVisualStyleBackColor = true;
-            this.RepackButton.Click += new System.EventHandler(this.RepackButton_Click);
-            // 
-            // AddSourceArchiveButton
-            // 
-            this.AddSourceArchiveButton.Location = new System.Drawing.Point(510, 224);
-            this.AddSourceArchiveButton.Name = "AddSourceArchiveButton";
-            this.AddSourceArchiveButton.Size = new System.Drawing.Size(75, 23);
-            this.AddSourceArchiveButton.TabIndex = 23;
-            this.AddSourceArchiveButton.Text = "Add...";
-            this.AddSourceArchiveButton.UseVisualStyleBackColor = true;
-            this.AddSourceArchiveButton.Click += new System.EventHandler(this.AddSourceArchiveButton_Click);
+            this.ClearSourceArchivesButton.Location = new System.Drawing.Point(658, 224);
+            this.ClearSourceArchivesButton.Name = "ClearSourceArchivesButton";
+            this.ClearSourceArchivesButton.Size = new System.Drawing.Size(75, 23);
+            this.ClearSourceArchivesButton.TabIndex = 23;
+            this.ClearSourceArchivesButton.Text = "Clear";
+            this.ClearSourceArchivesButton.UseVisualStyleBackColor = true;
+            this.ClearSourceArchivesButton.Click += new System.EventHandler(this.ClearSourceArchivesButton_Click);
             // 
             // RemoveSourceArchiveButton
             // 
@@ -388,15 +331,75 @@ sealed partial class MainForm
             this.RemoveSourceArchiveButton.UseVisualStyleBackColor = true;
             this.RemoveSourceArchiveButton.Click += new System.EventHandler(this.RemoveSourceArchiveButton_Click);
             // 
-            // ClearSourceArchivesButton
+            // AddSourceArchiveButton
             // 
-            this.ClearSourceArchivesButton.Location = new System.Drawing.Point(658, 224);
-            this.ClearSourceArchivesButton.Name = "ClearSourceArchivesButton";
-            this.ClearSourceArchivesButton.Size = new System.Drawing.Size(75, 23);
-            this.ClearSourceArchivesButton.TabIndex = 23;
-            this.ClearSourceArchivesButton.Text = "Clear";
-            this.ClearSourceArchivesButton.UseVisualStyleBackColor = true;
-            this.ClearSourceArchivesButton.Click += new System.EventHandler(this.ClearSourceArchivesButton_Click);
+            this.AddSourceArchiveButton.Location = new System.Drawing.Point(510, 224);
+            this.AddSourceArchiveButton.Name = "AddSourceArchiveButton";
+            this.AddSourceArchiveButton.Size = new System.Drawing.Size(75, 23);
+            this.AddSourceArchiveButton.TabIndex = 23;
+            this.AddSourceArchiveButton.Text = "Add...";
+            this.AddSourceArchiveButton.UseVisualStyleBackColor = true;
+            this.AddSourceArchiveButton.Click += new System.EventHandler(this.AddSourceArchiveButton_Click);
+            // 
+            // RepackButton
+            // 
+            this.RepackButton.Location = new System.Drawing.Point(636, 320);
+            this.RepackButton.Name = "RepackButton";
+            this.RepackButton.Size = new System.Drawing.Size(97, 23);
+            this.RepackButton.TabIndex = 22;
+            this.RepackButton.Text = "Repack all";
+            this.RepackButton.UseVisualStyleBackColor = true;
+            this.RepackButton.Click += new System.EventHandler(this.RepackButton_Click);
+            // 
+            // ArchivesToRepackListBox
+            // 
+            this.ArchivesToRepackListBox.AllowDrop = true;
+            this.ArchivesToRepackListBox.FormattingEnabled = true;
+            this.ArchivesToRepackListBox.Location = new System.Drawing.Point(12, 10);
+            this.ArchivesToRepackListBox.Name = "ArchivesToRepackListBox";
+            this.ArchivesToRepackListBox.Size = new System.Drawing.Size(720, 212);
+            this.ArchivesToRepackListBox.TabIndex = 21;
+            this.ArchivesToRepackListBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.ArchivesToRepackListBox_DragDrop);
+            this.ArchivesToRepackListBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.ArchivesToRepackListBox_DragEnter);
+            // 
+            // RepackOutputDirectoryLabel
+            // 
+            this.RepackOutputDirectoryLabel.AutoSize = true;
+            this.RepackOutputDirectoryLabel.Location = new System.Drawing.Point(12, 260);
+            this.RepackOutputDirectoryLabel.Name = "RepackOutputDirectoryLabel";
+            this.RepackOutputDirectoryLabel.Size = new System.Drawing.Size(85, 13);
+            this.RepackOutputDirectoryLabel.TabIndex = 2;
+            this.RepackOutputDirectoryLabel.Text = "Output directory:";
+            // 
+            // RepackOutputDirectoryBrowseButton
+            // 
+            this.RepackOutputDirectoryBrowseButton.Location = new System.Drawing.Point(652, 275);
+            this.RepackOutputDirectoryBrowseButton.Name = "RepackOutputDirectoryBrowseButton";
+            this.RepackOutputDirectoryBrowseButton.Size = new System.Drawing.Size(81, 23);
+            this.RepackOutputDirectoryBrowseButton.TabIndex = 1;
+            this.RepackOutputDirectoryBrowseButton.Text = "Browse...";
+            this.RepackOutputDirectoryBrowseButton.UseVisualStyleBackColor = true;
+            this.RepackOutputDirectoryBrowseButton.Click += new System.EventHandler(this.RepackOutputDirectoryBrowseButton_Click);
+            // 
+            // RepackOutputDirectoryTextBox
+            // 
+            this.RepackOutputDirectoryTextBox.Location = new System.Drawing.Point(12, 276);
+            this.RepackOutputDirectoryTextBox.Name = "RepackOutputDirectoryTextBox";
+            this.RepackOutputDirectoryTextBox.Size = new System.Drawing.Size(640, 20);
+            this.RepackOutputDirectoryTextBox.TabIndex = 0;
+            // 
+            // StatusGroupBox
+            // 
+            this.StatusGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.StatusGroupBox.Controls.Add(this.ProgressMessageLabel);
+            this.StatusGroupBox.Controls.Add(this.MainProgressBar);
+            this.StatusGroupBox.Controls.Add(this.Cancel_Button);
+            this.StatusGroupBox.Location = new System.Drawing.Point(8, 401);
+            this.StatusGroupBox.Name = "StatusGroupBox";
+            this.StatusGroupBox.Size = new System.Drawing.Size(1056, 112);
+            this.StatusGroupBox.TabIndex = 25;
+            this.StatusGroupBox.TabStop = false;
+            this.StatusGroupBox.Text = "Status";
             // 
             // MainProgressBar
             // 
@@ -423,13 +426,13 @@ sealed partial class MainForm
             this.NumberOfCPUThreadsOutOfFLP.PerformLayout();
             this.MainPanel.ResumeLayout(false);
             this.MainPanel.PerformLayout();
-            this.StatusGroupBox.ResumeLayout(false);
-            this.StatusGroupBox.PerformLayout();
             this.ModeTabControl.ResumeLayout(false);
             this.CreateTabPage.ResumeLayout(false);
             this.CreateTabPage.PerformLayout();
             this.RepackTabPage.ResumeLayout(false);
             this.RepackTabPage.PerformLayout();
+            this.StatusGroupBox.ResumeLayout(false);
+            this.StatusGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
     }
