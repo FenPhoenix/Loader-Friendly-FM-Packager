@@ -94,6 +94,12 @@ internal static class Core
     {
         foreach (var item in itemsToRename)
         {
+            /*
+            TODO: 7z.exe doesn't report an error or any fail state when trying to rename a file that doesn't exist;
+             it simply doesn't rename anything and reports success. So we need to run a verify pass afterwards to
+             make sure we don't have our temp-named files still in there. To do this we'll need SevenZipExtract
+             or something just to go through the file names.
+            */
             Fen7z.Result result = Fen7z.Update(
                 sevenZipPathAndExe: Paths.SevenZipExe,
                 sourcePath: sourcePath,
@@ -352,16 +358,33 @@ internal static class Core
 
                 Paths.CreateOrClearTempPath(Paths.TempPaths.Base);
 
-                Directory.SetCurrentDirectory(sourcePath);
+                if (File.Exists(outputArchive))
+                {
+                    (MBoxButton buttonPressed, _) = View.ShowMultiChoiceDialog(
+                        message: "Output archive already exists. Overwrite it?",
+                        title: "Alert",
+                        icon: MessageBoxIcon.Warning,
+                        yes: "Overwrite",
+                        no: "Cancel",
+                        yesIsDangerous: true,
+                        defaultButton: MBoxButton.No);
+
+                    if (buttonPressed != MBoxButton.Yes)
+                    {
+                        return;
+                    }
+                }
 
                 try
                 {
-                    // TODO: Tell user if it exists and confirm delete!
                     File.Delete(outputArchive);
                 }
-                catch
+                catch (Exception ex)
                 {
-
+                    string msg = "Unable to delete '" + outputArchive + "'.";
+                    Log(msg, ex);
+                    View.ShowError(msg, "Error");
+                    return;
                 }
 
                 int level = Config.CompressionLevel;

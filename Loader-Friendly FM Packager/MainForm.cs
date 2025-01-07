@@ -728,4 +728,61 @@ public sealed partial class MainForm : Form, IEventDisabler
             d.ShowDialog();
         }
     }
+
+    /// <summary>
+    /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="title"></param>
+    /// <param name="icon"></param>
+    /// <param name="yes"></param>
+    /// <param name="no"></param>
+    /// <param name="cancel"></param>
+    /// <param name="yesIsDangerous"></param>
+    /// <param name="noIsDangerous"></param>
+    /// <param name="cancelIsDangerous"></param>
+    /// <param name="checkBoxText"></param>
+    /// <param name="defaultButton"></param>
+    /// <param name="viewLogButtonVisible"></param>
+    /// <returns></returns>
+    public (MBoxButton ButtonPressed, bool CheckBoxChecked)
+    ShowMultiChoiceDialog(string message,
+        string title,
+        MessageBoxIcon icon,
+        string? yes,
+        string? no,
+        string? cancel = null,
+        bool yesIsDangerous = false,
+        bool noIsDangerous = false,
+        bool cancelIsDangerous = false,
+        string? checkBoxText = null,
+        MBoxButton defaultButton = MBoxButton.Yes,
+        bool viewLogButtonVisible = false) =>
+        ((MBoxButton, bool))Invoke(() =>
+        {
+            using var d = new TaskDialogCustom(
+                message: message,
+                title: title,
+                icon: icon,
+                yesText: yes,
+                noText: no,
+                cancelText: cancel,
+                yesIsDangerous: yesIsDangerous,
+                noIsDangerous: noIsDangerous,
+                cancelIsDangerous: cancelIsDangerous,
+                checkBoxText: checkBoxText,
+                defaultButton: defaultButton,
+                viewLogButtonVisible: viewLogButtonVisible);
+
+            DialogResult result = d.ShowDialog(this);
+
+            return (DialogResultToMBoxButton(result), d.IsVerificationChecked);
+        });
+
+    internal static MBoxButton DialogResultToMBoxButton(DialogResult dialogResult) => dialogResult switch
+    {
+        DialogResult.Yes => MBoxButton.Yes,
+        DialogResult.No => MBoxButton.No,
+        _ => MBoxButton.Cancel,
+    };
 }

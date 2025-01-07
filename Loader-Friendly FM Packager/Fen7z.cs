@@ -407,7 +407,10 @@ public static class Fen7z
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.Arguments =
-                "rn \"" + outputArchive + "\" " +
+                // -scc = console i/o charset
+                // Tested with 1252 "Rustung-u" and also Unicode copyright symbol, both get put into the archive
+                // with correct encoding and renamed correctly.
+                "rn -bsp1 -bb1 -sccUTF-8 \"" + outputArchive + "\" " +
                 "\"" + originalFileName + "\" \"" + newFileName + "\"";
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.UseShellExecute = false;

@@ -654,6 +654,10 @@ internal static class Utils
         {
         }
     }
+
+    internal static int MathMax3(int num1, int num2, int num3) => Math.Max(Math.Max(num1, num2), num3);
+
+    internal static int MathMax4(int num1, int num2, int num3, int num4) => Math.Max(Math.Max(Math.Max(num1, num2), num3), num4);
 }
 
 internal static class FMFileExtensions

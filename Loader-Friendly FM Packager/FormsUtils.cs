@@ -131,6 +131,16 @@ internal static class FormsUtils
         return ret;
     }
 
+    public static string[] SelectedItemsAsStrings(this ListBox listBox)
+    {
+        string[] ret = new string[listBox.SelectedItems.Count];
+        for (int i = 0; i < listBox.SelectedItems.Count; i++)
+        {
+            ret[i] = listBox.SelectedItems[i].ToStringOrEmpty();
+        }
+        return ret;
+    }
+
     internal static bool SelectedIndexIsInRange(this ComboBox comboBox) =>
         comboBox.SelectedIndex > -1 && comboBox.SelectedIndex < comboBox.Items.Count;
 
