@@ -8,7 +8,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Loader_Friendly_FM_Packager.Fen7z;
 using static Loader_Friendly_FM_Packager.Logger;
 
 namespace Loader_Friendly_FM_Packager;
