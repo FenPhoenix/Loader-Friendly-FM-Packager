@@ -313,7 +313,7 @@ sealed partial class MainForm
             // 
             // ClearSourceArchivesButton
             // 
-            this.ClearSourceArchivesButton.Location = new System.Drawing.Point(658, 224);
+            this.ClearSourceArchivesButton.Location = new System.Drawing.Point(510, 224);
             this.ClearSourceArchivesButton.Name = "ClearSourceArchivesButton";
             this.ClearSourceArchivesButton.Size = new System.Drawing.Size(75, 23);
             this.ClearSourceArchivesButton.TabIndex = 23;
@@ -333,7 +333,7 @@ sealed partial class MainForm
             // 
             // AddSourceArchiveButton
             // 
-            this.AddSourceArchiveButton.Location = new System.Drawing.Point(510, 224);
+            this.AddSourceArchiveButton.Location = new System.Drawing.Point(658, 224);
             this.AddSourceArchiveButton.Name = "AddSourceArchiveButton";
             this.AddSourceArchiveButton.Size = new System.Drawing.Size(75, 23);
             this.AddSourceArchiveButton.TabIndex = 23;
