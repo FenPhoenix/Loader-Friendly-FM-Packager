@@ -42,8 +42,6 @@ sealed partial class MainForm
             this.Test1Button = new System.Windows.Forms.Button();
             this.NumberOfCPUThreadsLabel = new System.Windows.Forms.Label();
             this.NumberOfCPUThreadsComboBox = new System.Windows.Forms.ComboBox();
-            this.NumberOfCPUThreadsOutOfFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.NumberOfCPUThreadsOutOfLabel = new System.Windows.Forms.Label();
             this.ProgressMessageLabel = new System.Windows.Forms.Label();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.MainPanel = new System.Windows.Forms.Panel();
@@ -60,7 +58,6 @@ sealed partial class MainForm
             this.RepackOutputDirectoryTextBox = new System.Windows.Forms.TextBox();
             this.StatusGroupBox = new System.Windows.Forms.GroupBox();
             this.MainProgressBar = new Loader_Friendly_FM_Packager.ProgressBarCustom();
-            this.NumberOfCPUThreadsOutOfFLP.SuspendLayout();
             this.MainPanel.SuspendLayout();
             this.ModeTabControl.SuspendLayout();
             this.CreateTabPage.SuspendLayout();
@@ -206,28 +203,9 @@ sealed partial class MainForm
             this.NumberOfCPUThreadsComboBox.FormattingEnabled = true;
             this.NumberOfCPUThreadsComboBox.Location = new System.Drawing.Point(927, 98);
             this.NumberOfCPUThreadsComboBox.Name = "NumberOfCPUThreadsComboBox";
-            this.NumberOfCPUThreadsComboBox.Size = new System.Drawing.Size(80, 21);
+            this.NumberOfCPUThreadsComboBox.Size = new System.Drawing.Size(132, 21);
             this.NumberOfCPUThreadsComboBox.TabIndex = 15;
             this.NumberOfCPUThreadsComboBox.SelectedIndexChanged += new System.EventHandler(this.NumberOfCPUThreadsComboBox_SelectedIndexChanged);
-            // 
-            // NumberOfCPUThreadsOutOfFLP
-            // 
-            this.NumberOfCPUThreadsOutOfFLP.Controls.Add(this.NumberOfCPUThreadsOutOfLabel);
-            this.NumberOfCPUThreadsOutOfFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.NumberOfCPUThreadsOutOfFLP.Location = new System.Drawing.Point(1008, 101);
-            this.NumberOfCPUThreadsOutOfFLP.Name = "NumberOfCPUThreadsOutOfFLP";
-            this.NumberOfCPUThreadsOutOfFLP.Size = new System.Drawing.Size(52, 16);
-            this.NumberOfCPUThreadsOutOfFLP.TabIndex = 20;
-            // 
-            // NumberOfCPUThreadsOutOfLabel
-            // 
-            this.NumberOfCPUThreadsOutOfLabel.AutoSize = true;
-            this.NumberOfCPUThreadsOutOfLabel.Location = new System.Drawing.Point(25, 0);
-            this.NumberOfCPUThreadsOutOfLabel.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.NumberOfCPUThreadsOutOfLabel.Name = "NumberOfCPUThreadsOutOfLabel";
-            this.NumberOfCPUThreadsOutOfLabel.Size = new System.Drawing.Size(27, 13);
-            this.NumberOfCPUThreadsOutOfLabel.TabIndex = 18;
-            this.NumberOfCPUThreadsOutOfLabel.Text = "/ 12";
             // 
             // ProgressMessageLabel
             // 
@@ -252,7 +230,6 @@ sealed partial class MainForm
             // MainPanel
             // 
             this.MainPanel.Controls.Add(this.ModeTabControl);
-            this.MainPanel.Controls.Add(this.NumberOfCPUThreadsOutOfFLP);
             this.MainPanel.Controls.Add(this.NumberOfCPUThreadsLabel);
             this.MainPanel.Controls.Add(this.CompressionLevelComboBox);
             this.MainPanel.Controls.Add(this.NumberOfCPUThreadsComboBox);
@@ -422,8 +399,6 @@ sealed partial class MainForm
             this.Text = "Loader-Friendly FM Packager";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
-            this.NumberOfCPUThreadsOutOfFLP.ResumeLayout(false);
-            this.NumberOfCPUThreadsOutOfFLP.PerformLayout();
             this.MainPanel.ResumeLayout(false);
             this.MainPanel.PerformLayout();
             this.ModeTabControl.ResumeLayout(false);
@@ -453,8 +428,6 @@ sealed partial class MainForm
     private System.Windows.Forms.Button Test1Button;
     private System.Windows.Forms.Label NumberOfCPUThreadsLabel;
     private System.Windows.Forms.ComboBox NumberOfCPUThreadsComboBox;
-    private System.Windows.Forms.FlowLayoutPanel NumberOfCPUThreadsOutOfFLP;
-    private System.Windows.Forms.Label NumberOfCPUThreadsOutOfLabel;
     private ProgressBarCustom MainProgressBar;
     private System.Windows.Forms.Label ProgressMessageLabel;
     private System.Windows.Forms.Button Cancel_Button;

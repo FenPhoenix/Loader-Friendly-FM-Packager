@@ -72,26 +72,6 @@ public static class Logger
     [SuppressMessage("ReSharper", "InconsistentlySynchronizedField")]
     public static void LogStartup(string message)
     {
-        if (_logFile.IsEmpty()) return;
-
-        try
-        {
-            using var sw = new StreamWriter(_logFile);
-            sw.WriteLine(GetDateTimeStringFast() + " " + message + $"{NL}");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-        }
-    }
-
-    // TODO: Consider how to make the log not clear every startup and still have it be feasible for people to "post their log"
-    public static void Log(
-        string message = "",
-        Exception? ex = null,
-        bool stackTrace = false,
-        [CallerMemberName] string callerMemberName = "")
-    {
         lock (_lock)
         {
             if (_logFile.IsEmpty()) return;
@@ -107,6 +87,28 @@ public static class Logger
                     // file doesn't exist - ignore
                 }
 
+                using var sw = new StreamWriter(_logFile);
+                sw.WriteLine(GetDateTimeStringFast() + " " + message + $"{NL}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+        }
+    }
+
+    public static void Log(
+        string message = "",
+        Exception? ex = null,
+        bool stackTrace = false,
+        [CallerMemberName] string callerMemberName = "")
+    {
+        lock (_lock)
+        {
+            if (_logFile.IsEmpty()) return;
+
+            try
+            {
                 using var sw = new StreamWriter(_logFile, append: true);
 
                 sw.WriteLine(GetDateTimeStringFast() + " " + callerMemberName + $"{NL}" + message);

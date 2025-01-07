@@ -118,7 +118,6 @@ public sealed partial class MainForm : Form, IEventDisabler
                 : NumberOfCPUThreadsComboBox.IndexIsInRange(value)
                     ? value
                     : 0;
-        NumberOfCPUThreadsOutOfLabel.Text = CPUThreads.ToStrInv();
     }
 
     #endregion

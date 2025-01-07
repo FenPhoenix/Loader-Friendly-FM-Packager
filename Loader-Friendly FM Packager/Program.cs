@@ -13,7 +13,8 @@ file static class Program
     private static void Main()
     {
         Logger.SetLogFile(Paths.LogFile);
-        Logger.Log(Application.ProductVersion + " Started session" + $"{NL}");
+        Logger.LogStartup(Application.ProductVersion + " Started session" + $"{NL}" +
+                          "-------------------------------------------------------");
 
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);

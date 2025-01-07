@@ -569,8 +569,8 @@ internal static class Core
                         return;
                     }
 
-                    Run7z_ALScanFiles(tempExtractedDir, outputArchive, listFileData, level, method, CancellationToken.None);
-                    Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, listFileData, level, method, CancellationToken.None);
+                    Run7z_ALScanFiles(tempExtractedDir, outputArchive, listFileData, level, method, _cts.Token);
+                    Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, listFileData, level, method, _cts.Token);
                 }
 
                 return;
@@ -579,7 +579,7 @@ internal static class Core
                 {
                     if (!pr.Canceling)
                     {
-                        View.SetProgressPercent(pr.CompressPercent);
+                        View.SetProgressPercent(pr.PercentOfBytes);
                     }
                 }
             }
