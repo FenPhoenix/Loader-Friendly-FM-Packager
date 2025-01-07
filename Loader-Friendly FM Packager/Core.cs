@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SevenZipExtractor;
 using static Loader_Friendly_FM_Packager.Logger;
 
 namespace Loader_Friendly_FM_Packager;
@@ -89,6 +90,7 @@ internal static class Core
     private static void RunProcess_Update(
         string sourcePath,
         string outputArchive,
+        ListFileData listFileData,
         List<FileToRename> itemsToRename,
         CancellationToken cancellationToken)
     {
@@ -125,6 +127,66 @@ internal static class Core
             {
                 // TODO: Handle update complete
             }
+        }
+
+        if (!ArchiveVerificationSucceeded(outputArchive, listFileData, out List<string> filesInArchive, out List<string> filesOnDisk))
+        {
+            string filesStr = "Files on disk:" + $"{NL}" +
+                              "--------------" + $"{NL}";
+            foreach (string file in filesOnDisk)
+            {
+                filesStr += file + $"{NL}";
+            }
+            filesStr += $"{NL}";
+            filesStr += "Files in archive:" + $"{NL}" +
+                        "--------------" + $"{NL}";
+            foreach (string file in filesInArchive)
+            {
+                filesStr += file + $"{NL}";
+            }
+
+            Log(filesStr);
+            View.ShowError("Archive verification failed: file name set is different than source. Reverting of temp rename could possibly have failed. See log for details.");
+        }
+
+        return;
+
+        // TODO: Also check explicitly for existence of un-renamed items from the renameable items list, so we can
+        //  report that with certainly if it happens, rather than just saying "maybe it's this".
+        static bool ArchiveVerificationSucceeded(string outputArchive, ListFileData listFileData, out List<string> filesInArchive, out List<string> filesOnDisk)
+        {
+            using var archive = new ArchiveFile(outputArchive, libraryFilePath: Paths.SevenZipDll);
+
+            filesInArchive = new List<string>();
+            foreach (Entry entry in archive.Entries)
+            {
+                filesInArchive.Add(entry.FileName.ToBackSlashes());
+            }
+
+            filesOnDisk = new List<string>();
+            for (int i = 0; i < listFileData.OriginalFileNamesLeadingPathRemoved.Count; i++)
+            {
+                filesOnDisk.Add(listFileData.OriginalFileNamesLeadingPathRemoved[i].ToBackSlashes());
+            }
+
+            filesInArchive.Sort(StringComparer.OrdinalIgnoreCase);
+            filesOnDisk.Sort(StringComparer.OrdinalIgnoreCase);
+
+            if (filesInArchive.Count != filesOnDisk.Count)
+            {
+                return false;
+            }
+            for (int i = 0; i < filesInArchive.Count; i++)
+            {
+                string fileInArchive = filesInArchive[i];
+                string fileOnDisk = filesOnDisk[i];
+                if (!fileInArchive.PathEqualsI(fileOnDisk))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 
@@ -275,6 +337,7 @@ internal static class Core
             RunProcess_Update(
                 sourcePath: sourcePath,
                 outputArchive: outputArchive,
+                listFileData,
                 listFileData.FilesToRename,
                 cancellationToken: cancellationToken);
         }
@@ -708,6 +771,8 @@ internal static class Core
         internal readonly List<string> OnePerBlockItems = new();
 
         internal readonly List<FileToRename> FilesToRename = new();
+
+        internal readonly List<string> OriginalFileNamesLeadingPathRemoved = new();
     }
 
     internal static (ListFileData ListFileData, string RestListFile)
@@ -784,6 +849,8 @@ internal static class Core
         for (int i = 0; i < files.Length; i++)
         {
             string fn = files[i].RemoveLeadingPath(filesDir);
+
+            ret.OriginalFileNamesLeadingPathRemoved.Add(fn);
 
             int dirSeps;
             long fileSize = new FileInfo(files[i]).Length;
