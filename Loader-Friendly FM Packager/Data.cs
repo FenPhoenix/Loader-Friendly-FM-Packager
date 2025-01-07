@@ -53,6 +53,15 @@ public sealed class FriendlyStringAndBackingValue<TBacking>
 
 public static class Global
 {
+    public const int MAX_PATH = 260;
+
+    public enum MBoxButton
+    {
+        Yes,
+        No,
+        Cancel,
+    }
+
     public enum Mode
     {
         Create,

@@ -12,6 +12,9 @@ file static class Program
     [STAThread]
     private static void Main()
     {
+        Logger.SetLogFile(Paths.LogFile);
+        Logger.Log(Application.ProductVersion + " Started session" + $"{NL}");
+
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         Application.Run(new AppContext());

@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Loader_Friendly_FM_Packager.Logger;
 
 namespace Loader_Friendly_FM_Packager;
 
 internal static class Core
 {
-    private static MainForm View = null!;
+    internal static MainForm View = null!;
 
     private const string AL_Scan_Block_ListFileName = "list_al_scan.lst";
     private const string Rest_Block_ListFileName = "list_rest.lst";
@@ -342,7 +343,7 @@ internal static class Core
 
                 _cts = _cts.Recreate();
 
-                Utils.CreateOrClearTempPath(Paths.Temp);
+                Paths.CreateOrClearTempPath(Paths.TempPaths.Base);
 
                 Directory.SetCurrentDirectory(sourcePath);
 
@@ -359,7 +360,18 @@ internal static class Core
                 int level = Config.CompressionLevel;
                 CompressionMethod method = Config.CompressionMethod;
 
-                (ListFileData listFileData, string listFile_Rest) = GetListFile(ref sourcePath, makeCopyOfFilesDir: true, _cts.Token);
+                ListFileData listFileData;
+                string listFile_Rest;
+                try
+                {
+                    (listFileData, listFile_Rest) = GetListFile(ref sourcePath, makeCopyOfFilesDir: true, _cts.Token);
+                }
+                catch (Exception ex)
+                {
+                    Log(ex: ex);
+                    View.ShowError("Failed to create FM. See log for details.");
+                    return;
+                }
 
                 Run7z_ALScanFiles(sourcePath, outputArchive, listFileData, level, method, _cts.Token);
                 Run7z_Rest(sourcePath, outputArchive, listFile_Rest, listFileData, level, method, _cts.Token);
@@ -381,7 +393,7 @@ internal static class Core
             }
             finally
             {
-                Utils.CreateOrClearTempPath(Paths.Temp);
+                Paths.CreateOrClearTempPath(Paths.TempPaths.Base);
                 View.EndCreateSingleArchiveOperation("Successfully created '" + outputArchive + "'.");
                 _cts.Dispose();
             }
@@ -398,11 +410,11 @@ internal static class Core
 
                 _cts = _cts.Recreate();
 
-                Utils.CreateOrClearTempPath(Paths.Temp);
+                Paths.CreateOrClearTempPath(Paths.TempPaths.Base);
 
                 Progress<Fen7z.ProgressReport> progress = new(ReportProgress);
 
-                string tempExtractedDir = Path.Combine(Paths.Temp_SourceCopy);
+                string tempExtractedDir = Paths.Temp_SourceCopy;
                 int level = Config.CompressionLevel;
                 CompressionMethod method = Config.CompressionMethod;
 
@@ -415,7 +427,7 @@ internal static class Core
                     string extractedDirName = Path.GetFileName(archive).Trim();
                     string outputArchive = Path.Combine(outputDir, Path.GetFileNameWithoutExtension(extractedDirName) + ".7z");
 
-                    Utils.CreateOrClearTempPath(tempExtractedDir);
+                    Paths.CreateOrClearTempPath(Paths.TempPaths.SourceCopy);
 
                     View.SetProgressMessage("Unpacking archive '" + archive + "'...");
 
@@ -428,7 +440,10 @@ internal static class Core
 
                     if (result.ErrorOccurred)
                     {
-                        // TODO: Handle the error. Also add logging maybe?
+                        // TODO: This is a batch process so we should gather up errors and show a dialog only once at the end.
+                        Log("7z.exe (Extract mode) returned an error:" + $"{NL}" + result);
+                        View.ShowError("Failed to unpack archive '" + archive + "'. See log for details.");
+                        return;
                     }
                     else if (result.Canceled)
                     {
@@ -439,11 +454,20 @@ internal static class Core
                         // TODO: Handle extract complete
                     }
 
-                    (ListFileData listFileData, string listFile_Rest) =
-                        GetListFile(
-                            ref tempExtractedDir,
-                            makeCopyOfFilesDir: false,
-                            _cts.Token);
+                    ListFileData listFileData;
+                    string listFile_Rest;
+                    try
+                    {
+                        (listFileData, listFile_Rest) = GetListFile(ref tempExtractedDir, makeCopyOfFilesDir: false, _cts.Token);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log(ex: ex);
+                        // TODO: This is a batch process so we should gather up errors and show a dialog only once at the end.
+                        View.ShowError("Failed to repack FM. See log for details.");
+                        return;
+                    }
+
                     Run7z_ALScanFiles(tempExtractedDir, outputArchive, listFileData, level, method, CancellationToken.None);
                     Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, listFileData, level, method, CancellationToken.None);
                 }
@@ -473,7 +497,7 @@ internal static class Core
             }
             finally
             {
-                Utils.CreateOrClearTempPath(Paths.Temp);
+                Paths.CreateOrClearTempPath(Paths.TempPaths.Base);
                 // TODO: Fail, success?
                 View.EndCreateSingleArchiveOperation("Finished repacking archives.");
                 _cts.Dispose();
@@ -662,7 +686,16 @@ internal static class Core
         List<NameAndTempName> misFiles = new();
         List<NameAndTempName> gamFiles = new();
 
-        string[] files = Directory.GetFiles(filesDir, "*", SearchOption.AllDirectories);
+        string[] files;
+        try
+        {
+            files = Directory.GetFiles(filesDir, "*", SearchOption.AllDirectories);
+        }
+        catch (Exception ex)
+        {
+            Log("Couldn't get the list of files in '" + filesDir + "'.", ex);
+            throw;
+        }
 
         /*
         TODO: This is slow. We can't just copy our to-be-renamed files either because they need to be in the
@@ -677,7 +710,7 @@ internal static class Core
         */
         if (makeCopyOfFilesDir)
         {
-            Utils.CreateOrClearTempPath(Paths.Temp_SourceCopy);
+            Paths.CreateOrClearTempPath(Paths.TempPaths.SourceCopy);
 
             View.SetProgressMessage("Making a copy of source FM directory...");
             View.SetProgressPercent(0);
@@ -713,7 +746,6 @@ internal static class Core
 
         List<string> readmeFullFilePaths = new();
 
-        //List<string> alScanFileNames = new();
         List<string> restFileNames = new();
         for (int i = 0; i < files.Length; i++)
         {
@@ -843,16 +875,45 @@ internal static class Core
 
             // If there actually is already a file named like "!!!!!!!!_miss21.mis" then someone's being a troll
             // so just give up.
-            // TODO: But we should log it... it could be we couldn't or didn't clear our source folder and we
-            //  have leftover renamed files?
-            if (!potentialRenameables.Any(x => x.Name.EqualsI(newName)))
+            if (potentialRenameables.Any(x => x.Name.EqualsI(newName)))
+            {
+                // Manual combine cause we don't want to deal with Path.Combine()'s might-throw bullshit
+                string filesDirLeadingPathSafe = filesDir.TrimEnd('/', '\\') + Path.DirectorySeparatorChar;
+                string msg = "Tried to rename '" + filesDirLeadingPathSafe + item.Name + "' to '" +
+                             filesDirLeadingPathSafe + newName +
+                             "' but '" + filesDirLeadingPathSafe + newName + "' already existed.";
+                var ex = new InvalidOperationException("Rename failed.");
+                Log(msg, ex);
+                throw ex;
+            }
+            else
             {
                 item.TempSortedName = newName;
 
-                // TODO: Error handling needed
-                File.Move(
-                    Path.Combine(filesDir, item.Name),
-                    Path.Combine(filesDir, item.TempSortedName));
+                string origFullName;
+                string newFullName;
+                try
+                {
+                    origFullName = Path.Combine(filesDir, item.Name);
+                    newFullName = Path.Combine(filesDir, item.TempSortedName);
+                }
+                catch (Exception ex)
+                {
+                    Log("Failed to combine paths.", ex);
+                    Paths.CreateOrClearTempPath(Paths.TempPaths.Base);
+                    throw;
+                }
+
+                try
+                {
+                    File.Move(origFullName, newFullName);
+                }
+                catch (Exception ex)
+                {
+                    Log("Failed to rename '" + origFullName + "' to '" + newFullName + "'.", ex);
+                    Paths.CreateOrClearTempPath(Paths.TempPaths.Base);
+                    throw;
+                }
             }
         }
 
@@ -880,30 +941,8 @@ internal static class Core
 
         finalRestFileNames.AddRange(restFileNames);
 
-        //string listFile_ALScan = Path.Combine(TempPath, AL_Scan_Block_ListFileName);
         string listFile_Rest = Path.Combine(Paths.Temp, Rest_Block_ListFileName);
 
-        foreach (string fileName in finalRestFileNames)
-        {
-            if (!File.Exists(Path.Combine(filesDir, fileName)))
-            {
-                // TODO: Handle this better - placeholder for now
-                string msg =
-                    "----------\r\n" +
-                    "Filename we're about to pass to 7z via the list file (" + nameof(GetListFile) +
-                    ") doesn't exist on disk! Character encoding difference?\r\n" +
-                    "Filename: +" + fileName + "\r\n" +
-                    "----------";
-                Trace.WriteLine(msg);
-                MessageBox.Show(
-                    msg,
-                    "Warning",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-            }
-        }
-
-        //File.WriteAllLines(listFile_ALScan, alScanFileNames);
         File.WriteAllLines(listFile_Rest, finalRestFileNames);
 
         return (ret, listFile_Rest);
@@ -995,5 +1034,17 @@ internal static class Core
             }
         }
         return tempList;
+    }
+
+    internal static void OpenLogFile()
+    {
+        try
+        {
+            Utils.ProcessStart_UseShellExecute(Paths.LogFile);
+        }
+        catch
+        {
+            MessageBox.Show("Unable to open the log file." + $"{NL}{NL}" + Paths.LogFile, "Error");
+        }
     }
 }

@@ -222,47 +222,6 @@ internal static class Utils
         }
     }
 
-    internal static void CreateOrClearTempPath(string tempPath)
-    {
-        if (Directory.Exists(tempPath))
-        {
-            try
-            {
-                DirAndFileTree_UnSetReadOnly(tempPath, throwException: true);
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(ex);
-            }
-
-            try
-            {
-                foreach (string f in Directory.GetFiles(tempPath, "*"))
-                {
-                    File.Delete(f);
-                }
-                foreach (string d in Directory.GetDirectories(tempPath, "*"))
-                {
-                    Directory.Delete(d, recursive: true);
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(ex);
-            }
-        }
-        else
-        {
-            try
-            {
-                Directory.CreateDirectory(tempPath);
-            }
-            catch (Exception ex)
-            {
-            }
-        }
-    }
-
     public static bool Contains(this string value, string substring, StringComparison comparison) =>
         // If substring is empty, IndexOf(string) returns 0, which would be a false "success" return
         !value.IsEmpty() && !substring.IsEmpty() && value.IndexOf(substring, comparison) >= 0;
@@ -686,6 +645,14 @@ internal static class Utils
         smallestUsedMisFile = usedMisFileInfos[0].Name;
 
         return true;
+    }
+
+    /// <inheritdoc cref="Process.Start(string)"/>
+    internal static void ProcessStart_UseShellExecute(string fileName)
+    {
+        using (Process.Start(new ProcessStartInfo { FileName = fileName, UseShellExecute = true }))
+        {
+        }
     }
 }
 

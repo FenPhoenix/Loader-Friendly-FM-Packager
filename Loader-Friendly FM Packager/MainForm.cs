@@ -701,4 +701,32 @@ public sealed partial class MainForm : Form, IEventDisabler
             ArchivesToRepackListBox.AddUniqueItems(Core.GetStronglyCheckedFiles(droppedItems));
         }
     }
+
+    /// <summary>
+    /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="title"></param>
+    /// <param name="icon"></param>
+    public void ShowError(string message, string? title = null, MessageBoxIcon icon = MessageBoxIcon.Error)
+    {
+        Invoke(() =>
+        {
+            ShowError_Internal(message, this, title, icon);
+        });
+    }
+
+    // Private method, not invoked because all calls are
+    private static void ShowError_Internal(string message, IWin32Window? owner, string? title, MessageBoxIcon icon)
+    {
+        using var d = new DarkErrorDialog(message, title, icon);
+        if (owner != null)
+        {
+            d.ShowDialog(owner);
+        }
+        else
+        {
+            d.ShowDialog();
+        }
+    }
 }
