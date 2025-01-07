@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Loader_Friendly_FM_Packager.Fen7z;
 using static Loader_Friendly_FM_Packager.Logger;
 
 namespace Loader_Friendly_FM_Packager;
@@ -61,7 +62,10 @@ internal static class Core
 
         if (result.ErrorOccurred)
         {
-            // TODO: Handle the error. Also add logging maybe?
+            // TODO: This could be a batch process so we should gather up errors and show a dialog only once at the end.
+            Log("7z.exe (Compress mode) returned an error:" + $"{NL}" + result);
+            View.ShowError("Failed to create archive '" + outputArchive + "'. See log for details.");
+            return;
         }
         else if (result.Canceled)
         {
@@ -91,7 +95,7 @@ internal static class Core
     {
         foreach (var item in itemsToRename)
         {
-            Fen7z.Result updateResult = Fen7z.Update(
+            Fen7z.Result result = Fen7z.Update(
                 sevenZipPathAndExe: Paths.SevenZipExe,
                 sourcePath: sourcePath,
                 outputArchive: outputArchive,
@@ -100,11 +104,15 @@ internal static class Core
                 cancellationToken: cancellationToken
             );
 
-            if (updateResult.ErrorOccurred)
+            if (result.ErrorOccurred)
             {
-                // TODO: Handle the error. Also add logging maybe?
+                // TODO: This could be a batch process so we should gather up errors and show a dialog only once at the end.
+                Log("7z.exe (Update mode) returned an error:" + $"{NL}" + result);
+                View.ShowError("Failed to finalize creation of archive '" + outputArchive +
+                               "'. The archive may appear complete but certain file names may be wrong. See log for details.");
+                return;
             }
-            else if (updateResult.Canceled)
+            else if (result.Canceled)
             {
                 throw new OperationCanceledException(_cts.Token);
             }
