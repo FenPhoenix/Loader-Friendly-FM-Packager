@@ -28,7 +28,14 @@ TODO: Act on caught exceptions and add robust error handling everywhere
 
 public sealed partial class MainForm : Form, IEventDisabler
 {
-    private bool _operationInProgress;
+    private enum OperationType
+    {
+        None,
+        CreateSingle,
+        RepackBatch,
+    }
+
+    private OperationType _operationTypeInProgress = OperationType.None;
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -54,7 +61,7 @@ public sealed partial class MainForm : Form, IEventDisabler
 
     #region Getters and setters
 
-    public bool DragDropEnabled => !_operationInProgress;
+    public bool DragDropEnabled => _operationTypeInProgress == OperationType.None;
 
     public void SetMode(Mode mode)
     {
@@ -117,7 +124,7 @@ public sealed partial class MainForm : Form, IEventDisabler
     public void StartCreateSingleArchiveOperation() => Invoke(() =>
     {
         TaskBarProgress.SetState(Handle, TaskbarStates.Normal);
-        _operationInProgress = true;
+        _operationTypeInProgress = OperationType.CreateSingle;
         MainPanel.Enabled = false;
         ProgressMessageLabel.Text = "";
         MainProgressBar.Value = 0;
@@ -140,15 +147,69 @@ public sealed partial class MainForm : Form, IEventDisabler
         }
         MainProgressBar.Value = 0;
         MainPanel.Enabled = true;
-        _operationInProgress = false;
+        _operationTypeInProgress = OperationType.None;
+    });
+
+    public void StartRepackBatchOperation() => Invoke(() =>
+    {
+        TaskBarProgress.SetState(Handle, TaskbarStates.Normal);
+        _operationTypeInProgress = OperationType.RepackBatch;
+        MainPanel.Enabled = false;
+        ProgressMessageLabel.Text = "";
+        ProgressSubMessageLabel.Text = "";
+        ProgressSubMessageLabel.Show();
+        MainProgressBar.Value = 0;
+        SubProgressBar.Value = 0;
+        MainProgressBar.Show();
+        SubProgressBar.Show();
+        Cancel_Button.Show();
+    });
+
+    public void EndRepackBatchOperation() => Invoke(() =>
+    {
+        TaskBarProgress.SetState(Handle, TaskbarStates.NoProgress);
+        MainProgressBar.Hide();
+        SubProgressBar.Hide();
+        Cancel_Button.Hide();
+        ResetProgressMessage();
+        ProgressSubMessageLabel.Hide();
+        MainProgressBar.Value = 0;
+        SubProgressBar.Value = 0;
+        MainPanel.Enabled = true;
+        _operationTypeInProgress = OperationType.None;
     });
 
     public void SetProgressMessage(string message) => Invoke(() =>
+    {
+        if (_operationTypeInProgress == OperationType.CreateSingle)
+        {
+            ProgressMessageLabel.Text = message;
+        }
+        else
+        {
+            ProgressSubMessageLabel.Text = message;
+        }
+    });
+
+    public void SetProgressBatchMainMessage(string message) => Invoke(() =>
     {
         ProgressMessageLabel.Text = message;
     });
 
     public void SetProgressPercent(int percent) => Invoke(() =>
+    {
+        if (_operationTypeInProgress == OperationType.CreateSingle)
+        {
+            TaskBarProgress.SetValue(Handle, percent.Clamp(0, 100), 100);
+            MainProgressBar.Value = percent;
+        }
+        else
+        {
+            SubProgressBar.Value = percent;
+        }
+    });
+
+    public void SetProgressBatchMainPercent(int percent) => Invoke(() =>
     {
         TaskBarProgress.SetValue(Handle, percent.Clamp(0, 100), 100);
         MainProgressBar.Value = percent;
@@ -522,7 +583,7 @@ public sealed partial class MainForm : Form, IEventDisabler
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-        if (_operationInProgress)
+        if (_operationTypeInProgress != OperationType.None)
         {
             MessageBox.Show(
                 text: "An operation is in progress. Please cancel it first.",

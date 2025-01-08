@@ -58,6 +58,8 @@ sealed partial class MainForm
             this.RepackOutputDirectoryTextBox = new System.Windows.Forms.TextBox();
             this.StatusGroupBox = new System.Windows.Forms.GroupBox();
             this.MainProgressBar = new Loader_Friendly_FM_Packager.ProgressBarCustom();
+            this.SubProgressBar = new Loader_Friendly_FM_Packager.ProgressBarCustom();
+            this.ProgressSubMessageLabel = new System.Windows.Forms.Label();
             this.MainPanel.SuspendLayout();
             this.ModeTabControl.SuspendLayout();
             this.CreateTabPage.SuspendLayout();
@@ -218,7 +220,7 @@ sealed partial class MainForm
             // 
             // Cancel_Button
             // 
-            this.Cancel_Button.Location = new System.Drawing.Point(488, 80);
+            this.Cancel_Button.Location = new System.Drawing.Point(488, 104);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Size = new System.Drawing.Size(81, 23);
             this.Cancel_Button.TabIndex = 23;
@@ -367,30 +369,48 @@ sealed partial class MainForm
             // 
             // StatusGroupBox
             // 
-            this.StatusGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.StatusGroupBox.Controls.Add(this.ProgressSubMessageLabel);
             this.StatusGroupBox.Controls.Add(this.ProgressMessageLabel);
+            this.StatusGroupBox.Controls.Add(this.SubProgressBar);
             this.StatusGroupBox.Controls.Add(this.MainProgressBar);
             this.StatusGroupBox.Controls.Add(this.Cancel_Button);
             this.StatusGroupBox.Location = new System.Drawing.Point(8, 401);
             this.StatusGroupBox.Name = "StatusGroupBox";
-            this.StatusGroupBox.Size = new System.Drawing.Size(1056, 112);
+            this.StatusGroupBox.Size = new System.Drawing.Size(1056, 135);
             this.StatusGroupBox.TabIndex = 25;
             this.StatusGroupBox.TabStop = false;
             this.StatusGroupBox.Text = "Status";
             // 
             // MainProgressBar
             // 
-            this.MainProgressBar.Location = new System.Drawing.Point(16, 48);
+            this.MainProgressBar.Location = new System.Drawing.Point(16, 40);
             this.MainProgressBar.Name = "MainProgressBar";
-            this.MainProgressBar.Size = new System.Drawing.Size(1024, 23);
+            this.MainProgressBar.Size = new System.Drawing.Size(1024, 16);
             this.MainProgressBar.TabIndex = 21;
             this.MainProgressBar.Visible = false;
+            // 
+            // SubProgressBar
+            // 
+            this.SubProgressBar.Location = new System.Drawing.Point(16, 80);
+            this.SubProgressBar.Name = "SubProgressBar";
+            this.SubProgressBar.Size = new System.Drawing.Size(1024, 16);
+            this.SubProgressBar.TabIndex = 21;
+            this.SubProgressBar.Visible = false;
+            // 
+            // ProgressSubMessageLabel
+            // 
+            this.ProgressSubMessageLabel.AutoSize = true;
+            this.ProgressSubMessageLabel.Location = new System.Drawing.Point(16, 64);
+            this.ProgressSubMessageLabel.Name = "ProgressSubMessageLabel";
+            this.ProgressSubMessageLabel.Size = new System.Drawing.Size(97, 13);
+            this.ProgressSubMessageLabel.TabIndex = 22;
+            this.ProgressSubMessageLabel.Text = "[ProgressMessage]";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1072, 519);
+            this.ClientSize = new System.Drawing.Size(1072, 544);
             this.Controls.Add(this.StatusGroupBox);
             this.Controls.Add(this.MainPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -444,4 +464,6 @@ sealed partial class MainForm
     private System.Windows.Forms.Button ClearSourceArchivesButton;
     private System.Windows.Forms.Button RemoveSourceArchiveButton;
     private System.Windows.Forms.Button AddSourceArchiveButton;
+    private System.Windows.Forms.Label ProgressSubMessageLabel;
+    private ProgressBarCustom SubProgressBar;
 }

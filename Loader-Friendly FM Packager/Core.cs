@@ -557,7 +557,7 @@ internal static class Core
 
             try
             {
-                View.StartCreateSingleArchiveOperation();
+                View.StartRepackBatchOperation();
 
                 _cts = _cts.Recreate();
 
@@ -584,6 +584,8 @@ internal static class Core
                 for (int i = 0; i < sourceArchives.Length; i++)
                 {
                     string archive = sourceArchives[i];
+
+                    View.SetProgressBatchMainMessage("Repacking '" + archive + "' (" + (i + 1).ToStrInv() + " of" + sourceArchives.Length.ToStrInv() + ")...");
 
                     try
                     {
@@ -624,12 +626,14 @@ internal static class Core
                         if (!run7zResult.Success)
                         {
                             errors.Add(new RepackBatchError(archive, run7zResult.Message, run7zResult.Exception));
+                            UpdateSubProgress(i, sourceArchives.Length);
                             continue;
                         }
                         run7zResult = Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, listFileData, level, method, _cts.Token);
                         if (!run7zResult.Success)
                         {
                             errors.Add(new RepackBatchError(archive, run7zResult.Message, run7zResult.Exception));
+                            UpdateSubProgress(i, sourceArchives.Length);
                             continue;
                         }
                     }
@@ -638,6 +642,8 @@ internal static class Core
                         Log("Archive: " + archive, ex: ex);
                         errors.Add(new RepackBatchError(archive, ex.Message, ex));
                     }
+
+                    UpdateSubProgress(i, sourceArchives.Length);
                 }
 
                 return;
@@ -648,6 +654,11 @@ internal static class Core
                     {
                         View.SetProgressPercent(pr.PercentOfBytes);
                     }
+                }
+
+                static void UpdateSubProgress(int i, int total)
+                {
+                    View.SetProgressBatchMainPercent(Utils.GetPercentFromValue_Int(i + 1, total));
                 }
             }
             catch (OperationCanceledException)
@@ -662,7 +673,7 @@ internal static class Core
             {
                 View.SetProgressMessage("Cleaning up...");
                 Paths.CreateOrClearTempPath(Paths.TempPaths.Base);
-                View.EndCreateSingleArchiveOperation();
+                View.EndRepackBatchOperation();
                 _cts.Dispose();
 
                 if (errors.Count > 0)
