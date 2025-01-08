@@ -15,3 +15,8 @@ rem Dumb hack to get rid of extraneous dll files because ludicrously
 rem xcopy requires you to make an entire file just to list excludes, rather than
 rem specifying them on the command line like someone who is not clinically insane
 del /F "%TargetDir%JetBrains.Annotations.dll"
+rem del /F "%TargetDir%x86\*.*"
+rem del /F "%TargetDir%x64\*.*"
+echo "%TargetDir%x64"
+rd /S /Q "%TargetDir%x86"
+rd /S /Q "%TargetDir%x64"
