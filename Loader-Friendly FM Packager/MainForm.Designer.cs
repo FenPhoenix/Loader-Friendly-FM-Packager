@@ -69,10 +69,13 @@ sealed partial class MainForm
             // 
             // SourceFMDirectoryTextBox
             // 
+            this.SourceFMDirectoryTextBox.AllowDrop = true;
             this.SourceFMDirectoryTextBox.Location = new System.Drawing.Point(12, 26);
             this.SourceFMDirectoryTextBox.Name = "SourceFMDirectoryTextBox";
             this.SourceFMDirectoryTextBox.Size = new System.Drawing.Size(640, 20);
             this.SourceFMDirectoryTextBox.TabIndex = 0;
+            this.SourceFMDirectoryTextBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.SourceFMDirectoryTextBox_DragDrop);
+            this.SourceFMDirectoryTextBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.SourceFMDirectoryTextBox_DragEnter);
             // 
             // FMDirectoryBrowseButton
             // 
@@ -360,10 +363,13 @@ sealed partial class MainForm
             // 
             // RepackOutputDirectoryTextBox
             // 
+            this.RepackOutputDirectoryTextBox.AllowDrop = true;
             this.RepackOutputDirectoryTextBox.Location = new System.Drawing.Point(12, 276);
             this.RepackOutputDirectoryTextBox.Name = "RepackOutputDirectoryTextBox";
             this.RepackOutputDirectoryTextBox.Size = new System.Drawing.Size(640, 20);
             this.RepackOutputDirectoryTextBox.TabIndex = 0;
+            this.RepackOutputDirectoryTextBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.RepackOutputDirectoryTextBox_DragDrop);
+            this.RepackOutputDirectoryTextBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.RepackOutputDirectoryTextBox_DragEnter);
             // 
             // StatusGroupBox
             // 

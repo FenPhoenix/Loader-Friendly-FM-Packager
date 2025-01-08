@@ -499,10 +499,54 @@ public sealed partial class MainForm : Form, IEventDisabler
             return (DialogResultToMBoxButton(result), d.IsVerificationChecked);
         });
 
-    internal static MBoxButton DialogResultToMBoxButton(DialogResult dialogResult) => dialogResult switch
+    private static MBoxButton DialogResultToMBoxButton(DialogResult dialogResult) => dialogResult switch
     {
         DialogResult.Yes => MBoxButton.Yes,
         DialogResult.No => MBoxButton.No,
         _ => MBoxButton.Cancel,
     };
+
+    private void SourceFMDirectoryTextBox_DragEnter(object sender, DragEventArgs e)
+    {
+        object? data = e.Data?.GetData(DataFormats.FileDrop);
+        if (data == null) return;
+
+        if (Core.FilesDropped(data, out _))
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+    }
+
+    private void SourceFMDirectoryTextBox_DragDrop(object sender, DragEventArgs e)
+    {
+        object? data = e.Data?.GetData(DataFormats.FileDrop);
+        if (data == null) return;
+
+        if (Core.FilesDropped(data, out string[]? droppedItems) && droppedItems.Length > 0)
+        {
+            SourceFMDirectoryTextBox.Text = droppedItems[0];
+        }
+    }
+
+    private void RepackOutputDirectoryTextBox_DragEnter(object sender, DragEventArgs e)
+    {
+        object? data = e.Data?.GetData(DataFormats.FileDrop);
+        if (data == null) return;
+
+        if (Core.FilesDropped(data, out _))
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+    }
+
+    private void RepackOutputDirectoryTextBox_DragDrop(object sender, DragEventArgs e)
+    {
+        object? data = e.Data?.GetData(DataFormats.FileDrop);
+        if (data == null) return;
+
+        if (Core.FilesDropped(data, out string[]? droppedItems) && droppedItems.Length > 0)
+        {
+            RepackOutputDirectoryTextBox.Text = droppedItems[0];
+        }
+    }
 }
