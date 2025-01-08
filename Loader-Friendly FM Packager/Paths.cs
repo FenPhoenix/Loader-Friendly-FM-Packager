@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using static Loader_Friendly_FM_Packager.Logger;
 
 namespace Loader_Friendly_FM_Packager;
 
@@ -30,54 +29,28 @@ internal static class Paths
 
     internal const string MissFlagStr = "missflag.str";
 
-    // TODO: Act on failure
-    internal static bool CreateOrClearTempPath(TempPath pathType)
+    // No swallowing exceptions - if we fail, then fail the whole operation. Otherwise we might get remnants of
+    // some leftover FM in another's archive and whatever else.
+    internal static void CreateOrClearTempPath(TempPath pathType)
     {
         string path = pathType.PathGetter.Invoke();
 
         if (Directory.Exists(path))
         {
-            try
-            {
-                Utils.DirAndFileTree_UnSetReadOnly(path, throwException: true);
-            }
-            catch (Exception ex)
-            {
-                Log("Exception setting temp path subtree to all non-readonly." + $"{NL}" +
-                    "path was: " + path, ex);
-            }
+            Utils.DirAndFileTree_UnSetReadOnly(path, throwException: true);
 
-            try
+            foreach (string f in Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly))
             {
-                foreach (string f in Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly))
-                {
-                    File.Delete(f);
-                }
-                foreach (string d in Directory.GetDirectories(path, "*", SearchOption.TopDirectoryOnly))
-                {
-                    Directory.Delete(d, recursive: true);
-                }
-
-                return true;
+                File.Delete(f);
             }
-            catch (Exception ex)
+            foreach (string d in Directory.GetDirectories(path, "*", SearchOption.TopDirectoryOnly))
             {
-                Log("Exception clearing temp path " + path, ex);
+                Directory.Delete(d, recursive: true);
             }
         }
         else
         {
-            try
-            {
-                Directory.CreateDirectory(path);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Log("Exception creating temp path " + path, ex);
-            }
+            Directory.CreateDirectory(path);
         }
-
-        return false;
     }
 }

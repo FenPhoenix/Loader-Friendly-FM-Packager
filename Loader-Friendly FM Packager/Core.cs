@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using SevenZipExtractor;
 using static Loader_Friendly_FM_Packager.Logger;
 
@@ -40,7 +41,8 @@ internal static class Core
         Application.Exit();
     }
 
-    private static void RunProcess(
+    [MustUseReturnValue]
+    private static RunProcessResult RunProcess(
     string sourcePath,
     string outputArchive,
     string listFile,
@@ -62,21 +64,16 @@ internal static class Core
 
         if (result.ErrorOccurred)
         {
-            // TODO: This could be a batch process so we should gather up errors and show a dialog only once at the end.
             Log("7z.exe (Compress mode) returned an error:" + $"{NL}" + result);
-            View.ShowError("Failed to create archive '" + outputArchive + "'. See log for details.");
-            return;
+            string msg = "Failed to create archive '" + outputArchive + "'. See log for details.";
+            return new RunProcessResult(false, outputArchive, msg, result.Exception);
         }
         else if (result.Canceled)
         {
             throw new OperationCanceledException(_cts.Token);
         }
-        else
-        {
-            // TODO: Handle creation complete
-        }
 
-        return;
+        return new RunProcessResult(true, outputArchive, "", null);
 
         static void ReportProgress(Fen7z.ProgressReport pr)
         {
@@ -87,7 +84,8 @@ internal static class Core
         }
     }
 
-    private static void RunProcess_Rename(
+    [MustUseReturnValue]
+    private static RunProcessResult RunProcess_Rename(
         string sourcePath,
         string outputArchive,
         ListFileData listFileData,
@@ -115,19 +113,14 @@ internal static class Core
 
             if (result.ErrorOccurred)
             {
-                // TODO: This could be a batch process so we should gather up errors and show a dialog only once at the end.
                 Log("7z.exe (Rename mode) returned an error:" + $"{NL}" + result);
-                View.ShowError("Failed to finalize creation of archive '" + outputArchive +
-                               "'. The archive may appear complete but certain file names may be wrong. See log for details.");
-                return;
+                string msg = "Failed to finalize creation of archive '" + outputArchive +
+                             "'. The archive may appear complete but certain file names may be wrong. See log for details.";
+                return new RunProcessResult(false, outputArchive, msg, result.Exception);
             }
             else if (result.Canceled)
             {
                 throw new OperationCanceledException(_cts.Token);
-            }
-            else
-            {
-                // TODO: Handle rename complete
             }
         }
 
@@ -150,11 +143,17 @@ internal static class Core
                 filesStr += file + $"{NL}";
             }
 
-            Log(filesStr);
-            View.ShowError("Archive verification failed: file name set is different than source. Reverting of temp rename could possibly have failed. See log for details.");
+            Log("Archive verification failed: file name set is different than source. Reverting of temp rename could possibly have failed. " +
+                "The archive may appear complete but certain file names may be wrong." +
+                $"{NL}" +
+                filesStr);
+            const string msg =
+                "Archive verification failed: file name set is different than source. " +
+                "Reverting of temp rename could possibly have failed. The archive may appear complete but certain file names may be wrong. See log for details.";
+            return new RunProcessResult(false, outputArchive, msg, null);
         }
 
-        return;
+        return new RunProcessResult(true, outputArchive, "", null);
 
         // TODO: Also check explicitly for existence of un-renamed items from the renameable items list, so we can
         //  report that with certainly if it happens, rather than just saying "maybe it's this".
@@ -202,7 +201,8 @@ internal static class Core
      used .mis file.
     -Use a list file even when there's only one entry in it, to prevent any filename encoding issues.
     */
-    internal static void Run7z_ALScanFiles(
+    [MustUseReturnValue]
+    internal static RunProcessResult Run7z_ALScanFiles(
         string sourcePath,
         string outputArchive,
         ListFileData listFileData,
@@ -212,6 +212,8 @@ internal static class Core
     {
         string listFile = Path.Combine(Paths.Temp, AL_Scan_Block_ListFileName);
 
+        RunProcessResult result;
+
         if (listFileData.Readmes.Count > 0)
         {
             View.SetProgressPercent(0);
@@ -219,13 +221,17 @@ internal static class Core
 
             File.WriteAllLines(listFile, listFileData.Readmes);
 
-            RunProcess(
+            result = RunProcess(
                 sourcePath: sourcePath,
                 outputArchive: outputArchive,
                 listFile: listFile,
                 level: level,
                 method: method,
                 cancellationToken: cancellationToken);
+            if (!result.Success)
+            {
+                return result;
+            }
         }
 
         if (listFileData.Thumbs.Count > 0)
@@ -235,13 +241,17 @@ internal static class Core
 
             File.WriteAllLines(listFile, listFileData.Thumbs);
 
-            RunProcess(
+            result = RunProcess(
                 sourcePath: sourcePath,
                 outputArchive: outputArchive,
                 listFile: listFile,
                 level: level,
                 method: method,
                 cancellationToken: cancellationToken);
+            if (!result.Success)
+            {
+                return result;
+            }
         }
 
         if (listFileData.MainImages.Count > 0)
@@ -251,13 +261,17 @@ internal static class Core
 
             File.WriteAllLines(listFile, listFileData.MainImages);
 
-            RunProcess(
+            result = RunProcess(
                 sourcePath: sourcePath,
                 outputArchive: outputArchive,
                 listFile: listFile,
                 level: level,
                 method: method,
                 cancellationToken: cancellationToken);
+            if (!result.Success)
+            {
+                return result;
+            }
         }
 
         if (listFileData.GamFiles.Count > 0)
@@ -267,13 +281,17 @@ internal static class Core
 
             File.WriteAllLines(listFile, listFileData.GamFiles);
 
-            RunProcess(
+            result = RunProcess(
                 sourcePath: sourcePath,
                 outputArchive: outputArchive,
                 listFile: listFile,
                 level: level,
                 method: method,
                 cancellationToken: cancellationToken);
+            if (!result.Success)
+            {
+                return result;
+            }
         }
 
         for (int i = 0; i < listFileData.OnePerBlockItems.Count; i++)
@@ -283,39 +301,29 @@ internal static class Core
             View.SetProgressPercent(0);
             View.SetProgressMessage("Adding " + fileName + " to its own block...");
 
-            if (!File.Exists(Path.Combine(sourcePath, fileName)))
-            {
-                // TODO: Handle this better - placeholder for now
-                string msg =
-                    "----------\r\n" +
-                    "Filename we're about to pass to 7z via the list file (" + nameof(Run7z_ALScanFiles) +
-                    ") doesn't exist on disk! Character encoding difference?\r\n" +
-                    "Filename: +" + fileName + "\r\n" +
-                    "----------";
-                Trace.WriteLine(msg);
-                MessageBox.Show(
-                    msg,
-                    "Warning",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-            }
-
             using (var sw = new StreamWriter(listFile, false, UTF8NoBOM))
             {
                 sw.WriteLine(fileName);
             }
 
-            RunProcess(
+            result = RunProcess(
                 sourcePath: sourcePath,
                 outputArchive: outputArchive,
                 listFile: listFile,
                 level: level,
                 method: method,
                 cancellationToken: cancellationToken);
+            if (!result.Success)
+            {
+                return result;
+            }
         }
+
+        return new RunProcessResult(true, outputArchive, "", null);
     }
 
-    internal static void Run7z_Rest(
+    [MustUseReturnValue]
+    internal static RunProcessResult Run7z_Rest(
         string sourcePath,
         string outputArchive,
         string listFile,
@@ -327,20 +335,24 @@ internal static class Core
         View.SetProgressMessage("Adding remaining files to archive...");
         View.SetProgressPercent(0);
 
-        RunProcess(
+        RunProcessResult result = RunProcess(
             sourcePath: sourcePath,
             outputArchive: outputArchive,
             listFile: listFile,
             level: level,
             method: method,
             cancellationToken: cancellationToken);
+        if (!result.Success)
+        {
+            return result;
+        }
 
         if (listFileData.FilesToRename.Count > 0)
         {
             View.SetProgressMessage("Finalizing archive...");
             View.SetProgressPercent(100);
 
-            RunProcess_Rename(
+            return RunProcess_Rename(
                 sourcePath: sourcePath,
                 outputArchive: outputArchive,
                 listFileData,
@@ -349,6 +361,8 @@ internal static class Core
                 method: method,
                 cancellationToken: cancellationToken);
         }
+
+        return new RunProcessResult(true, outputArchive, "", null);
     }
 
     internal static string GetArgs(int level, CompressionMethod method)
@@ -449,7 +463,7 @@ internal static class Core
                 }
                 catch (Exception ex)
                 {
-                    string msg = "Unable to delete '" + outputArchive + "'.";
+                    string msg = "Unable to overwrite '" + outputArchive + "'.";
                     Log(msg, ex);
                     View.ShowError(msg, "Error");
                     return;
@@ -464,47 +478,83 @@ internal static class Core
                 {
                     (listFileData, listFile_Rest) = GetListFile(ref sourcePath, makeCopyOfFilesDir: true, _cts.Token);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is not OperationCanceledException)
                 {
                     Log(ex: ex);
                     View.ShowError("Failed to create FM. See log for details.");
                     return;
                 }
 
-                Run7z_ALScanFiles(sourcePath, outputArchive, listFileData, level, method, _cts.Token);
-                Run7z_Rest(sourcePath, outputArchive, listFile_Rest, listFileData, level, method, _cts.Token);
+                RunProcessResult result = Run7z_ALScanFiles(sourcePath, outputArchive, listFileData, level, method, _cts.Token);
+                if (!result.Success)
+                {
+                    View.ShowError(result.Message);
+                    return;
+                }
+                result = Run7z_Rest(sourcePath, outputArchive, listFile_Rest, listFileData, level, method, _cts.Token);
+                if (!result.Success)
+                {
+                    View.ShowError(result.Message);
+                    return;
+                }
+
+                View.SetProgressPercent(100);
             }
             catch (OperationCanceledException)
             {
-                // TODO: Below success message overrides this one.
-                View.SetProgressMessage("Canceled.");
-                try
-                {
-                    // TODO: Maybe we shouldn't delete the archive on cancel.
-                    //  Instead, on create start, if the archive exists we'll tell the user and ask them to delete it.
-                    //File.Delete(outputArchive);
-                }
-                catch
-                {
-                    // ignore
-                }
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                Log(ex: ex);
+                View.ShowError("Failed to create FM. See log for details.");
+                return;
             }
             finally
             {
                 View.SetProgressMessage("Cleaning up...");
-                View.SetProgressPercent(100);
                 Paths.CreateOrClearTempPath(Paths.TempPaths.Base);
-                View.EndCreateSingleArchiveOperation("Successfully created '" + outputArchive + "'.");
+                View.EndCreateSingleArchiveOperation();
                 _cts.Dispose();
             }
         });
     }
 
-    // TODO: Check for existence of dest file and put like a (1) on the end etc.
+    internal sealed class RunProcessResult
+    {
+        internal readonly bool Success;
+        internal readonly string FM;
+        internal readonly string Message;
+        internal readonly Exception? Exception;
+
+        public RunProcessResult(bool success, string fm, string message, Exception? exception)
+        {
+            Success = success;
+            FM = fm;
+            Message = message;
+            Exception = exception;
+        }
+    }
+
+    private sealed class RepackBatchError
+    {
+        internal readonly string SourceArchiveName;
+        internal readonly string Message;
+        internal readonly Exception? Exception;
+
+        internal RepackBatchError(string sourceArchiveName, string message, Exception? exception)
+        {
+            SourceArchiveName = sourceArchiveName;
+            Message = message;
+            Exception = exception;
+        }
+    }
+
     internal static async Task RepackBatch()
     {
         await Task.Run(static () =>
         {
+            List<RepackBatchError> errors = new();
+
             try
             {
                 View.StartCreateSingleArchiveOperation();
@@ -522,55 +572,72 @@ internal static class Core
                 string[] sourceArchives = View.Repack_Archives;
                 string outputDir = View.Repack_OutputDirectory;
 
+                if (File.Exists(outputDir))
+                {
+                    Log("Output directory was a file.");
+                    View.ShowError("Output directory was a file. Please set output directory to a directory.");
+                    return;
+                }
+
+                Directory.CreateDirectory(outputDir);
+
                 for (int i = 0; i < sourceArchives.Length; i++)
                 {
                     string archive = sourceArchives[i];
-                    string extractedDirName = Path.GetFileNameWithoutExtension(archive).Trim();
-                    string outputArchive = Path.Combine(outputDir, extractedDirName + ".7z");
 
-                    Paths.CreateOrClearTempPath(Paths.TempPaths.SourceCopy);
-
-                    View.SetProgressMessage("Unpacking archive '" + archive + "'...");
-
-                    var result = Fen7z.Extract(
-                        sevenZipPathAndExe: Paths.SevenZipExe,
-                        archivePath: archive,
-                        outputPath: tempExtractedDir,
-                        cancellationToken: _cts.Token,
-                        progress: progress);
-
-                    if (result.ErrorOccurred)
-                    {
-                        // TODO: This is a batch process so we should gather up errors and show a dialog only once at the end.
-                        Log("7z.exe (Extract mode) returned an error:" + $"{NL}" + result);
-                        View.ShowError("Failed to unpack archive '" + archive + "'. See log for details.");
-                        return;
-                    }
-                    else if (result.Canceled)
-                    {
-                        throw new OperationCanceledException(_cts.Token);
-                    }
-                    else
-                    {
-                        // TODO: Handle extract complete
-                    }
-
-                    ListFileData listFileData;
-                    string listFile_Rest;
                     try
                     {
-                        (listFileData, listFile_Rest) = GetListFile(ref tempExtractedDir, makeCopyOfFilesDir: false, _cts.Token);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log(ex: ex);
-                        // TODO: This is a batch process so we should gather up errors and show a dialog only once at the end.
-                        View.ShowError("Failed to repack FM. See log for details.");
-                        return;
-                    }
+                        string extractedDirName = Path.GetFileNameWithoutExtension(archive).Trim();
+                        string outputArchive = Path.Combine(outputDir, extractedDirName + ".7z");
 
-                    Run7z_ALScanFiles(tempExtractedDir, outputArchive, listFileData, level, method, _cts.Token);
-                    Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, listFileData, level, method, _cts.Token);
+                        outputArchive = Utils.GetNonConflictingFileName(outputArchive);
+
+                        Paths.CreateOrClearTempPath(Paths.TempPaths.SourceCopy);
+
+                        View.SetProgressMessage("Unpacking archive '" + archive + "'...");
+
+                        var result = Fen7z.Extract(
+                            sevenZipPathAndExe: Paths.SevenZipExe,
+                            archivePath: archive,
+                            outputPath: tempExtractedDir,
+                            cancellationToken: _cts.Token,
+                            progress: progress);
+
+                        if (result.ErrorOccurred)
+                        {
+                            string msg = "7z.exe (Extract mode) returned an error:" + $"{NL}" + result;
+                            errors.Add(new RepackBatchError(archive, msg, result.Exception));
+                            Log("Archive: " + archive + $"{NL}" + msg);
+                            return;
+                        }
+                        else if (result.Canceled)
+                        {
+                            throw new OperationCanceledException(_cts.Token);
+                        }
+
+                        (ListFileData listFileData, string listFile_Rest) = GetListFile(
+                            ref tempExtractedDir,
+                            makeCopyOfFilesDir: false,
+                            _cts.Token);
+
+                        RunProcessResult run7zResult = Run7z_ALScanFiles(tempExtractedDir, outputArchive, listFileData, level, method, _cts.Token);
+                        if (!run7zResult.Success)
+                        {
+                            errors.Add(new RepackBatchError(archive, run7zResult.Message, run7zResult.Exception));
+                            continue;
+                        }
+                        run7zResult = Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, listFileData, level, method, _cts.Token);
+                        if (!run7zResult.Success)
+                        {
+                            errors.Add(new RepackBatchError(archive, run7zResult.Message, run7zResult.Exception));
+                            continue;
+                        }
+                    }
+                    catch (Exception ex) when (ex is not OperationCanceledException)
+                    {
+                        Log("Archive: " + archive, ex: ex);
+                        errors.Add(new RepackBatchError(archive, ex.Message, ex));
+                    }
                 }
 
                 return;
@@ -583,112 +650,28 @@ internal static class Core
                     }
                 }
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
-                // TODO: Below success message overrides this one.
-                View.SetProgressMessage("Canceled.");
-                try
-                {
-                    // TODO: Handle cancellation
-                }
-                catch
-                {
-                    // ignore
-                }
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                Log(ex: ex);
+                View.ShowError("Failed to repack FM. See log for details.");
             }
             finally
             {
+                View.SetProgressMessage("Cleaning up...");
                 Paths.CreateOrClearTempPath(Paths.TempPaths.Base);
-                // TODO: Fail, success?
-                View.EndCreateSingleArchiveOperation("Finished repacking archives.");
+                View.EndCreateSingleArchiveOperation();
                 _cts.Dispose();
+
+                if (errors.Count > 0)
+                {
+                    View.ShowError("There were errors while attempting to repack one or more FMs. See log for details.");
+                }
             }
         });
     }
-
-    /*
-    TODO(Update on size testing): We can actually just do like this:
-
-    Say we had these files:
-
-    miss20.mis
-    miss21.mis
-    miss22.mis
-
-    And miss22.mis was our smallest used .mis file. We then just rename it so it sorts at the top:
-
-    miss22.mis -> aaaaaaa_miss22.mis
-
-    (but then we're renaming a user's file, so we should I guess just copy the entire FM source dir to a temp dir
-    first?)
-
-    Then we add all 3 files to the archive, then we just rename the file inside the archive ("7z.exe rn")
-    back to miss22.mis. Its name will now be correct but it will also still be at the start of the block.
-    Hacky but whatever, it prevents having to have a whole custom version of 7-zip and all.
-
-    Make sure we pass -qs=off as an arg (even though it's the default) just to be explicit.
-
-    I guess also pass -mhc=off again in case it wants to compress the header when it changes the file name in it?
-    Presumably?
-
-    Also if any relevant file names are non-ascii then I guess maybe just skip this step and fall back? Cause you
-    can only pass renames on the command line, not in a list file or anything, and the command line has never even
-    heard of Unicode...
-
-    ---
-
-    That way, we could lay out the blocks like this:
-
-    {
-    miss24.mis <- smallest
-    miss20.mis
-    miss21.mis
-    miss22.mis
-    miss23.mis
-    }
-
-    {
-    bar.gam <- smallest
-    foo.gam
-    }
-
-    {
-    [all readme files]
-    }
-
-    // These are in their own block and not with the readmes, because we don't want to have them in the way during
-    // the scan
-    {
-    [all html referenced files]
-    }
-
-    {
-    [all main_* image files]
-    }
-
-    {
-    gltitle.*
-    fmthumb.*
-    }
-
-    {
-    fm.ini
-    mod.ini
-    fminfo.xml
-    }
-
-    {
-    all title(s).str (in order scanner wants them)
-    all newgame.str  (in order scanner wants them)
-    all missflag.str (order doesn't matter - they're language agnostic)
-    }
-
-    // It's unlikely anything extra will end up here that isn't already elsewhere, so we don't have to care too
-    // much about the size effect of this block
-    {
-    [all files referenced in fm.ini and mod.ini]
-    }
-    */
 
     /*
     For certain types of files, we want to keep them in a multi-file block, but put them at the start of said
@@ -787,7 +770,7 @@ internal static class Core
         }
 
         /*
-        TODO: This is slow. We can't just copy our to-be-renamed files either because they need to be in the
+        NOTE: This is slow. We can't just copy our to-be-renamed files either because they need to be in the
          stupid list file with paths relative to the main folder if they want to be in the same block as other
          stuff, which they do.
          We could:
@@ -804,7 +787,6 @@ internal static class Core
             View.SetProgressMessage("Making a copy of source FM directory...");
             View.SetProgressPercent(0);
 
-            // TODO: Error handling needed
             string[] sourceFiles = Directory.GetFiles(filesDir, "*", SearchOption.AllDirectories);
             for (int i = 0; i < sourceFiles.Length; i++)
             {

@@ -15,23 +15,11 @@ using Loader_Friendly_FM_Packager.WinFormsNative.Taskbar;
 namespace Loader_Friendly_FM_Packager;
 
 /*
-TODO: We'll be adding to the archive with every call, so make sure it doesn't exist beforehand and/or delete
- it first or something
-
-TODO: When re-packing from a zip file, notify the user when an unknown-encoded filename comes up (where it would
- normally use "Default" encoding). Show the user the filename in various encodings and allow them to choose what
- it should be.
- We'll need to pull in the .NET zip code so as to customize it to expose the "used default encoding" situation.
-
 TODO: Allow adding a context menu item, so the user can just right click and run it on a folder.
 
 TODO: Repack needs a second "overall" progress bar, and needs to say which FM it's doing.
 
 TODO: Repack should maybe have like a log on the UI that shows any errors and the FM where the error occurred?
-
---
-
-TODO: Re-run the 7z-scan-friendly convert with the final logic
 
 --
 
@@ -62,8 +50,6 @@ public sealed partial class MainForm : Form, IEventDisabler
         Cancel_Button.CenterH(StatusGroupBox);
         ResetProgressMessage();
         ProgressMessageLabel.Location = ProgressMessageLabel.Location with { X = MainProgressBar.Left };
-
-        UpdateModeEnabledState();
     }
 
     #region Getters and setters
@@ -472,8 +458,8 @@ public sealed partial class MainForm : Form, IEventDisabler
                 }
 #endif
 
-                Core.Run7z_ALScanFiles(tempExtractedDir, outputArchive, listFileData, level, method, CancellationToken.None);
-                Core.Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, listFileData, level, method, CancellationToken.None);
+                _ = Core.Run7z_ALScanFiles(tempExtractedDir, outputArchive, listFileData, level, method, CancellationToken.None);
+                _ = Core.Run7z_Rest(tempExtractedDir, outputArchive, listFile_Rest, listFileData, level, method, CancellationToken.None);
 
                 //Fen7z.Compress(
                 //    Paths.SevenZipExe,
@@ -608,11 +594,6 @@ public sealed partial class MainForm : Form, IEventDisabler
     private void Cancel_Button_Click(object sender, EventArgs e)
     {
         Core.CancelToken();
-    }
-
-    private void UpdateModeEnabledState()
-    {
-        // TODO: Set from config
     }
 
     private void AddSourceArchiveButton_Click(object sender, EventArgs e)

@@ -302,11 +302,6 @@ internal static class Utils
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsIniHeader(this string line) => !line.IsEmpty() && line[0] == '[' && line[^1] == ']';
 
-    // TODO: We need to run encoding detection on this too...
-    // Or we could just check if the InfoFile= value is ascii, and if not then oh well - fm.ini may be
-    // too small to accurately detect encoding anyway?
-    // TODO: Error handling needed here
-    // TODO: Test this thoroughly (create FM archives that cover all expected cases)
     internal static bool TryGetInfoFileFromFmIni(string filesDir, out string infoFile)
     {
         infoFile = "";
@@ -473,19 +468,7 @@ internal static class Utils
     {
         smallestGamFile = "";
 
-        List<FileInfo> gamFileInfos;
-        try
-        {
-            gamFileInfos = new DirectoryInfo(fmDir).GetFiles("*.gam", SearchOption.TopDirectoryOnly).ToList();
-        }
-        catch (Exception ex)
-        {
-            // TODO: Error handling needed
-            //string msg = "Error trying to get .gam files in FM installed directory.";
-            //fm.LogInfo(msg + " " + ErrorText.RetF, ex);
-            //Core.Dialogs.ShowError(msg + $"{NL}{NL}" + ErrorText.OldDarkDependentFeaturesWillFail);
-            return false;
-        }
+        List<FileInfo> gamFileInfos = new DirectoryInfo(fmDir).GetFiles("*.gam", SearchOption.TopDirectoryOnly).ToList();
 
         // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
         for (int i = 0; i < gamFileInfos.Count; i++)
@@ -514,19 +497,7 @@ internal static class Utils
     {
         smallestUsedMisFile = "";
 
-        List<FileInfo> misFileInfos;
-        try
-        {
-            misFileInfos = new DirectoryInfo(fmDir).GetFiles("*.mis", SearchOption.TopDirectoryOnly).ToList();
-        }
-        catch (Exception ex)
-        {
-            // TODO: Error handling needed
-            //string msg = "Error trying to get .mis files in FM installed directory.";
-            //fm.LogInfo(msg + " " + ErrorText.RetF, ex);
-            //Core.Dialogs.ShowError(msg + $"{NL}{NL}" + ErrorText.OldDarkDependentFeaturesWillFail);
-            return false;
-        }
+        List<FileInfo> misFileInfos = new DirectoryInfo(fmDir).GetFiles("*.mis", SearchOption.TopDirectoryOnly).ToList();
 
         // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
         for (int i = 0; i < misFileInfos.Count; i++)
@@ -564,32 +535,16 @@ internal static class Utils
             }
             else
             {
-                try
-                {
-                    string[] files = Directory.GetFiles(stringsPath, Paths.MissFlagStr, SearchOption.AllDirectories);
-                    if (files.Length > 0) missFlag = files[0];
-                }
-                catch (Exception ex)
-                {
-                    // TODO: Error handling needed
-                    //string msg = "Error trying to get " + Paths.MissFlagStr + " files in " + stringsPath + " or any subdirectory.";
-                    //fm.LogInfo(msg + " " + ErrorText.RetF, ex);
-                    //Core.Dialogs.ShowError(msg + $"{NL}{NL}" + ErrorText.OldDarkDependentFeaturesWillFail);
-                    return false;
-                }
+                string[] files = Directory.GetFiles(stringsPath, Paths.MissFlagStr, SearchOption.AllDirectories);
+                if (files.Length > 0) missFlag = files[0];
             }
 
             if (missFlag != null)
             {
-                // TODO: Error handling needed
                 List<string> mfLines = File.ReadLines(missFlag).ToList();
-                //if (!TryReadAllLines(missFlag, out List<string>? mfLines))
-                //{
-                //    Core.Dialogs.ShowError("Error trying to read '" + missFlag + $"'.{NL}{NL}" + ErrorText.OldDarkDependentFeaturesWillFail);
-                //    return false;
-                //}
 
-                // Stupid alloc-allergic logic copied from AngelLoader; we don't need to be so optimized here but whatever
+                // Stupid alloc-allergic code copied from AngelLoader; we don't need to be so optimized here but
+                // whatever
                 for (int mfI = 0; mfI < misFileInfos.Count; mfI++)
                 {
                     FileInfo mf = misFileInfos[mfI];
@@ -658,6 +613,40 @@ internal static class Utils
     internal static int MathMax3(int num1, int num2, int num3) => Math.Max(Math.Max(num1, num2), num3);
 
     internal static int MathMax4(int num1, int num2, int num3, int num4) => Math.Max(Math.Max(Math.Max(num1, num2), num3), num4);
+
+    internal static string RemoveExtension(this string path)
+    {
+        string s = path;
+        for (int i = path.Length; --i >= 0;)
+        {
+            char ch = path[i];
+            if (ch == '.')
+            {
+                s = path.Substring(0, i);
+                break;
+            }
+            if (ch == Path.DirectorySeparatorChar ||
+                ch == Path.AltDirectorySeparatorChar ||
+                ch == Path.VolumeSeparatorChar)
+            {
+                break;
+            }
+        }
+
+        return s;
+    }
+
+    internal static string GetNonConflictingFileName(string originalFileName)
+    {
+        string ret = originalFileName;
+        int i = 1;
+        while (File.Exists(ret) && i < int.MaxValue)
+        {
+            ret = originalFileName.RemoveExtension() + "(" + i.ToStrInv() + ")" + Path.GetExtension(originalFileName);
+            i++;
+        }
+        return ret;
+    }
 }
 
 internal static class FMFileExtensions
@@ -748,9 +737,6 @@ internal static class FMFiles
     internal const string FMThumb = "fmthumb";
 
     // For Thief 3 missions, all of them have this file, and then any other .gmp files are the actual missions
-    // TODO: Is there any possible thing a loader could do with the contents of T3 files that AL doesn't?
-    //  Like language detection or some such? We should add all T3 files with potentially useful contents to the
-    //  logic.
     internal const string EntryGmp = "Entry.gmp";
 
     internal const string TDM_DarkModTxt = "darkmod.txt";

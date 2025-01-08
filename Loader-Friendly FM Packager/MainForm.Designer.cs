@@ -180,7 +180,7 @@ sealed partial class MainForm
             // 
             // Test1Button
             // 
-            this.Test1Button.Location = new System.Drawing.Point(976, 168);
+            this.Test1Button.Location = new System.Drawing.Point(984, 128);
             this.Test1Button.Name = "Test1Button";
             this.Test1Button.Size = new System.Drawing.Size(81, 23);
             this.Test1Button.TabIndex = 8;
