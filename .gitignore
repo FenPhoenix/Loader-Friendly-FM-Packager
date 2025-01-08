@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Fen custom
+post_build_fen_personal_dev.bat
+
 # User-specific files
 *.rsuser
 *.suo
