@@ -49,9 +49,12 @@ public sealed partial class MainForm : Form, IEventDisabler
         PopulateThreadsComboBox();
 
         MainProgressBar.CenterH(StatusGroupBox);
+        SubProgressBar.CenterH(StatusGroupBox);
         Cancel_Button.CenterH(StatusGroupBox);
         ResetProgressMessage();
+        ProgressSubMessageLabel.Text = "";
         ProgressMessageLabel.Location = ProgressMessageLabel.Location with { X = MainProgressBar.Left };
+        ProgressSubMessageLabel.Location = ProgressSubMessageLabel.Location with { X = SubProgressBar.Left };
     }
 
     #region Getters and setters
