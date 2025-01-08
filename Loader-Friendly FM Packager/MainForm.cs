@@ -55,6 +55,11 @@ public sealed partial class MainForm : Form, IEventDisabler
         ProgressSubMessageLabel.Text = "";
         ProgressMessageLabel.Location = ProgressMessageLabel.Location with { X = MainProgressBar.Left };
         ProgressSubMessageLabel.Location = ProgressSubMessageLabel.Location with { X = SubProgressBar.Left };
+
+#if DEV_TESTING
+        SourceFMDirectoryTextBox.Text = @"J:\_BlackParade_Blocks\TheBlackParade_1.0";
+        OutputArchiveTextBox.Text = @"J:\Local Storage NVME\FMs\__solid_blocks_test\zz_test.7z";
+#endif
     }
 
     #region Getters and setters

@@ -57,9 +57,9 @@ sealed partial class MainForm
             this.RepackOutputDirectoryBrowseButton = new System.Windows.Forms.Button();
             this.RepackOutputDirectoryTextBox = new System.Windows.Forms.TextBox();
             this.StatusGroupBox = new System.Windows.Forms.GroupBox();
-            this.MainProgressBar = new Loader_Friendly_FM_Packager.ProgressBarCustom();
-            this.SubProgressBar = new Loader_Friendly_FM_Packager.ProgressBarCustom();
             this.ProgressSubMessageLabel = new System.Windows.Forms.Label();
+            this.SubProgressBar = new Loader_Friendly_FM_Packager.ProgressBarCustom();
+            this.MainProgressBar = new Loader_Friendly_FM_Packager.ProgressBarCustom();
             this.MainPanel.SuspendLayout();
             this.ModeTabControl.SuspendLayout();
             this.CreateTabPage.SuspendLayout();
@@ -73,7 +73,6 @@ sealed partial class MainForm
             this.SourceFMDirectoryTextBox.Name = "SourceFMDirectoryTextBox";
             this.SourceFMDirectoryTextBox.Size = new System.Drawing.Size(640, 20);
             this.SourceFMDirectoryTextBox.TabIndex = 0;
-            this.SourceFMDirectoryTextBox.Text = "J:\\_BlackParade_Blocks\\TheBlackParade_1.0";
             // 
             // FMDirectoryBrowseButton
             // 
@@ -100,7 +99,6 @@ sealed partial class MainForm
             this.OutputArchiveTextBox.Name = "OutputArchiveTextBox";
             this.OutputArchiveTextBox.Size = new System.Drawing.Size(640, 20);
             this.OutputArchiveTextBox.TabIndex = 0;
-            this.OutputArchiveTextBox.Text = "J:\\Local Storage NVME\\FMs\\__solid_blocks_test\\zz_test.7z";
             // 
             // OutputArchiveLabel
             // 
@@ -381,13 +379,14 @@ sealed partial class MainForm
             this.StatusGroupBox.TabStop = false;
             this.StatusGroupBox.Text = "Status";
             // 
-            // MainProgressBar
+            // ProgressSubMessageLabel
             // 
-            this.MainProgressBar.Location = new System.Drawing.Point(16, 40);
-            this.MainProgressBar.Name = "MainProgressBar";
-            this.MainProgressBar.Size = new System.Drawing.Size(1024, 16);
-            this.MainProgressBar.TabIndex = 21;
-            this.MainProgressBar.Visible = false;
+            this.ProgressSubMessageLabel.AutoSize = true;
+            this.ProgressSubMessageLabel.Location = new System.Drawing.Point(16, 64);
+            this.ProgressSubMessageLabel.Name = "ProgressSubMessageLabel";
+            this.ProgressSubMessageLabel.Size = new System.Drawing.Size(97, 13);
+            this.ProgressSubMessageLabel.TabIndex = 22;
+            this.ProgressSubMessageLabel.Text = "[ProgressMessage]";
             // 
             // SubProgressBar
             // 
@@ -397,14 +396,13 @@ sealed partial class MainForm
             this.SubProgressBar.TabIndex = 21;
             this.SubProgressBar.Visible = false;
             // 
-            // ProgressSubMessageLabel
+            // MainProgressBar
             // 
-            this.ProgressSubMessageLabel.AutoSize = true;
-            this.ProgressSubMessageLabel.Location = new System.Drawing.Point(16, 64);
-            this.ProgressSubMessageLabel.Name = "ProgressSubMessageLabel";
-            this.ProgressSubMessageLabel.Size = new System.Drawing.Size(97, 13);
-            this.ProgressSubMessageLabel.TabIndex = 22;
-            this.ProgressSubMessageLabel.Text = "[ProgressMessage]";
+            this.MainProgressBar.Location = new System.Drawing.Point(16, 40);
+            this.MainProgressBar.Name = "MainProgressBar";
+            this.MainProgressBar.Size = new System.Drawing.Size(1024, 16);
+            this.MainProgressBar.TabIndex = 21;
+            this.MainProgressBar.Visible = false;
             // 
             // MainForm
             // 
