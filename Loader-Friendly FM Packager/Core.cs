@@ -432,6 +432,13 @@ internal static class Core
             string sourcePath = View.SourceFMPath;
             string outputArchive = View.OutputArchive;
 
+            if (File.Exists(sourcePath))
+            {
+                Log("Source path was a file.");
+                View.ShowError("Source path was a file. Please set source path to a directory.");
+                return;
+            }
+
             try
             {
                 View.StartCreateSingleArchiveOperation();
