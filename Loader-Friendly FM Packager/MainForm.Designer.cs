@@ -267,7 +267,7 @@ sealed partial class MainForm
             this.CreateTabPage.Padding = new System.Windows.Forms.Padding(3);
             this.CreateTabPage.Size = new System.Drawing.Size(744, 358);
             this.CreateTabPage.TabIndex = 0;
-            this.CreateTabPage.Text = "Create";
+            this.CreateTabPage.Text = "Create single FM";
             this.CreateTabPage.UseVisualStyleBackColor = true;
             // 
             // RepackTabPage
@@ -285,7 +285,7 @@ sealed partial class MainForm
             this.RepackTabPage.Padding = new System.Windows.Forms.Padding(3);
             this.RepackTabPage.Size = new System.Drawing.Size(744, 358);
             this.RepackTabPage.TabIndex = 1;
-            this.RepackTabPage.Text = "Repack";
+            this.RepackTabPage.Text = "Batch repack";
             this.RepackTabPage.UseVisualStyleBackColor = true;
             // 
             // ClearSourceArchivesButton

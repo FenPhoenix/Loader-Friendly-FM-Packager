@@ -427,11 +427,21 @@ internal static class Core
 
     internal static async Task CreateSingleArchive()
     {
-        await Task.Run(static () =>
-        {
-            string sourcePath = View.SourceFMPath;
-            string outputArchive = View.OutputArchive;
+        string sourcePath = View.SourceFMPath;
+        string outputArchive = View.OutputArchive;
 
+        if (sourcePath.IsEmpty() || outputArchive.IsEmpty())
+        {
+            MessageBox.Show(
+                "You must specify both a source FM directory and an output archive.",
+                "Alert",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        await Task.Run(() =>
+        {
             if (File.Exists(sourcePath))
             {
                 Log("Source path was a file.");
@@ -558,7 +568,20 @@ internal static class Core
 
     internal static async Task RepackBatch()
     {
-        await Task.Run(static () =>
+        string[] sourceArchives = View.Repack_Archives;
+        string outputDir = View.Repack_OutputDirectory;
+
+        if (sourceArchives.Length == 0 || outputDir.IsEmpty())
+        {
+            MessageBox.Show(
+                "You must specify an output directory and at least one archive to repack.",
+                "Alert",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        await Task.Run(() =>
         {
             List<RepackBatchError> errors = new();
 
@@ -576,8 +599,6 @@ internal static class Core
                 int level = Config.CompressionLevel;
                 CompressionMethod method = Config.CompressionMethod;
 
-                string[] sourceArchives = View.Repack_Archives;
-                string outputDir = View.Repack_OutputDirectory;
 
                 if (File.Exists(outputDir))
                 {
