@@ -16,14 +16,6 @@ namespace Loader_Friendly_FM_Packager;
 
 /*
 TODO: Allow adding a context menu item, so the user can just right click and run it on a folder.
-
-TODO: Repack needs a second "overall" progress bar, and needs to say which FM it's doing.
-
-TODO: Repack should maybe have like a log on the UI that shows any errors and the FM where the error occurred?
-
---
-
-TODO: Act on caught exceptions and add robust error handling everywhere
 */
 
 public sealed partial class MainForm : Form, IEventDisabler
