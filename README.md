@@ -1,3 +1,5 @@
+### This project is now continued in the [7-Zip Speed Optimizer](https://github.com/FenPhoenix/7-Zip-Speed-Optimizer) repo.
+
 # Loader-Friendly FM Packager
 
 A tool to package 7z FMs in a way that allows FM loaders to scan them quickly, while retaining the high compression advantage of the 7z format.
