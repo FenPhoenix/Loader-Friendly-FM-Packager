@@ -73,7 +73,7 @@ sealed partial class MainForm
             this.SourceFMDirectoryTextBox.Location = new System.Drawing.Point(12, 26);
             this.SourceFMDirectoryTextBox.Name = "SourceFMDirectoryTextBox";
             this.SourceFMDirectoryTextBox.Size = new System.Drawing.Size(640, 20);
-            this.SourceFMDirectoryTextBox.TabIndex = 0;
+            this.SourceFMDirectoryTextBox.TabIndex = 1;
             this.SourceFMDirectoryTextBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.SourceFMDirectoryTextBox_DragDrop);
             this.SourceFMDirectoryTextBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.SourceFMDirectoryTextBox_DragEnter);
             // 
@@ -82,7 +82,7 @@ sealed partial class MainForm
             this.FMDirectoryBrowseButton.Location = new System.Drawing.Point(652, 25);
             this.FMDirectoryBrowseButton.Name = "FMDirectoryBrowseButton";
             this.FMDirectoryBrowseButton.Size = new System.Drawing.Size(81, 23);
-            this.FMDirectoryBrowseButton.TabIndex = 1;
+            this.FMDirectoryBrowseButton.TabIndex = 2;
             this.FMDirectoryBrowseButton.Text = "Browse...";
             this.FMDirectoryBrowseButton.UseVisualStyleBackColor = true;
             this.FMDirectoryBrowseButton.Click += new System.EventHandler(this.FMDirectoryBrowseButton_Click);
@@ -93,7 +93,7 @@ sealed partial class MainForm
             this.SourceFMDirectoryLabel.Location = new System.Drawing.Point(12, 10);
             this.SourceFMDirectoryLabel.Name = "SourceFMDirectoryLabel";
             this.SourceFMDirectoryLabel.Size = new System.Drawing.Size(105, 13);
-            this.SourceFMDirectoryLabel.TabIndex = 2;
+            this.SourceFMDirectoryLabel.TabIndex = 0;
             this.SourceFMDirectoryLabel.Text = "Source FM directory:";
             // 
             // OutputArchiveTextBox
@@ -101,7 +101,7 @@ sealed partial class MainForm
             this.OutputArchiveTextBox.Location = new System.Drawing.Point(12, 74);
             this.OutputArchiveTextBox.Name = "OutputArchiveTextBox";
             this.OutputArchiveTextBox.Size = new System.Drawing.Size(640, 20);
-            this.OutputArchiveTextBox.TabIndex = 0;
+            this.OutputArchiveTextBox.TabIndex = 4;
             // 
             // OutputArchiveLabel
             // 
@@ -109,7 +109,7 @@ sealed partial class MainForm
             this.OutputArchiveLabel.Location = new System.Drawing.Point(12, 58);
             this.OutputArchiveLabel.Name = "OutputArchiveLabel";
             this.OutputArchiveLabel.Size = new System.Drawing.Size(80, 13);
-            this.OutputArchiveLabel.TabIndex = 2;
+            this.OutputArchiveLabel.TabIndex = 3;
             this.OutputArchiveLabel.Text = "Output archive:";
             // 
             // CreateSingleArchiveButton
@@ -117,7 +117,7 @@ sealed partial class MainForm
             this.CreateSingleArchiveButton.Location = new System.Drawing.Point(636, 320);
             this.CreateSingleArchiveButton.Name = "CreateSingleArchiveButton";
             this.CreateSingleArchiveButton.Size = new System.Drawing.Size(97, 23);
-            this.CreateSingleArchiveButton.TabIndex = 4;
+            this.CreateSingleArchiveButton.TabIndex = 6;
             this.CreateSingleArchiveButton.Text = "Create";
             this.CreateSingleArchiveButton.UseVisualStyleBackColor = true;
             this.CreateSingleArchiveButton.Click += new System.EventHandler(this.CreateSingleArchiveButton_Click);
@@ -140,7 +140,7 @@ sealed partial class MainForm
             this.CompressionLevelComboBox.Location = new System.Drawing.Point(927, 28);
             this.CompressionLevelComboBox.Name = "CompressionLevelComboBox";
             this.CompressionLevelComboBox.Size = new System.Drawing.Size(132, 21);
-            this.CompressionLevelComboBox.TabIndex = 5;
+            this.CompressionLevelComboBox.TabIndex = 2;
             this.CompressionLevelComboBox.SelectedIndexChanged += new System.EventHandler(this.CompressionLevelComboBox_SelectedIndexChanged);
             // 
             // CompressionLevelLabel
@@ -149,7 +149,7 @@ sealed partial class MainForm
             this.CompressionLevelLabel.Location = new System.Drawing.Point(768, 32);
             this.CompressionLevelLabel.Name = "CompressionLevelLabel";
             this.CompressionLevelLabel.Size = new System.Drawing.Size(95, 13);
-            this.CompressionLevelLabel.TabIndex = 6;
+            this.CompressionLevelLabel.TabIndex = 1;
             this.CompressionLevelLabel.Text = "Compression level:";
             // 
             // CompressionMethodComboBox
@@ -159,7 +159,7 @@ sealed partial class MainForm
             this.CompressionMethodComboBox.Location = new System.Drawing.Point(927, 63);
             this.CompressionMethodComboBox.Name = "CompressionMethodComboBox";
             this.CompressionMethodComboBox.Size = new System.Drawing.Size(132, 21);
-            this.CompressionMethodComboBox.TabIndex = 5;
+            this.CompressionMethodComboBox.TabIndex = 4;
             this.CompressionMethodComboBox.SelectedIndexChanged += new System.EventHandler(this.CompressionMethodComboBox_SelectedIndexChanged);
             // 
             // CompressionMethodLabel
@@ -168,7 +168,7 @@ sealed partial class MainForm
             this.CompressionMethodLabel.Location = new System.Drawing.Point(768, 67);
             this.CompressionMethodLabel.Name = "CompressionMethodLabel";
             this.CompressionMethodLabel.Size = new System.Drawing.Size(108, 13);
-            this.CompressionMethodLabel.TabIndex = 6;
+            this.CompressionMethodLabel.TabIndex = 3;
             this.CompressionMethodLabel.Text = "Compression method:";
             // 
             // OutputArchiveBrowseButton
@@ -176,7 +176,7 @@ sealed partial class MainForm
             this.OutputArchiveBrowseButton.Location = new System.Drawing.Point(652, 73);
             this.OutputArchiveBrowseButton.Name = "OutputArchiveBrowseButton";
             this.OutputArchiveBrowseButton.Size = new System.Drawing.Size(81, 23);
-            this.OutputArchiveBrowseButton.TabIndex = 1;
+            this.OutputArchiveBrowseButton.TabIndex = 5;
             this.OutputArchiveBrowseButton.Text = "Browse...";
             this.OutputArchiveBrowseButton.UseVisualStyleBackColor = true;
             this.OutputArchiveBrowseButton.Click += new System.EventHandler(this.OutputArchiveBrowseButton_Click);
@@ -186,7 +186,7 @@ sealed partial class MainForm
             this.Test1Button.Location = new System.Drawing.Point(984, 128);
             this.Test1Button.Name = "Test1Button";
             this.Test1Button.Size = new System.Drawing.Size(81, 23);
-            this.Test1Button.TabIndex = 8;
+            this.Test1Button.TabIndex = 7;
             this.Test1Button.Text = "Test1";
             this.Test1Button.UseVisualStyleBackColor = true;
             this.Test1Button.Click += new System.EventHandler(this.Test1Button_Click);
@@ -197,7 +197,7 @@ sealed partial class MainForm
             this.NumberOfCPUThreadsLabel.Location = new System.Drawing.Point(768, 102);
             this.NumberOfCPUThreadsLabel.Name = "NumberOfCPUThreadsLabel";
             this.NumberOfCPUThreadsLabel.Size = new System.Drawing.Size(122, 13);
-            this.NumberOfCPUThreadsLabel.TabIndex = 16;
+            this.NumberOfCPUThreadsLabel.TabIndex = 5;
             this.NumberOfCPUThreadsLabel.Text = "Number of CPU threads:";
             // 
             // NumberOfCPUThreadsComboBox
@@ -207,7 +207,7 @@ sealed partial class MainForm
             this.NumberOfCPUThreadsComboBox.Location = new System.Drawing.Point(927, 98);
             this.NumberOfCPUThreadsComboBox.Name = "NumberOfCPUThreadsComboBox";
             this.NumberOfCPUThreadsComboBox.Size = new System.Drawing.Size(132, 21);
-            this.NumberOfCPUThreadsComboBox.TabIndex = 15;
+            this.NumberOfCPUThreadsComboBox.TabIndex = 6;
             this.NumberOfCPUThreadsComboBox.SelectedIndexChanged += new System.EventHandler(this.NumberOfCPUThreadsComboBox_SelectedIndexChanged);
             // 
             // ProgressMessageLabel
@@ -216,7 +216,7 @@ sealed partial class MainForm
             this.ProgressMessageLabel.Location = new System.Drawing.Point(16, 24);
             this.ProgressMessageLabel.Name = "ProgressMessageLabel";
             this.ProgressMessageLabel.Size = new System.Drawing.Size(97, 13);
-            this.ProgressMessageLabel.TabIndex = 22;
+            this.ProgressMessageLabel.TabIndex = 0;
             this.ProgressMessageLabel.Text = "[ProgressMessage]";
             // 
             // Cancel_Button
@@ -224,7 +224,7 @@ sealed partial class MainForm
             this.Cancel_Button.Location = new System.Drawing.Point(488, 104);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Size = new System.Drawing.Size(81, 23);
-            this.Cancel_Button.TabIndex = 23;
+            this.Cancel_Button.TabIndex = 4;
             this.Cancel_Button.Text = "Cancel";
             this.Cancel_Button.UseVisualStyleBackColor = true;
             this.Cancel_Button.Visible = false;
@@ -243,7 +243,7 @@ sealed partial class MainForm
             this.MainPanel.Location = new System.Drawing.Point(0, 0);
             this.MainPanel.Name = "MainPanel";
             this.MainPanel.Size = new System.Drawing.Size(1072, 400);
-            this.MainPanel.TabIndex = 24;
+            this.MainPanel.TabIndex = 0;
             // 
             // ModeTabControl
             // 
@@ -253,7 +253,7 @@ sealed partial class MainForm
             this.ModeTabControl.Name = "ModeTabControl";
             this.ModeTabControl.SelectedIndex = 0;
             this.ModeTabControl.Size = new System.Drawing.Size(752, 384);
-            this.ModeTabControl.TabIndex = 24;
+            this.ModeTabControl.TabIndex = 0;
             this.ModeTabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.ModeTabControl_Selected);
             // 
             // CreateTabPage
@@ -296,7 +296,7 @@ sealed partial class MainForm
             this.ClearSourceArchivesButton.Location = new System.Drawing.Point(510, 224);
             this.ClearSourceArchivesButton.Name = "ClearSourceArchivesButton";
             this.ClearSourceArchivesButton.Size = new System.Drawing.Size(75, 23);
-            this.ClearSourceArchivesButton.TabIndex = 23;
+            this.ClearSourceArchivesButton.TabIndex = 1;
             this.ClearSourceArchivesButton.Text = "Clear";
             this.ClearSourceArchivesButton.UseVisualStyleBackColor = true;
             this.ClearSourceArchivesButton.Click += new System.EventHandler(this.ClearSourceArchivesButton_Click);
@@ -306,7 +306,7 @@ sealed partial class MainForm
             this.RemoveSourceArchiveButton.Location = new System.Drawing.Point(584, 224);
             this.RemoveSourceArchiveButton.Name = "RemoveSourceArchiveButton";
             this.RemoveSourceArchiveButton.Size = new System.Drawing.Size(75, 23);
-            this.RemoveSourceArchiveButton.TabIndex = 23;
+            this.RemoveSourceArchiveButton.TabIndex = 2;
             this.RemoveSourceArchiveButton.Text = "Remove";
             this.RemoveSourceArchiveButton.UseVisualStyleBackColor = true;
             this.RemoveSourceArchiveButton.Click += new System.EventHandler(this.RemoveSourceArchiveButton_Click);
@@ -316,7 +316,7 @@ sealed partial class MainForm
             this.AddSourceArchiveButton.Location = new System.Drawing.Point(658, 224);
             this.AddSourceArchiveButton.Name = "AddSourceArchiveButton";
             this.AddSourceArchiveButton.Size = new System.Drawing.Size(75, 23);
-            this.AddSourceArchiveButton.TabIndex = 23;
+            this.AddSourceArchiveButton.TabIndex = 3;
             this.AddSourceArchiveButton.Text = "Add...";
             this.AddSourceArchiveButton.UseVisualStyleBackColor = true;
             this.AddSourceArchiveButton.Click += new System.EventHandler(this.AddSourceArchiveButton_Click);
@@ -326,7 +326,7 @@ sealed partial class MainForm
             this.RepackButton.Location = new System.Drawing.Point(636, 320);
             this.RepackButton.Name = "RepackButton";
             this.RepackButton.Size = new System.Drawing.Size(97, 23);
-            this.RepackButton.TabIndex = 22;
+            this.RepackButton.TabIndex = 7;
             this.RepackButton.Text = "Repack all";
             this.RepackButton.UseVisualStyleBackColor = true;
             this.RepackButton.Click += new System.EventHandler(this.RepackButton_Click);
@@ -338,7 +338,7 @@ sealed partial class MainForm
             this.ArchivesToRepackListBox.Location = new System.Drawing.Point(12, 10);
             this.ArchivesToRepackListBox.Name = "ArchivesToRepackListBox";
             this.ArchivesToRepackListBox.Size = new System.Drawing.Size(720, 212);
-            this.ArchivesToRepackListBox.TabIndex = 21;
+            this.ArchivesToRepackListBox.TabIndex = 0;
             this.ArchivesToRepackListBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.ArchivesToRepackListBox_DragDrop);
             this.ArchivesToRepackListBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.ArchivesToRepackListBox_DragEnter);
             // 
@@ -348,7 +348,7 @@ sealed partial class MainForm
             this.RepackOutputDirectoryLabel.Location = new System.Drawing.Point(12, 260);
             this.RepackOutputDirectoryLabel.Name = "RepackOutputDirectoryLabel";
             this.RepackOutputDirectoryLabel.Size = new System.Drawing.Size(85, 13);
-            this.RepackOutputDirectoryLabel.TabIndex = 2;
+            this.RepackOutputDirectoryLabel.TabIndex = 4;
             this.RepackOutputDirectoryLabel.Text = "Output directory:";
             // 
             // RepackOutputDirectoryBrowseButton
@@ -356,7 +356,7 @@ sealed partial class MainForm
             this.RepackOutputDirectoryBrowseButton.Location = new System.Drawing.Point(652, 275);
             this.RepackOutputDirectoryBrowseButton.Name = "RepackOutputDirectoryBrowseButton";
             this.RepackOutputDirectoryBrowseButton.Size = new System.Drawing.Size(81, 23);
-            this.RepackOutputDirectoryBrowseButton.TabIndex = 1;
+            this.RepackOutputDirectoryBrowseButton.TabIndex = 6;
             this.RepackOutputDirectoryBrowseButton.Text = "Browse...";
             this.RepackOutputDirectoryBrowseButton.UseVisualStyleBackColor = true;
             this.RepackOutputDirectoryBrowseButton.Click += new System.EventHandler(this.RepackOutputDirectoryBrowseButton_Click);
@@ -367,7 +367,7 @@ sealed partial class MainForm
             this.RepackOutputDirectoryTextBox.Location = new System.Drawing.Point(12, 276);
             this.RepackOutputDirectoryTextBox.Name = "RepackOutputDirectoryTextBox";
             this.RepackOutputDirectoryTextBox.Size = new System.Drawing.Size(640, 20);
-            this.RepackOutputDirectoryTextBox.TabIndex = 0;
+            this.RepackOutputDirectoryTextBox.TabIndex = 5;
             this.RepackOutputDirectoryTextBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.RepackOutputDirectoryTextBox_DragDrop);
             this.RepackOutputDirectoryTextBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.RepackOutputDirectoryTextBox_DragEnter);
             // 
@@ -381,7 +381,7 @@ sealed partial class MainForm
             this.StatusGroupBox.Location = new System.Drawing.Point(8, 401);
             this.StatusGroupBox.Name = "StatusGroupBox";
             this.StatusGroupBox.Size = new System.Drawing.Size(1056, 135);
-            this.StatusGroupBox.TabIndex = 25;
+            this.StatusGroupBox.TabIndex = 1;
             this.StatusGroupBox.TabStop = false;
             this.StatusGroupBox.Text = "Status";
             // 
@@ -391,7 +391,7 @@ sealed partial class MainForm
             this.ProgressSubMessageLabel.Location = new System.Drawing.Point(16, 64);
             this.ProgressSubMessageLabel.Name = "ProgressSubMessageLabel";
             this.ProgressSubMessageLabel.Size = new System.Drawing.Size(97, 13);
-            this.ProgressSubMessageLabel.TabIndex = 22;
+            this.ProgressSubMessageLabel.TabIndex = 2;
             this.ProgressSubMessageLabel.Text = "[ProgressMessage]";
             // 
             // SubProgressBar
@@ -399,7 +399,7 @@ sealed partial class MainForm
             this.SubProgressBar.Location = new System.Drawing.Point(16, 80);
             this.SubProgressBar.Name = "SubProgressBar";
             this.SubProgressBar.Size = new System.Drawing.Size(1024, 16);
-            this.SubProgressBar.TabIndex = 21;
+            this.SubProgressBar.TabIndex = 3;
             this.SubProgressBar.Visible = false;
             // 
             // MainProgressBar
@@ -407,7 +407,7 @@ sealed partial class MainForm
             this.MainProgressBar.Location = new System.Drawing.Point(16, 40);
             this.MainProgressBar.Name = "MainProgressBar";
             this.MainProgressBar.Size = new System.Drawing.Size(1024, 16);
-            this.MainProgressBar.TabIndex = 21;
+            this.MainProgressBar.TabIndex = 1;
             this.MainProgressBar.Visible = false;
             // 
             // MainForm
