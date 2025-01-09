@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using AngelLoader.Forms.WinFormsNative.Dialogs;
+using Loader_Friendly_FM_Packager.Properties;
 using Loader_Friendly_FM_Packager.WinFormsNative.Taskbar;
 
 namespace Loader_Friendly_FM_Packager;
@@ -39,6 +40,8 @@ public sealed partial class MainForm : Form, IEventDisabler
     public MainForm()
     {
         InitializeComponent();
+
+        Icon = Resources.App;
 
 #if !DEV_TESTING
         Test1Button.Hide();
